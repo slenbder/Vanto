@@ -3,9 +3,8 @@ import AppKit
 enum ClipboardItem: Equatable {
     case text(String)
     case image(NSImage)
-    // url points at our own copy under ClipboardFiles, not the original source path —
-    // originalFilename is carried separately purely for display, since the copy's name
-    // is UUID-based (see PasteStack.copyToClipboardStorage).
+    // url points at ClipboardFiles/<item UUID>/<original filename>, not the source path.
+    // originalFilename is retained separately for display.
     case file(url: URL, originalFilename: String)
 
     static func == (lhs: ClipboardItem, rhs: ClipboardItem) -> Bool {

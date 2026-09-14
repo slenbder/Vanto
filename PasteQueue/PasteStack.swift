@@ -268,19 +268,18 @@ final class PasteStack: ObservableObject {
         }
     }
 
-    /// Copies a captured file's bytes into our own storage under a name derived from the
-    /// queue item's own id (not the source filename) so two different source files that
-    /// happen to share a name never collide on disk.
+    /// Keeps the receiver-visible filename while isolating equal names in per-item folders.
     private func copyToClipboardStorage(_ sourceURL: URL, itemID: UUID) -> URL? {
-        var destinationURL = clipboardFilesDirectory.appendingPathComponent(itemID.uuidString)
-        let ext = sourceURL.pathExtension
-        if !ext.isEmpty {
-            destinationURL = destinationURL.appendingPathExtension(ext)
-        }
+        let itemDirectory = clipboardFilesDirectory.appendingPathComponent(itemID.uuidString, isDirectory: true)
+        let destinationURL = itemDirectory.appendingPathComponent(sourceURL.lastPathComponent)
         do {
+            try FileManager.default.createDirectory(at: itemDirectory, withIntermediateDirectories: false)
             try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
             return destinationURL
         } catch {
+            // createDirectory may have succeeded before copyItem failed. The item owns this
+            // UUID directory exclusively, so remove it without leaving an empty orphan.
+            try? FileManager.default.removeItem(at: itemDirectory)
             logger.error("copyToClipboardStorage failed sourceURL=\(sourceURL.path, privacy: .public) error=\(error.localizedDescription, privacy: .public)")
             return nil
         }
@@ -288,24 +287,45 @@ final class PasteStack: ObservableObject {
 
     private func deleteStoredFile(for item: QueuedClipboardItem) {
         guard case .file(let url, _) = item.content else { return }
-        guard url.deletingLastPathComponent().standardizedFileURL == clipboardFilesDirectory.standardizedFileURL else {
-            logger.error("Refusing to delete file outside clipboard storage url=\(url.path, privacy: .public)")
+        guard let storageEntry = ownedStorageEntry(for: item) else {
+            logger.error("Refusing to delete unowned file storage url=\(url.path, privacy: .public)")
             return
         }
-        try? FileManager.default.removeItem(at: url)
+        // New-format items remove their UUID directory. Legacy flat items remove only the
+        // file itself. FileManager.removeItem handles both without leaving empty folders.
+        try? FileManager.default.removeItem(at: storageEntry)
+    }
+
+    /// Resolves only the two layouts PasteQueue owns. Exact normalized parent equality and
+    /// the queue item's UUID prevent a crafted path (including `..`) from escaping this
+    /// instance's storage or deleting a sibling item.
+    private func ownedStorageEntry(for item: QueuedClipboardItem) -> URL? {
+        guard case .file(let url, _) = item.content else { return nil }
+        let root = clipboardFilesDirectory.standardizedFileURL
+        let file = url.standardizedFileURL
+        let parent = file.deletingLastPathComponent()
+
+        // Legacy layout: ClipboardFiles/<UUID>.<extension>
+        if parent == root {
+            guard file.deletingPathExtension().lastPathComponent == item.id.uuidString else { return nil }
+            return file
+        }
+
+        // Current layout: ClipboardFiles/<UUID>/<original filename>
+        guard parent.deletingLastPathComponent() == root,
+              parent.lastPathComponent == item.id.uuidString else { return nil }
+        return parent
     }
 
     private func cleanupOrphanedFiles(referencedBy queue: [QueuedClipboardItem]) {
-        let referencedNames = Set(queue.compactMap { item -> String? in
-            guard case .file(let url, _) = item.content else { return nil }
-            return url.lastPathComponent
-        })
+        let referencedEntries = Set(queue.compactMap { ownedStorageEntry(for: $0)?.standardizedFileURL })
         guard let contents = try? FileManager.default.contentsOfDirectory(
             at: clipboardFilesDirectory,
             includingPropertiesForKeys: nil
         ) else { return }
-        for fileURL in contents where !referencedNames.contains(fileURL.lastPathComponent) {
-            try? FileManager.default.removeItem(at: fileURL)
+        // Top-level contents can be legacy flat files or new per-item directories.
+        for entry in contents where !referencedEntries.contains(entry.standardizedFileURL) {
+            try? FileManager.default.removeItem(at: entry)
         }
     }
 

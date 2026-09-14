@@ -67,3 +67,19 @@ final class CommandVRecorder {
         requestCount += 1
     }
 }
+
+final class CleanupSchedulerRecorder {
+    private(set) var delays: [TimeInterval] = []
+    private var actions: [() -> Void] = []
+
+    func schedule(delay: TimeInterval, action: @escaping () -> Void) {
+        delays.append(delay)
+        actions.append(action)
+    }
+
+    func runAll() {
+        let pendingActions = actions
+        actions.removeAll()
+        pendingActions.forEach { $0() }
+    }
+}
