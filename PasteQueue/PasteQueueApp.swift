@@ -2,6 +2,15 @@ import SwiftUI
 import AppKit
 import Combine
 
+enum AppRuntime {
+    static var isRunningTests: Bool {
+        let environment = ProcessInfo.processInfo.environment
+        return environment["XCTestConfigurationFilePath"] != nil
+            || environment["XCTestBundlePath"] != nil
+            || NSClassFromString("XCTestCase") != nil
+    }
+}
+
 @main
 struct PasteQueueApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -49,6 +58,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var flashSubscription: AnyCancellable?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // PasteQueueTests run inside this executable via TEST_HOST. Return before touching
+        // either singleton so the host cannot monitor keys, prompt for Accessibility, poll
+        // the system pasteboard, sweep production file storage, or query login-item state.
+        guard !AppRuntime.isRunningTests else { return }
+
         // Hide the Dock icon — this is a menu-bar-only utility.
         NSApp.setActivationPolicy(.accessory)
         HotkeyManager.shared.start()

@@ -5,10 +5,62 @@ import os
 
 private let logger = Logger(subsystem: "com.slenbder.pastequeue", category: "PasteStack")
 
+enum LaunchAtLoginStatus {
+    case enabled
+    case requiresApproval
+    case notRegistered
+    case notFound
+}
+
+protocol LaunchAtLoginProviding: AnyObject {
+    var status: LaunchAtLoginStatus { get }
+    var userIntendedEnabled: Bool { get }
+    func register() throws
+    func unregister() throws
+    func setUserIntendedEnabled(_ enabled: Bool)
+}
+
+final class SystemLaunchAtLoginService: LaunchAtLoginProviding {
+    private static let userEnabledKey = "userEnabledLaunchAtLogin"
+
+    var status: LaunchAtLoginStatus {
+        switch SMAppService.mainApp.status {
+        case .enabled:
+            return .enabled
+        case .requiresApproval:
+            return .requiresApproval
+        case .notRegistered:
+            return .notRegistered
+        case .notFound:
+            return .notFound
+        @unknown default:
+            return .notRegistered
+        }
+    }
+
+    var userIntendedEnabled: Bool {
+        UserDefaults.standard.bool(forKey: Self.userEnabledKey)
+    }
+
+    func register() throws {
+        try SMAppService.mainApp.register()
+    }
+
+    func unregister() throws {
+        try SMAppService.mainApp.unregister()
+    }
+
+    func setUserIntendedEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Self.userEnabledKey)
+    }
+}
+
 /// Holds the FIFO queue of copied items and drives clipboard polling + synthetic paste.
 /// FIFO by design: first thing you copy is the first thing that gets pasted.
 final class PasteStack: ObservableObject {
     static let shared = PasteStack()
+
+    typealias CleanupScheduler = (_ delay: TimeInterval, _ action: @escaping () -> Void) -> Void
 
     private enum StopReason: String {
         case manualToggle
@@ -17,8 +69,6 @@ final class PasteStack: ObservableObject {
 
     /// Soft cap so a runaway collecting session can't grow the queue forever.
     static let maxQueueSize = 99
-
-    private static let userEnabledLaunchAtLoginKey = "userEnabledLaunchAtLogin"
 
     @Published var queue: [QueuedClipboardItem] = []
     @Published var isCollecting: Bool = false
@@ -32,6 +82,12 @@ final class PasteStack: ObservableObject {
     let flashRequested = PassthroughSubject<Void, Never>()
 
     private let pasteboard: PasteboardProviding
+    private let clipboardFilesDirectory: URL
+    private let sendCommandV: () -> Void
+    private let scheduleCleanup: CleanupScheduler
+    private let accessibilityTrustProvider: () -> Bool
+    private let launchAtLoginService: LaunchAtLoginProviding
+    private let automaticallyPolls: Bool
     private var pollTimer: Timer?
     private var lastChangeCount: Int
 
@@ -43,35 +99,64 @@ final class PasteStack: ObservableObject {
     // writeObjects() reports success while no bytes ever arrive. Copying the bytes into
     // our own Application Support directory at capture time sidesteps that entirely: the
     // file we hand out at paste time is one we actually own.
-    private static let clipboardFilesDirectory: URL = {
+    private static var productionClipboardFilesDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let directory = appSupport.appendingPathComponent("PasteQueue/ClipboardFiles", isDirectory: true)
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        var excludable = directory
+        return appSupport.appendingPathComponent("PasteQueue/ClipboardFiles", isDirectory: true)
+    }
+
+    convenience init() {
+        self.init(
+            pasteboard: NSPasteboard.general,
+            clipboardFilesDirectory: Self.productionClipboardFilesDirectory,
+            sendCommandV: Self.postCommandV,
+            scheduleCleanup: { delay, action in
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: action)
+            },
+            accessibilityTrustProvider: { AXIsProcessTrusted() },
+            launchAtLoginService: SystemLaunchAtLoginService(),
+            automaticallyPolls: true
+        )
+    }
+
+    init(
+        pasteboard: PasteboardProviding,
+        clipboardFilesDirectory: URL,
+        sendCommandV: @escaping () -> Void,
+        scheduleCleanup: @escaping CleanupScheduler,
+        accessibilityTrustProvider: @escaping () -> Bool,
+        launchAtLoginService: LaunchAtLoginProviding,
+        automaticallyPolls: Bool
+    ) {
+        self.pasteboard = pasteboard
+        self.clipboardFilesDirectory = clipboardFilesDirectory
+        self.sendCommandV = sendCommandV
+        self.scheduleCleanup = scheduleCleanup
+        self.accessibilityTrustProvider = accessibilityTrustProvider
+        self.launchAtLoginService = launchAtLoginService
+        self.automaticallyPolls = automaticallyPolls
+        self.lastChangeCount = pasteboard.changeCount
+        self.isAccessibilityTrusted = accessibilityTrustProvider()
+        self.launchAtLoginEnabled = launchAtLoginService.status == .enabled
+
+        try? FileManager.default.createDirectory(at: clipboardFilesDirectory, withIntermediateDirectories: true)
+        var excludable = clipboardFilesDirectory
         var resourceValues = URLResourceValues()
         resourceValues.isExcludedFromBackup = true
         try? excludable.setResourceValues(resourceValues)
-        return directory
-    }()
 
-    init(pasteboard: PasteboardProviding = NSPasteboard.general) {
-        self.pasteboard = pasteboard
-        self.lastChangeCount = pasteboard.changeCount
-        self.isAccessibilityTrusted = AXIsProcessTrusted()
-        self.launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
         // A force-quit while the queue held file items leaves their copies orphaned on
         // disk with nothing left in memory to clean them up — sweep once at startup.
-        Self.cleanupOrphanedFiles(referencedBy: queue)
+        cleanupOrphanedFiles(referencedBy: queue)
         refreshLaunchAtLoginStatus()
     }
 
     func refreshAccessibilityStatus() {
-        isAccessibilityTrusted = AXIsProcessTrusted()
+        isAccessibilityTrusted = accessibilityTrustProvider()
     }
 
     func refreshLaunchAtLoginStatus() {
-        let status = SMAppService.mainApp.status
-        let userIntendedEnabled = UserDefaults.standard.bool(forKey: Self.userEnabledLaunchAtLoginKey)
+        let status = launchAtLoginService.status
+        let userIntendedEnabled = launchAtLoginService.userIntendedEnabled
         launchAtLoginEnabled = (status == .enabled)
         // .requiresApproval — переходное состояние сразу после успешного register(),
         // пока юзер не подтвердил Login Item в System Settings. Это НЕ рассинхрон —
@@ -85,11 +170,11 @@ final class PasteStack: ObservableObject {
     func toggleLaunchAtLogin() {
         do {
             if launchAtLoginEnabled {
-                try SMAppService.mainApp.unregister()
-                UserDefaults.standard.set(false, forKey: Self.userEnabledLaunchAtLoginKey)
+                try launchAtLoginService.unregister()
+                launchAtLoginService.setUserIntendedEnabled(false)
             } else {
-                try SMAppService.mainApp.register()
-                UserDefaults.standard.set(true, forKey: Self.userEnabledLaunchAtLoginKey)
+                try launchAtLoginService.register()
+                launchAtLoginService.setUserIntendedEnabled(true)
             }
         } catch {
             logger.debug("toggleLaunchAtLogin failed: \(error.localizedDescription, privacy: .public)")
@@ -116,6 +201,7 @@ final class PasteStack: ObservableObject {
     }
 
     private func startPolling() {
+        guard automaticallyPolls else { return }
         pollTimer?.invalidate()
         pollTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
             self?.checkPasteboard()
@@ -148,14 +234,9 @@ final class PasteStack: ObservableObject {
         // This intentionally catches ANY copied file, not just images — same raw pasteboard
         // mechanics apply whether it's a jpg or a txt/pdf/whatever else copied from Finder.
         //
-        // Both this and the NSImage branch below go straight to the real pasteboard (not behind
-        // PasteboardProviding) for the same reason: they're the one AppKit API that already knows
-        // how to do this correctly without us hand-listing UTI types. Tests cover these branches
-        // through the real general pasteboard while the mock only controls changeCount.
-        let fileURLs = (NSPasteboard.general.readObjects(
-            forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true]
-        ) as? [URL]) ?? []
+        // The production pasteboard implementation keeps these reads backed by AppKit's
+        // readObjects API; tests provide the same typed values without touching the system.
+        let fileURLs = pasteboard.readFileURLs()
 
         if !fileURLs.isEmpty {
             // Multi-selection copies (Finder, Photos) hand back every selected file in one
@@ -165,12 +246,12 @@ final class PasteStack: ObservableObject {
                 guard queue.count < Self.maxQueueSize else { break }
                 let itemID = UUID()
                 let originalFilename = fileURL.lastPathComponent
-                guard let storedURL = Self.copyToClipboardStorage(fileURL, itemID: itemID) else { continue }
+                guard let storedURL = copyToClipboardStorage(fileURL, itemID: itemID) else { continue }
                 queue.append(QueuedClipboardItem(id: itemID, content: .file(url: storedURL, originalFilename: originalFilename)))
                 logger.debug("queue append type=file queue.count=\(self.queue.count, privacy: .public)")
             }
         } else {
-            let images = (NSPasteboard.general.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage]) ?? []
+            let images = pasteboard.readImages()
             if !images.isEmpty {
                 // Same reasoning as the file branch above: a single copy action can hand back
                 // more than one image (e.g. multi-selection in an app that vends several image
@@ -190,7 +271,7 @@ final class PasteStack: ObservableObject {
     /// Copies a captured file's bytes into our own storage under a name derived from the
     /// queue item's own id (not the source filename) so two different source files that
     /// happen to share a name never collide on disk.
-    private static func copyToClipboardStorage(_ sourceURL: URL, itemID: UUID) -> URL? {
+    private func copyToClipboardStorage(_ sourceURL: URL, itemID: UUID) -> URL? {
         var destinationURL = clipboardFilesDirectory.appendingPathComponent(itemID.uuidString)
         let ext = sourceURL.pathExtension
         if !ext.isEmpty {
@@ -205,12 +286,16 @@ final class PasteStack: ObservableObject {
         }
     }
 
-    private static func deleteStoredFile(for item: QueuedClipboardItem) {
+    private func deleteStoredFile(for item: QueuedClipboardItem) {
         guard case .file(let url, _) = item.content else { return }
+        guard url.deletingLastPathComponent().standardizedFileURL == clipboardFilesDirectory.standardizedFileURL else {
+            logger.error("Refusing to delete file outside clipboard storage url=\(url.path, privacy: .public)")
+            return
+        }
         try? FileManager.default.removeItem(at: url)
     }
 
-    private static func cleanupOrphanedFiles(referencedBy queue: [QueuedClipboardItem]) {
+    private func cleanupOrphanedFiles(referencedBy queue: [QueuedClipboardItem]) {
         let referencedNames = Set(queue.compactMap { item -> String? in
             guard case .file(let url, _) = item.content else { return nil }
             return url.lastPathComponent
@@ -244,22 +329,13 @@ final class PasteStack: ObservableObject {
             stopCollecting(reason: .queueDrained)
         }
 
-        let pb = NSPasteboard.general
-        pb.clearContents()
-        switch item.content {
-        case .text(let str):
-            pb.setString(str, forType: .string)
-        case .image(let image):
-            pb.writeObjects([image])
-        case .file(let url, _):
-            pb.writeObjects([url as NSURL])
-        }
+        pasteboard.replaceContents(with: item.content)
         // Still collecting with items left in the queue means the timer is still running —
         // sync lastChangeCount to our own write's new changeCount too, otherwise the next
         // checkPasteboard() tick sees "changed" and re-queues this same item anyway.
-        lastChangeCount = pb.changeCount
+        lastChangeCount = pasteboard.changeCount
 
-        simulateCommandV()
+        sendCommandV()
 
         // Deleting the stored copy right here (synchronously) would race the synthetic ⌘V:
         // that keystroke is only just now being posted to the event tap, and the receiving
@@ -267,14 +343,14 @@ final class PasteStack: ObservableObject {
         // immediate delete could remove the file before that read happens, reintroducing the
         // exact "reports success but nothing pastes" failure this on-disk copy exists to fix.
         // A short delay gives that read time to complete before cleanup runs.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            Self.deleteStoredFile(for: item)
+        scheduleCleanup(2) { [weak self] in
+            self?.deleteStoredFile(for: item)
         }
     }
 
     func clear() {
         for item in queue {
-            Self.deleteStoredFile(for: item)
+            deleteStoredFile(for: item)
         }
         queue.removeAll()
         logger.debug("queue clear queue.count=\(self.queue.count, privacy: .public)")
@@ -286,7 +362,7 @@ final class PasteStack: ObservableObject {
     func remove(id: UUID) {
         guard let index = queue.firstIndex(where: { $0.id == id }) else { return }
         let removed = queue.remove(at: index)
-        Self.deleteStoredFile(for: removed)
+        deleteStoredFile(for: removed)
         logger.debug("queue remove queue.count=\(self.queue.count, privacy: .public)")
     }
 
@@ -297,7 +373,7 @@ final class PasteStack: ObservableObject {
         logger.debug("queue move queue.count=\(self.queue.count, privacy: .public)")
     }
 
-    private func simulateCommandV() {
+    private static func postCommandV() {
         let src = CGEventSource(stateID: .hidSystemState)
         let vKeyCode: CGKeyCode = 9 // ANSI 'V'
 
