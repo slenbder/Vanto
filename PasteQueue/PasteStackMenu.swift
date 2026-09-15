@@ -2,6 +2,8 @@ import SwiftUI
 
 struct PasteStackMenu: View {
     @ObservedObject var stack: PasteStack
+    let minimumQueueListHeight: CGFloat
+    let onPaste: () -> Void
 
     // Manual drag-to-reorder state. AppKit's List backing draws its own insertion-line +
     // lifted-ghost visuals during onMove drags with no public SwiftUI hook to suppress
@@ -13,6 +15,7 @@ struct PasteStackMenu: View {
 
     private static let rowSpacing: CGFloat = 8
     private static let fallbackRowHeight: CGFloat = 32
+    private static let maxListHeight: CGFloat = 230
     private static let dragCoordinateSpace = "queueRows"
 
     // The dragged row's live vertical offset: raw finger/cursor translation minus however
@@ -66,7 +69,7 @@ struct PasteStackMenu: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusAccessibilityLabel)
 
-            if !stack.queue.isEmpty {
+            if effectiveListHeight > 0 {
                 Divider()
                 // A ScrollView asked for its *ideal* height (no incoming height proposal,
                 // which is exactly what MenuBarExtra's .window style does when it measures
@@ -83,7 +86,7 @@ struct PasteStackMenu: View {
                     }
                     .coordinateSpace(name: Self.dragCoordinateSpace)
                 }
-                .frame(height: listHeight)
+                .frame(height: effectiveListHeight)
             }
 
             Divider()
@@ -96,7 +99,7 @@ struct PasteStackMenu: View {
                 }
 
                 Button("Paste") {
-                    stack.pasteNext()
+                    onPaste()
                 }
                 .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
                 .disabled(stack.queue.isEmpty)
@@ -223,20 +226,25 @@ struct PasteStackMenu: View {
         )
     }
 
+    private var effectiveListHeight: CGFloat {
+        max(Self.listHeight(for: stack.queue), minimumQueueListHeight)
+    }
+
+    static func listHeight(for queue: [QueuedClipboardItem]) -> CGFloat {
+        min(queue.reduce(CGFloat(0)) { $0 + estimatedRowHeight(for: $1) }, maxListHeight)
+    }
+
     // ~8 rows' worth of height: text rows run ~20pt (`.callout`) + row padding + 8pt
     // inter-row spacing ≈ 32pt/row, image/file rows are taller (28pt frame ≈ 38pt/row).
-    // Capped at 230pt so a long queue scrolls instead of pushing the buttons below off
+    // Capped at maxListHeight so a long queue scrolls instead of pushing the buttons below off
     // the bottom of the popover.
-    private var listHeight: CGFloat {
-        let contentHeight = stack.queue.reduce(CGFloat(0)) { total, entry in
-            switch entry.content {
-            case .text:
-                return total + 32
-            case .image, .file:
-                return total + 38
-            }
+    private static func estimatedRowHeight(for entry: QueuedClipboardItem) -> CGFloat {
+        switch entry.content {
+        case .text:
+            return 32
+        case .image, .file:
+            return 38
         }
-        return min(contentHeight, 230)
     }
 
     // Swaps the dragged row past a neighbor once its (live, offset-adjusted) position has
@@ -378,12 +386,16 @@ private struct QueueRowView: View {
         QueuedClipboardItem(content: .text("third")),
     ]
     stack.isCollecting = true
-    return PasteStackMenu(stack: stack)
+    return PasteStackMenu(stack: stack, minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue)) {
+        stack.pasteNext()
+    }
 }
 
 #Preview("Long queue") {
     let stack = PasteStack()
     stack.queue = (1...25).map { QueuedClipboardItem(content: .text("clipboard item number \($0)")) }
     stack.isCollecting = true
-    return PasteStackMenu(stack: stack)
+    return PasteStackMenu(stack: stack, minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue)) {
+        stack.pasteNext()
+    }
 }

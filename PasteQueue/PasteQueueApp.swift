@@ -1,6 +1,9 @@
 import SwiftUI
 import AppKit
 import Combine
+import os
+
+private let uiLogger = Logger(subsystem: "com.slenbder.pastequeue", category: "UI")
 
 enum AppRuntime {
     static var isRunningTests: Bool {
@@ -50,12 +53,31 @@ final class CenteredLabelView: NSView {
     }
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem?
     private var countLabel: CenteredLabelView?
     private var popover: NSPopover?
     private var queueSubscription: AnyCancellable?
     private var flashSubscription: AnyCancellable?
+    private var pasteRecipientApplication: NSRunningApplication?
+    private var isRestoringFocusForPaste = false
+    private var activationObserver: NSObjectProtocol?
+    private var activationTimeout: DispatchWorkItem?
+    private var globalMouseMonitor: Any?
+    private var localMouseMonitor: Any?
+    private var escapeKeyMonitor: Any?
+
+    private enum PasteRequestSource: String {
+        case button
+        case hotkey
+    }
+
+    private enum PopoverCloseReason: String {
+        case statusItem
+        case outsideClick
+        case escape
+        case queueDrained
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // PasteQueueTests run inside this executable via TEST_HOST. Return before touching
@@ -65,9 +87,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Hide the Dock icon — this is a menu-bar-only utility.
         NSApp.setActivationPolicy(.accessory)
-        HotkeyManager.shared.start()
+        HotkeyManager.shared.start { [weak self] in
+            self?.requestPaste(source: .hotkey)
+        }
         PasteStack.shared.refreshLaunchAtLoginStatus()
         setUpStatusItem()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        removePopoverEventMonitors()
     }
 
     // MenuBarExtra's label is hosted by the system status item, but it gives no
@@ -128,8 +156,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.countLabel = countLabel
 
         let popover = NSPopover()
-        popover.contentViewController = NSHostingController(rootView: PasteStackMenu(stack: PasteStack.shared))
-        popover.behavior = .transient
+        popover.behavior = .applicationDefined
+        popover.delegate = self
         self.popover = popover
 
         queueSubscription = PasteStack.shared.$queue.combineLatest(PasteStack.shared.$isCollecting).sink { queue, isCollecting in
@@ -203,16 +231,216 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func statusItemClicked() {
         guard let button = statusItem?.button, let popover else { return }
         if popover.isShown {
-            popover.close()
+            closePopover(reason: .statusItem)
         } else {
-            // .accessory apps never become the active app on their own — without this,
-            // clicking outside the popover (another app's window, Dock, desktop) never
-            // triggers the "app resigns active" transition that .transient's automatic
-            // dismissal relies on, so the popover only ever closes via a repeat click on
-            // this same status item button (which counts as interacting with our own window).
+            rememberExternalFrontmostApplication()
+            // .accessory apps never become the active app on their own. Activating when the
+            // user explicitly opens the menu lets the popover receive keyboard focus; later
+            // paste requests return focus to the remembered external recipient.
             NSApp.activate(ignoringOtherApps: true)
             PasteStack.shared.refreshLaunchAtLoginStatus()
+            let minimumQueueListHeight = PasteStackMenu.listHeight(for: PasteStack.shared.queue)
+            popover.contentViewController = makePopoverContentController(
+                minimumQueueListHeight: minimumQueueListHeight
+            )
+            uiLogger.debug("popover will open queueCount=\(PasteStack.shared.queue.count, privacy: .public) minimumQueueListHeight=\(minimumQueueListHeight, privacy: .public)")
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            installPopoverEventMonitors()
         }
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        uiLogger.debug("popoverDidClose")
+        removePopoverEventMonitors()
+    }
+
+    private func makePopoverContentController(
+        minimumQueueListHeight: CGFloat
+    ) -> NSHostingController<PasteStackMenu> {
+        NSHostingController(
+            rootView: PasteStackMenu(
+                stack: PasteStack.shared,
+                minimumQueueListHeight: minimumQueueListHeight
+            ) { [weak self] in
+                self?.requestPaste(source: .button)
+            }
+        )
+    }
+
+    private func rememberExternalFrontmostApplication() {
+        guard let frontmost = NSWorkspace.shared.frontmostApplication,
+              isExternalApplication(frontmost) else {
+            pasteRecipientApplication = nil
+            return
+        }
+        pasteRecipientApplication = frontmost
+    }
+
+    private func requestPaste(source: PasteRequestSource) {
+        uiLogger.debug("paste requested source=\(source.rawValue, privacy: .public)")
+        guard !isRestoringFocusForPaste else { return }
+
+        let beganInPopover = popover?.isShown == true
+        guard beganInPopover else {
+            guard !NSApp.isActive else { return }
+            let queueCountBeforePaste = PasteStack.shared.queue.count
+            PasteStack.shared.pasteNext()
+            uiLogger.debug("paste sent queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+            return
+        }
+
+        guard let recipient = pasteRecipientApplication,
+              isExternalApplication(recipient),
+              !recipient.isTerminated else {
+            uiLogger.debug("recipient restore failed")
+            return
+        }
+
+        isRestoringFocusForPaste = true
+        uiLogger.debug("recipient restore started")
+        activateRecipientAndPaste(recipient, beganInPopover: beganInPopover)
+    }
+
+    private func activateRecipientAndPaste(
+        _ recipient: NSRunningApplication,
+        beganInPopover: Bool
+    ) {
+        guard !recipient.isTerminated,
+              recipient.activate(options: [.activateIgnoringOtherApps]) else {
+            uiLogger.debug("recipient restore failed")
+            finishFocusRestore(success: false)
+            return
+        }
+
+        waitForActivation(of: recipient) { [weak self] success in
+            guard let self else { return }
+            finishFocusRestore(success: success)
+            if success {
+                uiLogger.debug("recipient restore confirmed")
+                let queueCountBeforePaste = PasteStack.shared.queue.count
+                PasteStack.shared.pasteNext()
+                uiLogger.debug("paste sent queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+                if beganInPopover, PasteStack.shared.queue.isEmpty {
+                    closePopover(reason: .queueDrained)
+                }
+            } else {
+                uiLogger.debug("recipient restore failed")
+            }
+        }
+    }
+
+    private func waitForActivation(
+        of recipient: NSRunningApplication,
+        completion: @escaping (Bool) -> Void
+    ) {
+        if isFrontmost(recipient) {
+            completion(true)
+            return
+        }
+
+        let notificationCenter = NSWorkspace.shared.notificationCenter
+        activationObserver = notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self,
+                  activationObserver != nil,
+                  let activated = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+                  activated.processIdentifier == recipient.processIdentifier else { return }
+            completion(true)
+        }
+
+        let timeout = DispatchWorkItem { [weak self] in
+            guard let self, activationTimeout != nil else { return }
+            if !isFrontmost(recipient) {
+                uiLogger.debug("recipient restore timeout")
+            }
+            completion(isFrontmost(recipient))
+        }
+        activationTimeout = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: timeout)
+    }
+
+    private func finishFocusRestore(success: Bool) {
+        if let activationObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(activationObserver)
+            self.activationObserver = nil
+        }
+        activationTimeout?.cancel()
+        activationTimeout = nil
+        isRestoringFocusForPaste = false
+        if !success {
+            pasteRecipientApplication = nil
+        }
+    }
+
+    private func isFrontmost(_ application: NSRunningApplication) -> Bool {
+        NSWorkspace.shared.frontmostApplication?.processIdentifier == application.processIdentifier
+    }
+
+    private func isExternalApplication(_ application: NSRunningApplication) -> Bool {
+        application.processIdentifier != ProcessInfo.processInfo.processIdentifier
+    }
+
+    private func installPopoverEventMonitors() {
+        guard globalMouseMonitor == nil,
+              localMouseMonitor == nil,
+              escapeKeyMonitor == nil else { return }
+
+        let mouseEvents: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: mouseEvents) { [weak self] _ in
+            self?.closePopover(reason: .outsideClick)
+        }
+
+        localMouseMonitor = NSEvent.addLocalMonitorForEvents(matching: mouseEvents) { [weak self] event in
+            guard let self else { return event }
+            if !isEventInsidePopover(event), !isEventOnStatusItem(event) {
+                closePopover(reason: .outsideClick)
+            }
+            return event
+        }
+
+        escapeKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self else { return event }
+            if event.keyCode == 53 {
+                closePopover(reason: .escape)
+                return nil
+            }
+            return event
+        }
+    }
+
+    private func closePopover(reason: PopoverCloseReason) {
+        guard popover?.isShown == true else { return }
+        uiLogger.debug("popover close requested reason=\(reason.rawValue, privacy: .public)")
+        popover?.close()
+    }
+
+    private func removePopoverEventMonitors() {
+        if let globalMouseMonitor {
+            NSEvent.removeMonitor(globalMouseMonitor)
+            self.globalMouseMonitor = nil
+        }
+        if let localMouseMonitor {
+            NSEvent.removeMonitor(localMouseMonitor)
+            self.localMouseMonitor = nil
+        }
+        if let escapeKeyMonitor {
+            NSEvent.removeMonitor(escapeKeyMonitor)
+            self.escapeKeyMonitor = nil
+        }
+    }
+
+    private func isEventInsidePopover(_ event: NSEvent) -> Bool {
+        guard let popoverWindow = popover?.contentViewController?.view.window else { return false }
+        return event.window === popoverWindow
+    }
+
+    private func isEventOnStatusItem(_ event: NSEvent) -> Bool {
+        guard let button = statusItem?.button,
+              event.window === button.window else { return false }
+        let locationInButton = button.convert(event.locationInWindow, from: nil)
+        return button.bounds.contains(locationInButton)
     }
 }

@@ -18,29 +18,33 @@ final class HotkeyManager {
     static let shared = HotkeyManager()
     private var globalMonitor: Any?
     private var localMonitor: Any?
+    private var pasteRequestHandler: () -> Void = {
+        PasteStack.shared.pasteNext()
+    }
 
     private init() {}
 
-    func start() {
+    func start(pasteRequestHandler: @escaping () -> Void = { PasteStack.shared.pasteNext() }) {
+        self.pasteRequestHandler = pasteRequestHandler
         requestAccessibilityIfNeeded()
-        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-            HotkeyManager.handle(event)
+        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handle(event)
         }
-        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            HotkeyManager.handle(event)
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handle(event)
             return event
         }
     }
 
-    private static func handle(_ event: NSEvent) {
+    private func handle(_ event: NSEvent) {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         guard flags == [.control, .command] else { return }
 
-        switch HotkeyManager.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
+        switch Self.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
         case "c":
             PasteStack.shared.toggleCollecting()
         case "v":
-            PasteStack.shared.pasteNext()
+            pasteRequestHandler()
         default:
             break
         }
