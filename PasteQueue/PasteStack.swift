@@ -330,9 +330,13 @@ final class PasteStack: ObservableObject {
     }
 
     func pasteNext() {
-        // Checked before any pasteboard access, and before anything isCollecting-related —
-        // isCollecting and queue.count are independent dimensions of state (see type-level
-        // doc), so an empty queue is a no-op regardless of whether a session is running.
+        // Close the polling window for a just-copied item before choosing what to paste.
+        // When collecting is off, paste remains a pure queue operation and never captures
+        // whatever external app currently has on the system pasteboard.
+        if isCollecting {
+            checkPasteboard()
+        }
+
         guard !queue.isEmpty else {
             flashRequested.send()
             return

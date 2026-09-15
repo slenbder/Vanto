@@ -142,6 +142,62 @@ final class PasteStackTests: XCTestCase {
         XCTAssertEqual(recorder.requestCount, 0)
     }
 
+    func testPasteNextSynchronouslyCapturesPendingItemWhenCollectingAndQueueIsEmpty() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+        stack.toggleCollecting()
+
+        mock.changeCount = 1
+        mock.stringValue = "A"
+
+        stack.pasteNext()
+
+        XCTAssertEqual(mock.writtenItems, [.text("A")])
+        XCTAssertEqual(recorder.requestCount, 1)
+        XCTAssertTrue(stack.queue.isEmpty)
+        XCTAssertFalse(stack.isCollecting)
+    }
+
+    func testPasteNextCapturesPendingItemAfterExistingQueueBeforePastingFIFO() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+        stack.toggleCollecting()
+
+        mock.changeCount = 1
+        mock.stringValue = "A"
+        stack.checkPasteboard()
+        mock.changeCount = 2
+        mock.stringValue = "B"
+
+        stack.pasteNext()
+
+        XCTAssertEqual(mock.writtenItems, [.text("A")])
+        XCTAssertEqual(recorder.requestCount, 1)
+        XCTAssertEqual(stack.queue.map(\.content), [.text("B")])
+        XCTAssertTrue(stack.isCollecting)
+
+        stack.checkPasteboard()
+
+        XCTAssertEqual(stack.queue.map(\.content), [.text("B")])
+    }
+
+    func testPasteNextDoesNotCaptureExternalPasteboardWhenCollectionIsOff() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+
+        mock.changeCount = 1
+        mock.stringValue = "A"
+
+        stack.pasteNext()
+
+        XCTAssertTrue(stack.queue.isEmpty)
+        XCTAssertTrue(mock.writtenItems.isEmpty)
+        XCTAssertEqual(recorder.requestCount, 0)
+    }
+
     func testClearEmptiesTheQueue() {
         let mock = MockPasteboard()
         let stack = makeStack(pasteboard: mock)
