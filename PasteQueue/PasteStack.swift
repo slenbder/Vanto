@@ -187,7 +187,8 @@ final class PasteStack: ObservableObject {
                 launchAtLoginService.setUserIntendedEnabled(true)
             }
         } catch {
-            logger.debug("toggleLaunchAtLogin failed: \(error.localizedDescription, privacy: .public)")
+            let nsError = error as NSError
+            logger.debug("toggleLaunchAtLogin failed domain=\(nsError.domain, privacy: .public) code=\(nsError.code, privacy: .public)")
         }
         refreshLaunchAtLoginStatus()
     }
@@ -290,15 +291,16 @@ final class PasteStack: ObservableObject {
             // createDirectory may have succeeded before copyItem failed. The item owns this
             // UUID directory exclusively, so remove it without leaving an empty orphan.
             try? FileManager.default.removeItem(at: itemDirectory)
-            logger.error("copyToClipboardStorage failed sourceURL=\(sourceURL.path, privacy: .public) error=\(error.localizedDescription, privacy: .public)")
+            let nsError = error as NSError
+            logger.error("copyToClipboardStorage failed itemID=\(itemID.uuidString, privacy: .public) domain=\(nsError.domain, privacy: .public) code=\(nsError.code, privacy: .public)")
             return nil
         }
     }
 
     private func deleteStoredFile(for item: QueuedClipboardItem) {
-        guard case .file(let url, _) = item.content else { return }
+        guard case .file = item.content else { return }
         guard let storageEntry = ownedStorageEntry(for: item) else {
-            logger.error("Refusing to delete unowned file storage url=\(url.path, privacy: .public)")
+            logger.error("deleteStoredFile refused itemID=\(item.id.uuidString, privacy: .public) reason=ownershipValidationFailed")
             return
         }
         // New-format items remove their UUID directory. Legacy flat items remove only the
