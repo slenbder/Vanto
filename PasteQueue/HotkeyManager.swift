@@ -37,8 +37,7 @@ final class HotkeyManager {
     }
 
     private func handle(_ event: NSEvent) {
-        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        guard flags == [.control, .command] else { return }
+        guard Self.shouldHandleShortcut(modifierFlags: event.modifierFlags, isRepeat: event.isARepeat) else { return }
 
         switch Self.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
         case "c":
@@ -48,6 +47,13 @@ final class HotkeyManager {
         default:
             break
         }
+    }
+
+    internal static func shouldHandleShortcut(modifierFlags: NSEvent.ModifierFlags, isRepeat: Bool) -> Bool {
+        guard !isRepeat else { return false }
+
+        let shortcutModifiers = modifierFlags.intersection([.control, .command, .shift, .option])
+        return shortcutModifiers == [.control, .command]
     }
 
     /// Translates a virtual keyCode into the character it would produce under the

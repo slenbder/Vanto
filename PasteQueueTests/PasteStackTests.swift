@@ -455,3 +455,17 @@ final class PasteStackTests: XCTestCase {
         case expectedFile
     }
 }
+
+final class HotkeyManagerShortcutTests: XCTestCase {
+    func testShortcutModifierFiltering() {
+        XCTAssertTrue(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command], isRepeat: false))
+        XCTAssertTrue(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command, .capsLock], isRepeat: false))
+        XCTAssertTrue(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command, .function, .numericPad], isRepeat: false))
+
+        XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command], isRepeat: true))
+        XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command, .shift], isRepeat: false))
+        XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command, .option], isRepeat: false))
+        XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.command], isRepeat: false))
+        XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control], isRepeat: false))
+    }
+}
