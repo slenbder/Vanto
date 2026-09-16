@@ -1,6 +1,73 @@
 import AppKit
 import Carbon
 
+internal enum KeyboardLayoutTranslator {
+    typealias Translator = (_ keyCode: UInt16, _ modifierKeyState: UInt32) -> String?
+
+    static let commandModifierKeyState = UInt32((cmdKey >> 8) & 0xFF)
+    static let fallbackVKeyCode: CGKeyCode = 9
+
+    /// Translates a virtual key code under the ASCII-capable hardware layout with no
+    /// modifiers. Input shortcut matching intentionally uses this path unchanged.
+    static func asciiCapableCharacter(for keyCode: UInt16) -> String? {
+        guard let translator = currentASCIICapableTranslator() else { return nil }
+        return translator(keyCode, 0)
+    }
+
+    static func commandKeyCode(for character: String, translator: Translator) -> CGKeyCode? {
+        for keyCode in UInt16(0)...UInt16(127) {
+            guard let translated = translator(keyCode, commandModifierKeyState) else { continue }
+            if translated.lowercased() == character.lowercased() {
+                return CGKeyCode(keyCode)
+            }
+        }
+        return nil
+    }
+
+    static func commandVKeyCode() -> CGKeyCode {
+        guard let translator = currentASCIICapableTranslator() else { return fallbackVKeyCode }
+        return commandVKeyCode(translator: translator)
+    }
+
+    static func commandVKeyCode(translator: Translator) -> CGKeyCode {
+        commandKeyCode(for: "v", translator: translator) ?? fallbackVKeyCode
+    }
+
+    private static func currentASCIICapableTranslator() -> Translator? {
+        guard let inputSource = TISCopyCurrentASCIICapableKeyboardLayoutInputSource()?.takeRetainedValue() else { return nil }
+        guard let layoutDataPointer = TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData) else { return nil }
+        let layoutData = Unmanaged<CFData>.fromOpaque(layoutDataPointer).takeUnretainedValue() as Data
+
+        return { keyCode, modifierKeyState in
+            translate(keyCode: keyCode, modifierKeyState: modifierKeyState, layoutData: layoutData)
+        }
+    }
+
+    private static func translate(keyCode: UInt16, modifierKeyState: UInt32, layoutData: Data) -> String? {
+        var deadKeyState: UInt32 = 0
+        var chars = [UniChar](repeating: 0, count: 4)
+        var length = 0
+        let status = layoutData.withUnsafeBytes { rawBuffer -> OSStatus in
+            guard let baseAddress = rawBuffer.baseAddress else { return OSStatus(paramErr) }
+            let keyboardLayout = baseAddress.assumingMemoryBound(to: UCKeyboardLayout.self)
+            return UCKeyTranslate(
+                keyboardLayout,
+                keyCode,
+                UInt16(kUCKeyActionDown),
+                modifierKeyState,
+                UInt32(LMGetKbdType()),
+                UInt32(kUCKeyTranslateNoDeadKeysBit),
+                &deadKeyState,
+                chars.count,
+                &length,
+                &chars
+            )
+        }
+        guard status == noErr, length > 0 else { return nil }
+        return String(utf16CodeUnits: chars, count: length)
+    }
+}
+
 /// Registers two global hotkeys system-wide:
 ///   ⌃⌘C  — toggle collecting mode on/off
 ///   ⌃⌘V  — pop the next item off the queue and paste it
@@ -39,7 +106,7 @@ final class HotkeyManager {
     private func handle(_ event: NSEvent) {
         guard Self.shouldHandleShortcut(modifierFlags: event.modifierFlags, isRepeat: event.isARepeat) else { return }
 
-        switch Self.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
+        switch KeyboardLayoutTranslator.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
         case "c":
             PasteStack.shared.toggleCollecting()
         case "v":
@@ -54,38 +121,6 @@ final class HotkeyManager {
 
         let shortcutModifiers = modifierFlags.intersection([.control, .command, .shift, .option])
         return shortcutModifiers == [.control, .command]
-    }
-
-    /// Translates a virtual keyCode into the character it would produce under the
-    /// system's ASCII-capable hardware layout, ignoring the currently active Unicode
-    /// input source (e.g. Cyrillic, Japanese). This is what keeps ⌃⌘C/⌃⌘V tracking the
-    /// physical hardware key under Dvorak/AZERTY, while staying unaffected by non-Latin
-    /// input sources, since those are software input methods layered on the same
-    /// physical ANSI hardware rather than alternate hardware layouts.
-    private static func asciiCapableCharacter(for keyCode: UInt16) -> String? {
-        guard let inputSource = TISCopyCurrentASCIICapableKeyboardLayoutInputSource()?.takeRetainedValue() else { return nil }
-        guard let layoutDataPointer = TISGetInputSourceProperty(inputSource, kTISPropertyUnicodeKeyLayoutData) else { return nil }
-        let layoutData = Unmanaged<CFData>.fromOpaque(layoutDataPointer).takeUnretainedValue() as Data
-        var deadKeyState: UInt32 = 0
-        var chars = [UniChar](repeating: 0, count: 4)
-        var length = 0
-        let status = layoutData.withUnsafeBytes { rawBuffer -> OSStatus in
-            let keyboardLayout = rawBuffer.baseAddress!.assumingMemoryBound(to: UCKeyboardLayout.self)
-            return UCKeyTranslate(
-                keyboardLayout,
-                keyCode,
-                UInt16(kUCKeyActionDown),
-                0,
-                UInt32(LMGetKbdType()),
-                UInt32(kUCKeyTranslateNoDeadKeysBit),
-                &deadKeyState,
-                chars.count,
-                &length,
-                &chars
-            )
-        }
-        guard status == noErr, length > 0 else { return nil }
-        return String(utf16CodeUnits: chars, count: length)
     }
 
     private func requestAccessibilityIfNeeded() {

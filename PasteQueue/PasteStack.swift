@@ -399,7 +399,7 @@ final class PasteStack: ObservableObject {
 
     private static func postCommandV() {
         let src = CGEventSource(stateID: .hidSystemState)
-        let vKeyCode: CGKeyCode = 9 // ANSI 'V'
+        let vKeyCode = KeyboardLayoutTranslator.commandVKeyCode()
 
         let keyDown = CGEvent(keyboardEventSource: src, virtualKey: vKeyCode, keyDown: true)
         keyDown?.flags = .maskCommand

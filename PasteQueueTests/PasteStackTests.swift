@@ -1,5 +1,6 @@
 @testable import PasteQueue
 import AppKit
+import Carbon
 import XCTest
 
 final class PasteStackTests: XCTestCase {
@@ -467,5 +468,35 @@ final class HotkeyManagerShortcutTests: XCTestCase {
         XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control, .command, .option], isRepeat: false))
         XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.command], isRepeat: false))
         XCTAssertFalse(HotkeyManager.shouldHandleShortcut(modifierFlags: [.control], isRepeat: false))
+    }
+
+    func testCommandKeyCodeSearchFindsNonANSIKeyCode() {
+        let keyCode = KeyboardLayoutTranslator.commandKeyCode(for: "v") { candidate, _ in
+            candidate == 42 ? "V" : nil
+        }
+
+        XCTAssertEqual(keyCode, 42)
+    }
+
+    func testCommandKeyCodeSearchUsesCommandModifierState() {
+        var receivedModifierStates: [UInt32] = []
+
+        _ = KeyboardLayoutTranslator.commandKeyCode(for: "v") { _, modifierKeyState in
+            receivedModifierStates.append(modifierKeyState)
+            return nil
+        }
+
+        XCTAssertEqual(receivedModifierStates.count, 128)
+        XCTAssertTrue(receivedModifierStates.allSatisfy {
+            $0 == UInt32((cmdKey >> 8) & 0xFF)
+        })
+    }
+
+    func testCommandVKeyCodeFallsBackToANSIKeyCodeWhenNoMatchExists() {
+        let match = KeyboardLayoutTranslator.commandKeyCode(for: "v") { _, _ in nil }
+        let keyCode = KeyboardLayoutTranslator.commandVKeyCode { _, _ in nil }
+
+        XCTAssertNil(match)
+        XCTAssertEqual(keyCode, 9)
     }
 }
