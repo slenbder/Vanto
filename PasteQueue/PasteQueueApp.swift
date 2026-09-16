@@ -287,8 +287,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         guard beganInPopover else {
             guard !NSApp.isActive else { return }
             let queueCountBeforePaste = PasteStack.shared.queue.count
-            PasteStack.shared.pasteNext()
-            uiLogger.debug("paste sent queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+            let result = PasteStack.shared.pasteNext()
+            uiLogger.debug("paste attempt outcome=\(result.rawValue, privacy: .public) queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
             return
         }
 
@@ -321,9 +321,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             if success {
                 uiLogger.debug("recipient restore confirmed")
                 let queueCountBeforePaste = PasteStack.shared.queue.count
-                PasteStack.shared.pasteNext()
-                uiLogger.debug("paste sent queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
-                if beganInPopover, PasteStack.shared.queue.isEmpty {
+                let result = PasteStack.shared.pasteNext()
+                uiLogger.debug("paste attempt outcome=\(result.rawValue, privacy: .public) queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+                if beganInPopover, result == .commandPosted, PasteStack.shared.queue.isEmpty {
                     closePopover(reason: .queueDrained)
                 }
             } else {

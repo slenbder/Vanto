@@ -8,7 +8,7 @@ protocol PasteboardProviding: AnyObject {
     func readFileURLs() -> [URL]
     func readImages() -> [NSImage]
     func string(forType type: NSPasteboard.PasteboardType) -> String?
-    func replaceContents(with item: ClipboardItem)
+    func replaceContents(with item: ClipboardItem) -> Bool
 }
 
 extension NSPasteboard: PasteboardProviding {
@@ -23,15 +23,15 @@ extension NSPasteboard: PasteboardProviding {
         (readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage]) ?? []
     }
 
-    func replaceContents(with item: ClipboardItem) {
+    func replaceContents(with item: ClipboardItem) -> Bool {
         clearContents()
         switch item {
         case .text(let string):
-            setString(string, forType: .string)
+            return setString(string, forType: .string)
         case .image(let image):
-            writeObjects([image])
+            return writeObjects([image])
         case .file(let url, _):
-            writeObjects([url as NSURL])
+            return writeObjects([url as NSURL])
         }
     }
 }

@@ -21,14 +21,15 @@ final class PasteStackTests: XCTestCase {
         pasteboard: MockPasteboard = MockPasteboard(),
         storageDirectory: URL? = nil,
         commandVRecorder: CommandVRecorder = CommandVRecorder(),
-        scheduleCleanup: @escaping PasteStack.CleanupScheduler = { _, action in action() }
+        scheduleCleanup: @escaping PasteStack.CleanupScheduler = { _, action in action() },
+        accessibilityTrustProvider: @escaping () -> Bool = { true }
     ) -> PasteStack {
         PasteStack(
             pasteboard: pasteboard,
             clipboardFilesDirectory: storageDirectory ?? testRoot.appendingPathComponent(UUID().uuidString),
-            sendCommandV: commandVRecorder.send,
+            commandVEventFactory: commandVRecorder.makePoster,
             scheduleCleanup: scheduleCleanup,
-            accessibilityTrustProvider: { false },
+            accessibilityTrustProvider: accessibilityTrustProvider,
             launchAtLoginService: MockLaunchAtLoginService(),
             automaticallyPolls: false
         )
@@ -197,6 +198,141 @@ final class PasteStackTests: XCTestCase {
         XCTAssertTrue(stack.queue.isEmpty)
         XCTAssertTrue(mock.writtenItems.isEmpty)
         XCTAssertEqual(recorder.requestCount, 0)
+    }
+
+    func testPasteNextPreservesHeadWhenAccessibilityIsUnavailable() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let cleanup = CleanupSchedulerRecorder()
+        let stack = makeStack(
+            pasteboard: mock,
+            commandVRecorder: recorder,
+            scheduleCleanup: cleanup.schedule,
+            accessibilityTrustProvider: { false }
+        )
+        mock.changeCount = 1
+        mock.stringValue = "A"
+        stack.checkPasteboard()
+        let queuedID = stack.queue[0].id
+        stack.toggleCollecting()
+
+        let result = stack.pasteNext()
+
+        XCTAssertEqual(result, .accessibilityUnavailable)
+        XCTAssertEqual(stack.queue.first?.id, queuedID)
+        XCTAssertEqual(stack.queue.map(\.content), [.text("A")])
+        XCTAssertEqual(mock.replaceContentsCallCount, 0)
+        XCTAssertEqual(recorder.factoryRequestCount, 0)
+        XCTAssertEqual(recorder.requestCount, 0)
+        XCTAssertTrue(cleanup.delays.isEmpty)
+        XCTAssertTrue(stack.isCollecting)
+    }
+
+    func testPasteNextPreservesHeadWhenCommandVEventCreationFails() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        recorder.shouldCreateEvents = false
+        let cleanup = CleanupSchedulerRecorder()
+        let stack = makeStack(
+            pasteboard: mock,
+            commandVRecorder: recorder,
+            scheduleCleanup: cleanup.schedule
+        )
+        mock.changeCount = 1
+        mock.stringValue = "A"
+        stack.checkPasteboard()
+        let queuedID = stack.queue[0].id
+        stack.toggleCollecting()
+
+        let result = stack.pasteNext()
+
+        XCTAssertEqual(result, .eventCreationFailed)
+        XCTAssertEqual(stack.queue.first?.id, queuedID)
+        XCTAssertEqual(stack.queue.map(\.content), [.text("A")])
+        XCTAssertEqual(mock.replaceContentsCallCount, 0)
+        XCTAssertEqual(recorder.factoryRequestCount, 1)
+        XCTAssertEqual(recorder.requestCount, 0)
+        XCTAssertTrue(cleanup.delays.isEmpty)
+        XCTAssertTrue(stack.isCollecting)
+    }
+
+    func testPasteNextPreservesFileCacheWhenPasteboardWriteFails() throws {
+        let source = try writeSourceFile(named: "keep-on-failure.txt", contents: "cached bytes")
+        let mock = MockPasteboard()
+        mock.fileURLs = [source]
+        let recorder = CommandVRecorder()
+        let cleanup = CleanupSchedulerRecorder()
+        let stack = makeStack(
+            pasteboard: mock,
+            commandVRecorder: recorder,
+            scheduleCleanup: cleanup.schedule
+        )
+        mock.changeCount = 1
+        stack.checkPasteboard()
+        guard let queuedItem = stack.queue.first,
+              case .file(let storedURL, _) = queuedItem.content else {
+            return XCTFail("expected a stored file")
+        }
+        let itemDirectory = storedURL.deletingLastPathComponent()
+        stack.toggleCollecting()
+        mock.replaceContentsResult = false
+
+        let result = stack.pasteNext()
+
+        XCTAssertEqual(result, .pasteboardWriteFailed)
+        XCTAssertEqual(stack.queue.first?.id, queuedItem.id)
+        XCTAssertEqual(mock.replaceContentsCallCount, 1)
+        XCTAssertTrue(mock.writtenItems.isEmpty)
+        XCTAssertEqual(recorder.factoryRequestCount, 1)
+        XCTAssertEqual(recorder.requestCount, 0)
+        XCTAssertTrue(cleanup.delays.isEmpty)
+        XCTAssertTrue(stack.isCollecting)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: storedURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: itemDirectory.path))
+
+        let readsAfterFailedWrite = mock.readFileURLsCallCount
+        stack.checkPasteboard()
+        XCTAssertEqual(mock.readFileURLsCallCount, readsAfterFailedWrite)
+        XCTAssertEqual(stack.queue.first?.id, queuedItem.id)
+    }
+
+    func testCommandPostedRemovesOnlyFIFOHeadAndStopsCollectionWhenDrained() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let cleanup = CleanupSchedulerRecorder()
+        let stack = makeStack(
+            pasteboard: mock,
+            commandVRecorder: recorder,
+            scheduleCleanup: cleanup.schedule
+        )
+        mock.changeCount = 1
+        mock.stringValue = "A"
+        stack.checkPasteboard()
+        mock.changeCount = 2
+        mock.stringValue = "B"
+        stack.checkPasteboard()
+        let firstID = stack.queue[0].id
+        let secondID = stack.queue[1].id
+        stack.toggleCollecting()
+
+        let firstResult = stack.pasteNext()
+
+        XCTAssertEqual(firstResult, .commandPosted)
+        XCTAssertEqual(stack.queue.map(\.id), [secondID])
+        XCTAssertFalse(stack.queue.contains { $0.id == firstID })
+        XCTAssertEqual(mock.writtenItems, [.text("A")])
+        XCTAssertEqual(recorder.requestCount, 1)
+        XCTAssertEqual(cleanup.delays, [2])
+        XCTAssertTrue(stack.isCollecting)
+
+        let secondResult = stack.pasteNext()
+
+        XCTAssertEqual(secondResult, .commandPosted)
+        XCTAssertTrue(stack.queue.isEmpty)
+        XCTAssertEqual(mock.writtenItems, [.text("A"), .text("B")])
+        XCTAssertEqual(recorder.requestCount, 2)
+        XCTAssertEqual(cleanup.delays, [2, 2])
+        XCTAssertFalse(stack.isCollecting)
     }
 
     func testClearEmptiesTheQueue() {

@@ -6,10 +6,14 @@ final class MockPasteboard: PasteboardProviding {
     var stringValue: String?
     var fileURLs: [URL] = []
     var images: [NSImage] = []
+    var replaceContentsResult = true
     private(set) var writtenItems: [ClipboardItem] = []
+    private(set) var replaceContentsCallCount = 0
+    private(set) var readFileURLsCallCount = 0
 
     func readFileURLs() -> [URL] {
-        fileURLs
+        readFileURLsCallCount += 1
+        return fileURLs
     }
 
     func readImages() -> [NSImage] {
@@ -20,10 +24,14 @@ final class MockPasteboard: PasteboardProviding {
         stringValue
     }
 
-    func replaceContents(with item: ClipboardItem) {
+    func replaceContents(with item: ClipboardItem) -> Bool {
+        replaceContentsCallCount += 1
         fileURLs = []
         images = []
         stringValue = nil
+        changeCount += 1
+
+        guard replaceContentsResult else { return false }
 
         switch item {
         case .text(let string):
@@ -35,7 +43,7 @@ final class MockPasteboard: PasteboardProviding {
         }
 
         writtenItems.append(item)
-        changeCount += 1
+        return true
     }
 }
 
@@ -61,10 +69,16 @@ final class MockLaunchAtLoginService: LaunchAtLoginProviding {
 }
 
 final class CommandVRecorder {
+    var shouldCreateEvents = true
+    private(set) var factoryRequestCount = 0
     private(set) var requestCount = 0
 
-    func send() {
-        requestCount += 1
+    func makePoster() -> PasteStack.CommandVEventPoster? {
+        factoryRequestCount += 1
+        guard shouldCreateEvents else { return nil }
+        return { [weak self] in
+            self?.requestCount += 1
+        }
     }
 }
 

@@ -12,6 +12,14 @@ enum LaunchAtLoginStatus {
     case notFound
 }
 
+enum PasteAttemptResult: String, Equatable {
+    case queueEmpty
+    case accessibilityUnavailable
+    case eventCreationFailed
+    case pasteboardWriteFailed
+    case commandPosted
+}
+
 protocol LaunchAtLoginProviding: AnyObject {
     var status: LaunchAtLoginStatus { get }
     var userIntendedEnabled: Bool { get }
@@ -61,6 +69,8 @@ final class PasteStack: ObservableObject {
     static let shared = PasteStack()
 
     typealias CleanupScheduler = (_ delay: TimeInterval, _ action: @escaping () -> Void) -> Void
+    typealias CommandVEventPoster = () -> Void
+    typealias CommandVEventFactory = () -> CommandVEventPoster?
 
     private enum StopReason: String {
         case manualToggle
@@ -83,7 +93,7 @@ final class PasteStack: ObservableObject {
 
     private let pasteboard: PasteboardProviding
     private let clipboardFilesDirectory: URL
-    private let sendCommandV: () -> Void
+    private let commandVEventFactory: CommandVEventFactory
     private let scheduleCleanup: CleanupScheduler
     private let accessibilityTrustProvider: () -> Bool
     private let launchAtLoginService: LaunchAtLoginProviding
@@ -108,7 +118,7 @@ final class PasteStack: ObservableObject {
         self.init(
             pasteboard: NSPasteboard.general,
             clipboardFilesDirectory: Self.productionClipboardFilesDirectory,
-            sendCommandV: Self.postCommandV,
+            commandVEventFactory: Self.makeCommandVEventPoster,
             scheduleCleanup: { delay, action in
                 DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: action)
             },
@@ -121,7 +131,7 @@ final class PasteStack: ObservableObject {
     init(
         pasteboard: PasteboardProviding,
         clipboardFilesDirectory: URL,
-        sendCommandV: @escaping () -> Void,
+        commandVEventFactory: @escaping CommandVEventFactory,
         scheduleCleanup: @escaping CleanupScheduler,
         accessibilityTrustProvider: @escaping () -> Bool,
         launchAtLoginService: LaunchAtLoginProviding,
@@ -129,7 +139,7 @@ final class PasteStack: ObservableObject {
     ) {
         self.pasteboard = pasteboard
         self.clipboardFilesDirectory = clipboardFilesDirectory
-        self.sendCommandV = sendCommandV
+        self.commandVEventFactory = commandVEventFactory
         self.scheduleCleanup = scheduleCleanup
         self.accessibilityTrustProvider = accessibilityTrustProvider
         self.launchAtLoginService = launchAtLoginService
@@ -329,7 +339,8 @@ final class PasteStack: ObservableObject {
         }
     }
 
-    func pasteNext() {
+    @discardableResult
+    func pasteNext() -> PasteAttemptResult {
         // Close the polling window for a just-copied item before choosing what to paste.
         // When collecting is off, paste remains a pure queue operation and never captures
         // whatever external app currently has on the system pasteboard.
@@ -339,27 +350,35 @@ final class PasteStack: ObservableObject {
 
         guard !queue.isEmpty else {
             flashRequested.send()
-            return
+            return .queueEmpty
         }
-        let item = queue.removeFirst()
+
+        refreshAccessibilityStatus()
+        guard isAccessibilityTrusted else {
+            return .accessibilityUnavailable
+        }
+
+        guard let postCommandV = commandVEventFactory() else {
+            return .eventCreationFailed
+        }
+
+        let item = queue.first!
+        let pasteboardWriteSucceeded = pasteboard.replaceContents(with: item.content)
+        // clearContents() can change the pasteboard even when the subsequent write fails.
+        // Always sync to the resulting count so polling cannot treat our own attempt as Copy.
+        lastChangeCount = pasteboard.changeCount
+        guard pasteboardWriteSucceeded else {
+            return .pasteboardWriteFailed
+        }
+
+        postCommandV()
+
+        queue.removeFirst()
         logger.debug("queue removeFirst queue.count=\(self.queue.count, privacy: .public)")
 
-        // Stop collecting (which invalidates the poll timer) BEFORE writing to the pasteboard
-        // below. Our own write bumps NSPasteboard's changeCount just like a real user copy
-        // would; if the timer were still alive when that happens, the next 0.25s tick would
-        // mistake our own paste-back for a fresh copy and re-queue the item we just popped.
-        // Ordering this first closes that window for the "queue just drained" case.
         if queue.isEmpty {
             stopCollecting(reason: .queueDrained)
         }
-
-        pasteboard.replaceContents(with: item.content)
-        // Still collecting with items left in the queue means the timer is still running —
-        // sync lastChangeCount to our own write's new changeCount too, otherwise the next
-        // checkPasteboard() tick sees "changed" and re-queues this same item anyway.
-        lastChangeCount = pasteboard.changeCount
-
-        sendCommandV()
 
         // Deleting the stored copy right here (synchronously) would race the synthetic ⌘V:
         // that keystroke is only just now being posted to the event tap, and the receiving
@@ -370,6 +389,7 @@ final class PasteStack: ObservableObject {
         scheduleCleanup(2) { [weak self] in
             self?.deleteStoredFile(for: item)
         }
+        return .commandPosted
     }
 
     func clear() {
@@ -397,16 +417,20 @@ final class PasteStack: ObservableObject {
         logger.debug("queue move queue.count=\(self.queue.count, privacy: .public)")
     }
 
-    private static func postCommandV() {
+    private static func makeCommandVEventPoster() -> CommandVEventPoster? {
         let src = CGEventSource(stateID: .hidSystemState)
         let vKeyCode = KeyboardLayoutTranslator.commandVKeyCode()
 
-        let keyDown = CGEvent(keyboardEventSource: src, virtualKey: vKeyCode, keyDown: true)
-        keyDown?.flags = .maskCommand
-        let keyUp = CGEvent(keyboardEventSource: src, virtualKey: vKeyCode, keyDown: false)
-        keyUp?.flags = .maskCommand
+        guard let keyDown = CGEvent(keyboardEventSource: src, virtualKey: vKeyCode, keyDown: true),
+              let keyUp = CGEvent(keyboardEventSource: src, virtualKey: vKeyCode, keyDown: false) else {
+            return nil
+        }
+        keyDown.flags = .maskCommand
+        keyUp.flags = .maskCommand
 
-        keyDown?.post(tap: .cghidEventTap)
-        keyUp?.post(tap: .cghidEventTap)
+        return {
+            keyDown.post(tap: .cghidEventTap)
+            keyUp.post(tap: .cghidEventTap)
+        }
     }
 }
