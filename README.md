@@ -1,7 +1,7 @@
 # PasteQueue
 
-A minimal menu-bar utility: ⌃⌘C collects copies (text or images) in order,
-⌃⌘V pastes them back one at a time, FIFO (first copied, first pasted).
+A minimal menu-bar utility for collecting text, images, and files, then pasting
+them back one at a time in FIFO order (first copied, first pasted).
 
 ## ⌨️ Hotkeys — read this before you buy
 
@@ -23,8 +23,9 @@ hotkeys are planned for a future version, not v1.
 
 ## Installing
 
-1. Open `PasteQueue.dmg`.
-2. Drag `PasteQueue.app` into the `Applications` shortcut in the same window.
+The distribution format for the first release has not been finalized. If you
+receive a `PasteQueue.app`, move it to `/Applications` before enabling Launch at
+Login. See `SETUP.md` to build the app from source.
 
 ## Uninstalling
 
@@ -35,10 +36,11 @@ none of which are dangerous, but worth knowing about if you want a fully
 clean system:
 
 - **`~/Library/Application Support/PasteQueue/ClipboardFiles/`** — temporary
-  copies of files you've queued. The app cleans this up itself on every
-  normal launch; the only way anything is left here is if the app was
-  force-quit with files still queued and then deleted before being run
-  again. Safe to delete manually at any time.
+  copies of files you've queued. PasteQueue removes owned copies when you use
+  Clear or delete an item, about two seconds after that item is pasted, and on
+  the next launch if an orphan remains. An ordinary Quit with files still
+  queued does not perform a separate exit cleanup, so copies can remain until
+  the next launch. Safe to delete manually while PasteQueue is not running.
 - **`~/Library/Preferences/com.slenbder.pastequeue.plist`** — your Launch at
   Login preference. Safe to delete; `defaults delete com.slenbder.pastequeue`
   also works from Terminal.
@@ -55,30 +57,14 @@ rm -f ~/Library/Preferences/com.slenbder.pastequeue.plist
 ```
 (then check Login Items as above, and empty the Trash).
 
-## How to open it (first launch only)
+## Opening a downloaded build
 
-This build is signed with a personal Apple Developer account, not a paid
-Developer ID — it is **not notarized**. macOS Gatekeeper will refuse a plain
-double-click the first time ("PasteQueue can't be opened because Apple cannot
-check it for malicious software" / "is damaged and can't be opened"). This is
-expected, not a broken build. Use one of these, once:
-
-**Option A — right-click to open**
-1. In `Applications`, right-click (or Control-click) `PasteQueue.app`.
-2. Choose **Open**.
-3. Click **Open** again in the dialog that appears.
-
-After this one-time approval, launching normally (double-click, Spotlight,
-Dock) works from then on.
-
-**Option B — remove the quarantine flag from Terminal**
-```
-xattr -r -d com.apple.quarantine /Applications/PasteQueue.app
-```
-Run once after copying the app to `/Applications`, then launch normally.
-
-Either option works — pick whichever is more convenient. You only need to do
-this once per copy of the app; a fresh download/rebuild will need it again.
+macOS opening behavior depends on how the specific artifact was signed,
+notarized, and distributed. Follow the instructions shipped with that build and
+do not bypass a security warning unless you trust its source. Developer ID,
+notarization, Hardened Runtime, and the final release package are still release
+decisions; this README does not claim a particular Gatekeeper outcome in
+advance.
 
 ## First run
 
@@ -91,21 +77,25 @@ this once per copy of the app; a fresh download/rebuild will need it again.
    **⚠️ Accessibility required** item — click it to jump straight to the
    right System Settings pane. The hotkeys silently do nothing until this is
    granted; there is no crash, just no effect.
-4. Known annoyance with personal-team signing: every rebuild can register as
-   a "new" app to macOS, so you may have to re-approve Accessibility after
-   each rebuild during development. Not an issue for a normal user just
-   running the shipped `.app`.
+4. During development, a rebuilt app may need to be removed and re-added in
+   Accessibility settings. Make sure the permission belongs to the exact app
+   copy you are running.
 
 ## Using it
 
-1. ⌃⌘C on your first field (e.g. street) — starts collecting.
-2. ⌃⌘C on each next field, in the order you want them pasted. Copying an
-   image works the same way — it queues as a thumbnail instead of text.
-3. Switch to the destination, ⌃⌘V — pastes the first item.
-4. ⌃⌘V again — pastes the next one, and so on until the queue is empty.
+1. Press ⌃⌘C once to start collecting. Press it again whenever you want to
+   stop collecting.
+2. While collection is on, copy text, images, or files with the normal ⌘C in
+   the order you want them pasted.
+3. Switch to the destination and press ⌃⌘V, or open the menu and click
+   **Paste**, to paste the first item.
+4. Repeat ⌃⌘V or **Paste** for the remaining items.
    Once the last item is pasted, collecting mode turns itself off
    automatically — no need to remember to hit "Stop collecting."
-5. Click the menu bar icon any time to see what's queued, or hit Clear.
+5. Open the menu to preview the queue, delete individual items, **Clear** it,
+   drag rows to reorder them, switch collection with **Start**/**Stop**, or use
+   **Paste**. During sequential pasting from an open menu, it remains available
+   while items remain and closes after the last item is pasted.
 
 The queue holds at most 99 items — anything copied past that is silently
 ignored (no alert) until you paste some off or clear the queue. The counter
@@ -120,44 +110,37 @@ works once the app is actually installed in `/Applications` (an `.app`
 launched straight out of Xcode's DerivedData can fail to register — that's
 expected, not a bug).
 
-## Manual testing checklist
+## Manual release checklist
 
-A few things that aren't covered by the automated tests and need a real
-run (⌘R or the shipped `.app`):
+Run this checklist against the actual final release build. Earlier targeted
+checks during development are useful evidence, but are not a complete pass of
+the final artifact.
 
-- **Image copy/paste** — copy a few different sources and confirm each
-  queues as a thumbnail and pastes correctly:
-  - A screenshot (⌘⇧4, copies to clipboard automatically if you hold Control
-    too, or just ⌘C an existing screenshot file's contents in Preview)
-  - An image opened in Preview, ⌘C
-  - An image copied from a webpage in Safari (right-click → Copy Image)
-- **File copy/paste** — copy a few different sources and confirm each
-  queues as its own item (icon + original filename) and pastes back the
-  actual file, not a broken/generic-icon stand-in:
-  - A single file in Finder, ⌘C
-  - A multi-selection of several files in Finder, ⌘C — confirm each one
-    queues as a separate item, in the order they were selected
-  - A photo copied out of Photos.app — this is the case the on-disk copy
-    step exists for (Photos only grants a read handle for the instant of
-    the copy), so confirm it still pastes correctly, not just that it
-    queues
-- **Launch at Login** — toggle it on, log out/in (or restart), confirm the
-  app actually launches; toggle off, confirm it doesn't launch next time.
-- **Queue cap** — copy 99+ items in a row, confirm collecting past 99 is a
-  silent no-op and the counter turns red once you hit 99.
-- **⌃⌘C / ⌃⌘V hotkeys** — still needs a live keyboard and a granted
-  Accessibility permission, same as before.
-- **Menu bar icon color follows what's under the menu bar, not the system
-  theme** — with the app running, change the *desktop wallpaper* (not the
-  system Light/Dark Mode setting) between a light and a dark image and
-  confirm the icon silhouette recolors to match what's actually behind the
-  menu bar in each case. This is deliberately a wallpaper change, not a
-  theme change: system Dark Mode + light wallpaper is exactly the case
-  where the two can disagree, and the icon should still track the
-  wallpaper. The count label must stay legible in both cases — it's a
-  separate view layered on top of the icon, not part of the recolored
-  template image, so only its own color (red at the 99 cap) changes, never
-  the icon's recoloring behavior.
+- **Collection and hotkeys** — press ⌃⌘C once, copy several items with
+  ordinary ⌘C, then stop with ⌃⌘C. Confirm Caps Lock does not interfere
+  and holding either hotkey does not repeat its action.
+- **FIFO and content types** — paste mixed text, images, a Finder file, a Finder
+  multi-selection, and a Photos item. Confirm ordering, image previews, original
+  filenames, and the pasted file contents.
+- **Popover workflow** — verify previews, individual delete, Clear,
+  drag-to-reorder, Start/Stop, and Paste. With several items queued, paste by
+  both button and hotkey: focus must return to the external recipient, the menu
+  must remain available while items remain, and it must close after the last
+  item. Reopen it with a shorter queue and confirm its height is compact. Also
+  check status-item toggle, outside click, and Escape closing.
+- **Queue cap** — copy 99+ items, confirm additional items are ignored while
+  full and the count turns red at 99.
+- **Accessibility and VoiceOver** — test a fresh permission grant, status and
+  queue announcements, all core buttons, and deletion focus. Re-test after any
+  UI change.
+- **Launch at Login** — test both enabled and disabled states across a real
+  logout/login or restart with the app installed in `/Applications`.
+- **Menu bar appearance** — use light and dark desktop wallpapers independently
+  of system appearance; confirm the template icon and count remain legible.
+- **Final artifact** — run the full automated test target, smoke-test on the
+  supported macOS versions, and verify installation, first launch, permissions,
+  signing, notarization, and Gatekeeper behavior on the exact artifact that will
+  be distributed.
 
 ## Known limitations (v1)
 
@@ -169,20 +152,10 @@ run (⌘R or the shipped `.app`):
   - After deleting an item, VoiceOver focus drops to the scroll-area
     container rather than moving to the next row — you'll need to
     re-enter Interact mode before deleting the next one.
-- **Secure input fields.** ⌃⌘V will not paste into secure text fields —
-  password fields (`NSSecureTextField`), Keychain prompts, or a `sudo`
-  password prompt in Terminal. When a secure field is focused, macOS
-  enables "Secure Event Input," which blocks *all* other processes —
-  including PasteQueue's global hotkey monitor and its synthetic ⌘V
-  keystroke — from observing or injecting keyboard events into that field.
-  In practice: the hotkey may not even fire while a secure field has focus,
-  and if it does, nothing gets typed. No crash, no error, no partial paste —
-  just silently nothing, by macOS design. This is a platform security
-  boundary (it's exactly what stops keyloggers and autotype tools from
-  reading or injecting into password fields), not a bug in this app.
-- **Not notarized.** Signed with a personal Apple Developer account, not a
-  paid Developer ID — see "How to open it" above for the one-time
-  Gatekeeper bypass.
+- **Secure input fields.** macOS or the focused application may suppress the
+  global shortcut, the synthesized ⌘V, or both while secure input is active.
+  Behavior can differ between password fields, system prompts, terminals, and
+  third-party apps, so do not rely on PasteQueue for secure-entry workflows.
 - **Intel Macs are unsupported and untested** (Apple Silicon only).
 
 ## Where to go from here
@@ -201,9 +174,8 @@ run (⌘R or the shipped `.app`):
 - No persistence — the queue lives in memory and resets when you quit. That's
   intentional for this use case; add it later if you ever want the queue to
   survive a relaunch.
-- Properly notarized/Developer-ID-signed distribution is a separate step
-  (paid Apple Developer Program membership required) — not needed for
-  personal use or sharing with a few people who don't mind the one-time
-  Gatekeeper bypass above.
+- Developer ID signing, notarization, Hardened Runtime, packaging, and paid
+  delivery remain separate release decisions; none is implied by the current
+  source tree.
 
 See `SETUP.md` for building from source.

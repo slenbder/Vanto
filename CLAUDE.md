@@ -1,10 +1,14 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides compact working guidance for coding agents in this
+repository.
 
 ## What this is
 
-PasteQueue is a macOS menu-bar-only utility. ⌃⌘C collects clipboard copies (text, images, or files) in order; ⌃⌘V pastes them back one at a time, FIFO. Minimum target: macOS 13.0, Apple Silicon only.
+PasteQueue is a macOS menu-bar-only utility. ⌃⌘C toggles collection; while
+collection is active, ordinary ⌘C copies text, images, or files into a FIFO
+queue. ⌃⌘V or the Paste button sends the next item. Minimum target: macOS
+13.0; Apple Silicon only.
 
 ## Build & test
 
@@ -17,11 +21,16 @@ xcodegen generate
 # Build
 xcodebuild -scheme PasteQueue -configuration Debug build
 
-# Run all tests
-xcodebuild test -scheme PasteQueue -destination 'platform=macOS'
+# Run the isolated unit-test target
+xcodebuild test -scheme PasteQueue -destination 'platform=macOS' \
+  -only-testing:PasteQueueTests \
+  -derivedDataPath /private/tmp/PasteQueueDerivedData \
+  CODE_SIGNING_ALLOWED=NO
 ```
 
-Alternatively, use Xcode: ⌘R to run, ⌘U for tests. See the **Manual testing checklist** in README.md for things tests don't cover (image copy/paste, hotkeys, Launch at Login, queue cap, menu bar icon recoloring).
+`CODE_SIGNING_ALLOWED=NO` applies to the test invocation, not to release builds.
+Do not claim tests passed unless they were run successfully on the current HEAD.
+Use README.md for the final manual release checklist.
 
 **App Sandbox must be OFF.** A sandboxed app cannot post synthetic keyboard events or register global key monitors — this is a hard requirement, not optional.
 
@@ -31,48 +40,86 @@ Six source files, including one protocol:
 
 | File | Role |
 |------|------|
-| `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning the `NSStatusItem`, count label, and popover |
+| `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, and paste routing |
 | `PasteStack.swift` | Singleton model: FIFO queue, clipboard polling, synthetic paste, Launch at Login |
 | `HotkeyManager.swift` | Registers global + local `NSEvent` monitors for ⌃⌘C / ⌃⌘V |
 | `PasteStackMenu.swift` | SwiftUI popover content with hand-rolled drag-to-reorder |
 | `ClipboardItem.swift` | `ClipboardItem` enum (`.text`, `.image`, `.file`) + `QueuedClipboardItem` wrapper |
-| `PasteboardProviding.swift` | Protocol over `NSPasteboard` so tests use `MockPasteboard` |
+| `PasteboardProviding.swift` | Complete pasteboard seam for change count, text, image/file reads, and content replacement |
 
 ### Data flow
 
-`PasteStack.shared` is the single source of truth. It `@Published var queue` and `@Published var isCollecting`; `AppDelegate` and `PasteStackMenu` both observe it via Combine / `@ObservedObject`.
+`PasteStack` owns queue state, pasteboard capture/replacement, file storage, and
+synthetic ⌘V. `AppDelegate` owns window/application concerns: it remembers the
+external frontmost app before opening the menu, restores that recipient for a
+paste requested from the popover, and calls `PasteStack.pasteNext()` only after
+focus restoration succeeds. Hotkey requests are routed through `AppDelegate`.
 
-Clipboard polling runs via a 0.25 s `Timer` while `isCollecting == true`. `checkPasteboard()` is `internal` (not `private`) so tests can call it directly without racing a real timer.
+Clipboard polling runs every 0.25 seconds while collection is active.
+`pasteNext()` first captures a pending pasteboard change when collection is on,
+then consumes the FIFO head. It does not capture external clipboard content
+when collection is off.
 
 ### Critical ordering in `checkPasteboard()`
 
 File detection (`NSURL` with `.urlReadingFileURLsOnly`) **must run before** image detection (`NSImage`). Copying a file in Finder puts a `public.file-url` on the pasteboard; `NSImage` will "succeed" against it, but returns the generic file-type icon instead of the file's actual content. Catching the URL first avoids this.
 
-Both file and image reads bypass `PasteboardProviding` and talk to `NSPasteboard.general` directly — that's intentional and documented in the source.
+The required detection order is **files → images → text**. All reads and
+writes go through `PasteboardProviding`; do not bypass it with
+`NSPasteboard.general`.
 
 ### File copy-on-capture
 
-When a file is queued, `PasteStack` immediately copies it to `~/Library/Application Support/PasteQueue/ClipboardFiles/` (named by UUID, not by original filename). This sidesteps sandbox extension issues: some source paths (Photos, sandboxed apps) only grant a read handle for the instant of `readObjects()` — the receiving process can't open the original URL later. The stored copy is owned by this process and can always be handed out. Stored files are cleaned up 2 seconds after `pasteNext()` emits the synthetic ⌘V (the delay gives the receiving app time to read from the pasteboard).
+When a file is queued, it is copied to
+`ClipboardFiles/<item UUID>/<original filename>`. The UUID directory prevents
+same-name collisions while preserving the receiver-visible filename. Cleanup
+is scoped to storage owned by that queue item. Current cleanup points are
+startup orphan cleanup, Clear/remove, and delayed cleanup about two seconds
+after paste; do not claim a separate ordinary-Quit cleanup.
+
+### Popover lifecycle
+
+The popover uses `.applicationDefined` with explicit closing for the status
+item, outside click, and a drained queue. Escape is handled by a local key
+monitor while PasteQueue is receiving keyboard events; its behavior after
+focus returns to the external application has not been separately confirmed. A
+fresh hosting controller is created at each opening. That opening's initial
+list height is passed as its minimum (capped by the view at 230 pt), keeping
+controls stable while a queue is consumed; reopening recalculates a compact
+height. During sequential paste the popover remains available while items
+remain and closes after the final item.
 
 ### Status item ownership
 
-The menu bar item is managed directly in `AppDelegate` via plain AppKit (`NSStatusItem`), not SwiftUI's `MenuBarExtra`. This is required to get access to `NSStatusBarButton.effectiveAppearance`, which tracks what's actually behind the menu bar (driven by desktop wallpaper, not the system Light/Dark setting). The SwiftUI `MenuBarExtra` API doesn't expose the underlying button.
-
-The count label (`CenteredLabelView`) is a manual `NSView` subclass drawn with `NSString.draw(in:withAttributes:)`. Its frame is recomputed inside the Combine sink (not once at setup) because `NSStatusBarButton` may not have settled to its final size by the time `applicationDidFinishLaunching` runs.
+`AppDelegate` uses AppKit `NSStatusItem`, not `MenuBarExtra`, so the template icon
+tracks the status-bar button's effective appearance. The count is a separate
+`CenteredLabelView`; keep its frame calculation in the queue subscription after
+AppKit has established the button bounds.
 
 ### Hotkey matching
 
 `HotkeyManager` uses `TISCopyCurrentASCIICapableKeyboardLayoutInputSource` + `UCKeyTranslate` to map the physical keyCode to a character under the ASCII-capable hardware layout. This keeps ⌃⌘C/⌃⌘V tracking the physical key under Dvorak/AZERTY while being unaffected by non-Latin input sources (Cyrillic, Japanese, etc.).
 
-Both a global and a local `NSEvent` monitor are registered — the global monitor misses events when PasteQueue itself is the active app (e.g., while the popover is open); the local monitor covers that case.
+Both a global and a local `NSEvent` monitor are registered — the global monitor
+misses events when PasteQueue itself is active, and the local monitor covers
+that case. Caps Lock and non-shortcut device flags do not prevent matching;
+Shift and Option do. Key-repeat events are ignored.
 
 ### Drag-to-reorder in PasteStackMenu
 
-`List(onMove:)` is intentionally avoided: AppKit's List backing draws its own insertion-line and lifted-ghost visuals with no public hook to suppress them. Reordering is hand-rolled with `DragGesture` using a named coordinate space anchored on the `VStack` ancestor (not the row itself), which avoids a feedback loop where the row's own `offset(y:)` modifier would cause translation drift.
+Reordering is a hand-rolled `DragGesture`, not `List(onMove:)`. Keep its named
+coordinate space on the stable rows container; moving it to the offset row
+reintroduces translation drift.
 
-## Testing
+## Test isolation
 
-`PasteQueueTests/MockPasteboard.swift` provides `MockPasteboard: PasteboardProviding`. Tests drive `checkPasteboard()` directly (no timer). The image and file paths read from `NSPasteboard.general` directly (by design), so those tests write to the real pasteboard and call `NSPasteboard.general.clearContents()` in `setUpWithError()`.
+Tests inject `MockPasteboard`, the ⌘V sender, cleanup scheduler,
+Accessibility state, Launch at Login service, and a unique temporary storage
+directory; automatic polling is disabled. Image and file tests remain in
+memory except for files created under those temporary directories. The test
+host must return before production singletons, polling, Accessibility prompts,
+login-item state, or production storage are touched. Tests must never use
+`NSPasteboard.general`.
 
 ## Extending content types
 
