@@ -66,6 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var globalMouseMonitor: Any?
     private var localMouseMonitor: Any?
     private var escapeKeyMonitor: Any?
+    private var isClosingPopover = false
 
     private enum PasteRequestSource: String {
         case button
@@ -239,6 +240,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             // paste requests return focus to the remembered external recipient.
             NSApp.activate(ignoringOtherApps: true)
             PasteStack.shared.refreshLaunchAtLoginStatus()
+            isClosingPopover = false
             let minimumQueueListHeight = PasteStackMenu.listHeight(for: PasteStack.shared.queue)
             popover.contentViewController = makePopoverContentController(
                 minimumQueueListHeight: minimumQueueListHeight
@@ -252,6 +254,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     func popoverDidClose(_ notification: Notification) {
         uiLogger.debug("popoverDidClose")
         removePopoverEventMonitors()
+        isClosingPopover = false
     }
 
     private func makePopoverContentController(
@@ -389,8 +392,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
               escapeKeyMonitor == nil else { return }
 
         let mouseEvents: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown, .otherMouseDown]
-        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: mouseEvents) { [weak self] _ in
-            self?.closePopover(reason: .outsideClick)
+        globalMouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: mouseEvents) { [weak self] event in
+            guard let self else { return }
+            let screenPoint = screenLocation(for: event)
+            if !isScreenPointInsidePopover(screenPoint), !isScreenPointOnStatusItem(screenPoint) {
+                closePopover(reason: .outsideClick)
+            }
         }
 
         localMouseMonitor = NSEvent.addLocalMonitorForEvents(matching: mouseEvents) { [weak self] event in
@@ -412,7 +419,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     private func closePopover(reason: PopoverCloseReason) {
-        guard popover?.isShown == true else { return }
+        guard !isClosingPopover,
+              popover?.isShown == true else { return }
+        isClosingPopover = true
         uiLogger.debug("popover close requested reason=\(reason.rawValue, privacy: .public)")
         popover?.close()
     }
@@ -430,6 +439,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             NSEvent.removeMonitor(escapeKeyMonitor)
             self.escapeKeyMonitor = nil
         }
+    }
+
+    private func screenLocation(for event: NSEvent) -> NSPoint {
+        guard let window = event.window else { return event.locationInWindow }
+        return window.convertToScreen(NSRect(origin: event.locationInWindow, size: .zero)).origin
+    }
+
+    private func isScreenPointInsidePopover(_ screenPoint: NSPoint) -> Bool {
+        guard let popoverWindow = popover?.contentViewController?.view.window else { return false }
+        return popoverWindow.frame.contains(screenPoint)
+    }
+
+    private func isScreenPointOnStatusItem(_ screenPoint: NSPoint) -> Bool {
+        guard let button = statusItem?.button,
+              let window = button.window else { return false }
+        let buttonFrameInWindow = button.convert(button.bounds, to: nil)
+        let buttonFrameInScreen = window.convertToScreen(buttonFrameInWindow)
+        return buttonFrameInScreen.contains(screenPoint)
     }
 
     private func isEventInsidePopover(_ event: NSEvent) -> Bool {
