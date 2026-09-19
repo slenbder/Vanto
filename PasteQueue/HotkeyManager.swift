@@ -15,9 +15,9 @@ internal enum KeyboardLayoutTranslator {
         return translator(keyCode, 0)
     }
 
-    static func commandKeyCode(for character: String, translator: Translator) -> CGKeyCode? {
+    private static func keyCode(for character: String, modifierKeyState: UInt32, translator: Translator) -> CGKeyCode? {
         for keyCode in UInt16(0)...UInt16(127) {
-            guard let translated = translator(keyCode, commandModifierKeyState) else { continue }
+            guard let translated = translator(keyCode, modifierKeyState) else { continue }
             if translated.lowercased() == character.lowercased() {
                 return CGKeyCode(keyCode)
             }
@@ -25,12 +25,26 @@ internal enum KeyboardLayoutTranslator {
         return nil
     }
 
+    static func commandKeyCode(for character: String, translator: Translator) -> CGKeyCode? {
+        keyCode(for: character, modifierKeyState: commandModifierKeyState, translator: translator)
+    }
+
+    /// Reverse of asciiCapableCharacter(for:) — same UNMODIFIED (state 0) table, just the
+    /// other direction (character -> keyCode). HotkeyManager.effectiveSpec() uses this (not
+    /// commandKeyCode) so its lookup shares matchingAction's exact modifier-state semantics:
+    /// on a layout where the Command-modified table disagrees with the unmodified one for a
+    /// given physical key, commandKeyCode here would have resolved to a DIFFERENT keyCode
+    /// than the one matchingAction actually fires on for the same default character.
+    static func asciiCapableKeyCode(for character: String, translator: Translator) -> CGKeyCode? {
+        keyCode(for: character, modifierKeyState: 0, translator: translator)
+    }
+
     /// Live variant used to resolve the current physical keyCode for an un-overridden
     /// shortcut's default character (e.g. dedupe/display against "c"/"v") — always
     /// re-queries the active keyboard layout, never caches a stale result.
-    static func commandKeyCode(for character: String) -> CGKeyCode? {
+    static func asciiCapableKeyCode(for character: String) -> CGKeyCode? {
         guard let translator = currentASCIICapableTranslator() else { return nil }
-        return commandKeyCode(for: character, translator: translator)
+        return asciiCapableKeyCode(for: character, translator: translator)
     }
 
     static func commandVKeyCode() -> CGKeyCode {
@@ -101,9 +115,13 @@ final class HotkeyManager: ObservableObject {
     typealias ActionHandler = () -> Void
 
     @Published private(set) var overrides: [ShortcutAction: HotkeySpec] = [:]
-    /// Set while a ShortcutRecorderField is capturing a new combo, so the action about to
-    /// be re-recorded (and its sibling) don't also fire on the very keys being captured.
-    @Published private(set) var isPaused = false
+    /// The action a ShortcutRecorderField is currently capturing a new combo for, if any —
+    /// single source of truth for "is anything being recorded right now" (matchingAction
+    /// below still suppresses BOTH actions while non-nil; that's intentional, see
+    /// matchingAction's own comment). ShortcutRecorderField reads this directly instead of
+    /// threading a separately-owned @State/@Binding through SettingsMenu, so there's exactly
+    /// one place this can drift out of sync with reality instead of two.
+    @Published private(set) var recordingAction: ShortcutAction?
     /// Hook for AppDelegate's own Escape-closes-popover local monitor: when set, Escape
     /// should call this instead of closing the popover. See PasteQueueApp.swift.
     var escapeRecordingInterceptor: (() -> Void)?
@@ -114,7 +132,12 @@ final class HotkeyManager: ObservableObject {
     private var pasteRequestHandler: ActionHandler
     private let shortcutStore: ShortcutStoring
 
-    convenience init() {
+    // Private: the only production call site is `shared` below. Kept as a *convenience*
+    // init (not folded into `shared`'s own initializer) so it still funnels through the
+    // designated init's single init path — but private means nothing else in the module can
+    // construct a second production-wired instance by accident. Tests bypass this entirely
+    // via the designated init below, which stays internal for exactly that purpose.
+    private convenience init() {
         self.init(
             shortcutStore: UserDefaultsShortcutStore(),
             toggleCollectingHandler: { PasteStack.shared.toggleCollecting() },
@@ -166,18 +189,26 @@ final class HotkeyManager: ObservableObject {
     /// the OTHER action currently resolves to, override or not.
     func effectiveSpec(for action: ShortcutAction) -> HotkeySpec? {
         if let override = overrides[action] { return override }
-        guard let keyCode = KeyboardLayoutTranslator.commandKeyCode(for: action.defaultCharacter) else { return nil }
+        // asciiCapableKeyCode (not commandKeyCode) — see its doc comment above. Using the
+        // Command-modified table here used to let this disagree with matchingAction, which
+        // always resolves keyCode -> character under the unmodified table.
+        guard let keyCode = KeyboardLayoutTranslator.asciiCapableKeyCode(for: action.defaultCharacter) else { return nil }
         return HotkeySpec(keyCode: keyCode, modifierFlags: [.control, .command])
     }
 
     // MARK: - Recording pause
 
-    func pauseForRecording() {
-        isPaused = true
+    /// Suppresses matching for BOTH actions, not just `action` — intentional: while a
+    /// ShortcutRecorderField is capturing a new combo, the OTHER action's un-overridden
+    /// default could easily be one of the keys the user presses while experimenting, and
+    /// letting it fire mid-capture would be confusing. Covered by
+    /// testPausingSuppressesAllMatchingUntilResumed.
+    func pauseForRecording(action: ShortcutAction) {
+        recordingAction = action
     }
 
     func resumeAfterRecording() {
-        isPaused = false
+        recordingAction = nil
     }
 
     // MARK: - Matching
@@ -195,7 +226,11 @@ final class HotkeyManager: ObservableObject {
     /// constructing real NSEvents or real global monitors — same reasoning as
     /// shouldHandleShortcut below.
     func matchingAction(keyCode: UInt16, modifierFlags: NSEvent.ModifierFlags, isRepeat: Bool) -> ShortcutAction? {
-        guard !isPaused, !isRepeat else { return nil }
+        guard recordingAction == nil, !isRepeat else { return nil }
+        // Resolved once per call, not once per un-overridden action in the loop below — this
+        // runs on the GLOBAL monitor (every keystroke, system-wide), and the live keyboard-
+        // layout query it wraps (TIS/Carbon) isn't free enough to redo per candidate action.
+        let translatedCharacter = KeyboardLayoutTranslator.asciiCapableCharacter(for: keyCode)?.lowercased()
         for action in ShortcutAction.allCases {
             if let override = overrides[action] {
                 if HotkeySpec(keyCode: keyCode, modifierFlags: modifierFlags) == override {
@@ -204,7 +239,7 @@ final class HotkeyManager: ObservableObject {
                 continue
             }
             guard Self.shouldHandleShortcut(modifierFlags: modifierFlags, isRepeat: isRepeat) else { continue }
-            if KeyboardLayoutTranslator.asciiCapableCharacter(for: keyCode)?.lowercased() == action.defaultCharacter {
+            if translatedCharacter == action.defaultCharacter {
                 return action
             }
         }

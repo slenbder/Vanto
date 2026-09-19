@@ -8,9 +8,6 @@ import SwiftUI
 struct ShortcutRecorderField: View {
     let action: ShortcutAction
     @ObservedObject var hotkeyManager: HotkeyManager
-    /// Lifted to the parent so starting to record one row cancels any recording already in
-    /// progress on the other row (single-flight across the two rows).
-    @Binding var currentlyRecording: ShortcutAction?
 
     // Dynamic strings built at runtime (the duplicate/conflict captions) can't rely on
     // Text's automatic LocalizedStringKey extraction the way a literal like Text("Stopped")
@@ -21,27 +18,33 @@ struct ShortcutRecorderField: View {
     @State private var duplicateMessage: String?
     @State private var monitor: Any?
 
-    private static let escapeKeyCode: UInt16 = 53
-
-    private var isRecording: Bool { currentlyRecording == action }
+    // "Is anything being recorded, and is it THIS row" now lives on hotkeyManager
+    // (recordingAction) — single-flight across rows falls out of both rows observing the
+    // same @Published property, with no separate @State/@Binding to keep in sync.
+    private var isRecording: Bool { hotkeyManager.recordingAction == action }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        // Resolved once per body evaluation and handed to both the capsule and the caption —
+        // effectiveSpec's un-overridden path does a live keyboard-layout scan, so computing
+        // it twice per render (once for the label, once for the conflict caption) doubled
+        // that cost for no reason.
+        let currentSpec = hotkeyManager.effectiveSpec(for: action)
+        return VStack(alignment: .leading, spacing: 2) {
             HStack {
                 actionLabel
                     .font(.callout)
                 Spacer()
-                keyCapsule
+                keyCapsule(currentSpec: currentSpec)
                 resetButton
             }
-            if let caption {
+            if let caption = caption(for: currentSpec) {
                 Text(caption)
                     .font(.caption2)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .onChange(of: currentlyRecording) { newValue in
+        .onChange(of: hotkeyManager.recordingAction) { newValue in
             // Another row just started recording — this one loses the single-flight race.
             // Only tear down THIS row's own monitor; the hotkeyManager pause/interceptor
             // now belong to whichever row is actually active, so don't touch them here.
@@ -57,18 +60,17 @@ struct ShortcutRecorderField: View {
     }
 
     @ViewBuilder
-    private var keyCapsule: some View {
+    private func keyCapsule(currentSpec: HotkeySpec?) -> some View {
         Button {
             isRecording ? stopRecording(releasingHotkeyManager: true) : startRecording()
         } label: {
-            // Branched (not Text(isRecording ? "Recording…" : displaySpec)) — that ternary
-            // unifies on displaySpec's String type and silently skips the "Recording…"
-            // literal's LocalizedStringKey extraction.
+            // Branched (not a ternary unifying on one Text) — that ternary would silently
+            // skip the "Recording…" literal's LocalizedStringKey extraction.
             Group {
                 if isRecording {
                     Text("Recording…")
                 } else {
-                    Text(displaySpec)
+                    Text(currentSpec?.displayString ?? action.defaultDisplayString)
                 }
             }
                 .font(.callout.monospaced())
@@ -111,13 +113,9 @@ struct ShortcutRecorderField: View {
         }
     }
 
-    private var displaySpec: String {
-        hotkeyManager.effectiveSpec(for: action)?.displayString ?? action.defaultDisplayString
-    }
-
-    private var caption: String? {
+    private func caption(for currentSpec: HotkeySpec?) -> String? {
         if let duplicateMessage { return duplicateMessage }
-        if let spec = hotkeyManager.effectiveSpec(for: action), ShortcutRecording.isSystemCopyPasteCutConflict(spec) {
+        if let currentSpec, ShortcutRecording.isSystemCopyPasteCutConflict(currentSpec) {
             return String(
                 localized: "Matches macOS's own Copy/Paste/Cut — will also fire on every ordinary use elsewhere.",
                 locale: locale
@@ -128,8 +126,7 @@ struct ShortcutRecorderField: View {
 
     private func startRecording() {
         duplicateMessage = nil
-        currentlyRecording = action
-        hotkeyManager.pauseForRecording()
+        hotkeyManager.pauseForRecording(action: action)
         hotkeyManager.escapeRecordingInterceptor = { [self] in
             stopRecording(releasingHotkeyManager: true)
         }
@@ -137,8 +134,10 @@ struct ShortcutRecorderField: View {
             // Escape is owned entirely by AppDelegate's monitor + escapeRecordingInterceptor
             // above (see PasteQueueApp.swift) — NOT handled here, so there's a single
             // deterministic decision-maker instead of two independently-registered local
-            // monitors racing over the same keydown.
-            guard event.keyCode != Self.escapeKeyCode else { return event }
+            // monitors racing over the same keydown. This guard still matters regardless of
+            // that ordering: without it, the swallow-everything branch below would eat
+            // Escape itself if this monitor ever saw it before AppDelegate's did.
+            guard event.keyCode != ShortcutRecording.escapeKeyCode else { return event }
             handle(event)
             return nil // swallow every other key while recording
         }
@@ -155,8 +154,9 @@ struct ShortcutRecorderField: View {
     }
 
     private func capture(_ spec: HotkeySpec) {
-        let otherAction: ShortcutAction = (action == .startStopCollecting) ? .pasteNext : .startStopCollecting
-        if let otherSpec = hotkeyManager.effectiveSpec(for: otherAction), ShortcutRecording.isDuplicate(spec, otherSpec) {
+        for otherAction in ShortcutAction.allCases where otherAction != action {
+            guard let otherSpec = hotkeyManager.effectiveSpec(for: otherAction),
+                  ShortcutRecording.isDuplicate(spec, otherSpec) else { continue }
             duplicateMessage = String(
                 localized: "Already used by \(otherAction.displayName(locale: locale)).",
                 locale: locale
@@ -172,9 +172,6 @@ struct ShortcutRecorderField: View {
         if let monitor {
             NSEvent.removeMonitor(monitor)
             self.monitor = nil
-        }
-        if currentlyRecording == action {
-            currentlyRecording = nil
         }
         if releasingHotkeyManager {
             hotkeyManager.resumeAfterRecording()

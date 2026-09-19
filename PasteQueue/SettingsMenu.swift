@@ -7,23 +7,14 @@ struct SettingsMenu: View {
     @ObservedObject var hotkeyManager: HotkeyManager
     @ObservedObject var languageStore: LanguagePreferenceStore
 
-    /// Single-flight recording state shared by both rows — starting to record one cancels
-    /// the other. See ShortcutRecorderField.
-    @State private var currentlyRecording: ShortcutAction?
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            // Single-flight recording state (starting to record one row cancels the other)
+            // lives on hotkeyManager.recordingAction now — both rows observe the same
+            // @ObservedObject, so there's no separate @State to thread through here anymore.
             VStack(alignment: .leading, spacing: 8) {
-                ShortcutRecorderField(
-                    action: .startStopCollecting,
-                    hotkeyManager: hotkeyManager,
-                    currentlyRecording: $currentlyRecording
-                )
-                ShortcutRecorderField(
-                    action: .pasteNext,
-                    hotkeyManager: hotkeyManager,
-                    currentlyRecording: $currentlyRecording
-                )
+                ShortcutRecorderField(action: .startStopCollecting, hotkeyManager: hotkeyManager)
+                ShortcutRecorderField(action: .pasteNext, hotkeyManager: hotkeyManager)
             }
 
             Divider()

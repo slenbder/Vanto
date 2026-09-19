@@ -120,7 +120,7 @@ final class HotkeyManagerTests: XCTestCase {
 
     func testPausingSuppressesAllMatchingUntilResumed() {
         let manager = makeManager()
-        manager.pauseForRecording()
+        manager.pauseForRecording(action: .pasteNext)
 
         XCTAssertNil(manager.matchingAction(keyCode: keyCodeC, modifierFlags: [.control, .command], isRepeat: false))
         XCTAssertNil(manager.matchingAction(keyCode: keyCodeV, modifierFlags: [.control, .command], isRepeat: false))

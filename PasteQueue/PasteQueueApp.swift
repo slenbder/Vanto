@@ -422,7 +422,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         escapeKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
-            if event.keyCode == 53 {
+            if event.keyCode == ShortcutRecording.escapeKeyCode {
                 // A ShortcutRecorderField currently recording claims Escape for itself
                 // (cancel the recording, keep the popover open) instead of the usual
                 // close-popover behavior. Routed through this single existing monitor
