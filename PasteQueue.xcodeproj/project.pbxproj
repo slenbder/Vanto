@@ -8,15 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		0F0BB6797A530700B5A0B9E7 /* PasteQueueIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 178563EB14A18621693882F3 /* PasteQueueIcon.icon */; };
+		11E1060081FA415BE8E21568 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */; };
+		183FC893964C5251788FF8D5 /* LanguagePreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */; };
 		18E6CFED2EC423EFB03FD46E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 528CD81459766BBCBF3FC34E /* Assets.xcassets */; };
 		1CBB4AC2AF49121992D35BC0 /* PasteStackMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9208B0DE1CB41D6CDACC1E2 /* PasteStackMenu.swift */; };
+		25773BF0BEC1EA5F523240BC /* ShortcutRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */; };
 		26968079B750BA0E08E5D3B2 /* PasteStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */; };
 		32E652E0D3699814EE84684F /* ClipboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */; };
+		37BFCE000515332E7669FD47 /* ShortcutStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */; };
 		3EC6B04D8528F1A4D884B694 /* PasteStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170F484A230B1FF826B2EA31 /* PasteStack.swift */; };
+		4A46E02B7E214C4AE3063A3F /* LanguagePreferenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */; };
+		5A141DBBDA76AF9E6E26853F /* PopoverRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78ED48C8CDD0045F3EA3391 /* PopoverRootView.swift */; };
 		5CD63F2F22A71250EC7B0B25 /* PasteboardProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */; };
+		7D08D5A453D5A9478342E4CC /* HotkeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */; };
+		7E5CD219BF1550727879683E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 465A07FD839334047E3C971F /* Localizable.xcstrings */; };
+		851BF0F37FCA6A751BD5B166 /* SettingsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0E5A625ED24921506144AE /* SettingsMenu.swift */; };
 		992A1B6E83F0EDEC786FD07A /* MockPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65655535468346D3640E0109 /* MockPasteboard.swift */; };
 		9BDD75AFCA31CA451F9265F7 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */; };
 		A2554169AB2F2247401AC077 /* PasteQueueApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9120492BC3070642E4907B5D /* PasteQueueApp.swift */; };
+		B4667A1078086D65A8735FDD /* PopoverStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */; };
+		FB61462722C6EACD32F7A3CF /* HotkeySpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +43,25 @@
 /* Begin PBXFileReference section */
 		170F484A230B1FF826B2EA31 /* PasteStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStack.swift; sourceTree = "<group>"; };
 		178563EB14A18621693882F3 /* PasteQueueIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = PasteQueueIcon.icon; sourceTree = "<group>"; };
+		2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverStatusRow.swift; sourceTree = "<group>"; };
+		24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpecTests.swift; sourceTree = "<group>"; };
 		2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackTests.swift; sourceTree = "<group>"; };
+		465A07FD839334047E3C971F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStore.swift; sourceTree = "<group>"; };
 		4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStoreTests.swift; sourceTree = "<group>"; };
 		528CD81459766BBCBF3FC34E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		54D1FD43BC2B929DE1CE83D2 /* PasteQueueTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PasteQueueTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		65655535468346D3640E0109 /* MockPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPasteboard.swift; sourceTree = "<group>"; };
+		6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderField.swift; sourceTree = "<group>"; };
+		7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutStoring.swift; sourceTree = "<group>"; };
+		85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
+		8B0E5A625ED24921506144AE /* SettingsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMenu.swift; sourceTree = "<group>"; };
 		9120492BC3070642E4907B5D /* PasteQueueApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteQueueApp.swift; sourceTree = "<group>"; };
+		B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpec.swift; sourceTree = "<group>"; };
 		B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardProviding.swift; sourceTree = "<group>"; };
 		B9208B0DE1CB41D6CDACC1E2 /* PasteStackMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackMenu.swift; sourceTree = "<group>"; };
+		C78ED48C8CDD0045F3EA3391 /* PopoverRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverRootView.swift; sourceTree = "<group>"; };
 		D8A6A57A3F89CBEF1CA96864 /* PasteQueue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PasteQueue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,6 +79,9 @@
 		93AA64AD2C56D7894C7BDA2E /* PasteQueueTests */ = {
 			isa = PBXGroup;
 			children = (
+				85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */,
+				24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */,
+				527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */,
 				65655535468346D3640E0109 /* MockPasteboard.swift */,
 				2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */,
 			);
@@ -78,11 +103,19 @@
 				528CD81459766BBCBF3FC34E /* Assets.xcassets */,
 				E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */,
 				4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */,
+				B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */,
+				480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */,
+				465A07FD839334047E3C971F /* Localizable.xcstrings */,
 				B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */,
 				9120492BC3070642E4907B5D /* PasteQueueApp.swift */,
 				178563EB14A18621693882F3 /* PasteQueueIcon.icon */,
 				170F484A230B1FF826B2EA31 /* PasteStack.swift */,
 				B9208B0DE1CB41D6CDACC1E2 /* PasteStackMenu.swift */,
+				C78ED48C8CDD0045F3EA3391 /* PopoverRootView.swift */,
+				2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */,
+				8B0E5A625ED24921506144AE /* SettingsMenu.swift */,
+				6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */,
+				7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */,
 			);
 			path = PasteQueue;
 			sourceTree = "<group>";
@@ -150,7 +183,13 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				de,
 				en,
+				es,
+				ja,
+				"pt-BR",
+				ru,
+				"zh-Hans",
 			);
 			mainGroup = 8B9030C9B34575B9C4C2FC2D;
 			minimizedProjectReferenceProxies = 1;
@@ -171,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18E6CFED2EC423EFB03FD46E /* Assets.xcassets in Resources */,
+				7E5CD219BF1550727879683E /* Localizable.xcstrings in Resources */,
 				0F0BB6797A530700B5A0B9E7 /* PasteQueueIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -182,6 +222,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11E1060081FA415BE8E21568 /* HotkeyManagerTests.swift in Sources */,
+				FB61462722C6EACD32F7A3CF /* HotkeySpecTests.swift in Sources */,
+				4A46E02B7E214C4AE3063A3F /* LanguagePreferenceStoreTests.swift in Sources */,
 				992A1B6E83F0EDEC786FD07A /* MockPasteboard.swift in Sources */,
 				26968079B750BA0E08E5D3B2 /* PasteStackTests.swift in Sources */,
 			);
@@ -193,10 +236,17 @@
 			files = (
 				32E652E0D3699814EE84684F /* ClipboardItem.swift in Sources */,
 				9BDD75AFCA31CA451F9265F7 /* HotkeyManager.swift in Sources */,
+				7D08D5A453D5A9478342E4CC /* HotkeySpec.swift in Sources */,
+				183FC893964C5251788FF8D5 /* LanguagePreferenceStore.swift in Sources */,
 				A2554169AB2F2247401AC077 /* PasteQueueApp.swift in Sources */,
 				3EC6B04D8528F1A4D884B694 /* PasteStack.swift in Sources */,
 				1CBB4AC2AF49121992D35BC0 /* PasteStackMenu.swift in Sources */,
 				5CD63F2F22A71250EC7B0B25 /* PasteboardProviding.swift in Sources */,
+				5A141DBBDA76AF9E6E26853F /* PopoverRootView.swift in Sources */,
+				B4667A1078086D65A8735FDD /* PopoverStatusRow.swift in Sources */,
+				851BF0F37FCA6A751BD5B166 /* SettingsMenu.swift in Sources */,
+				25773BF0BEC1EA5F523240BC /* ShortcutRecorderField.swift in Sources */,
+				37BFCE000515332E7669FD47 /* ShortcutStoring.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +268,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6D5U6N6YZA;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -227,6 +278,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.pastequeue;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
@@ -296,6 +348,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6D5U6N6YZA;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -305,6 +358,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.pastequeue;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;

@@ -161,8 +161,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         popover.delegate = self
         self.popover = popover
 
-        queueSubscription = PasteStack.shared.$queue.combineLatest(PasteStack.shared.$isCollecting).sink { queue, isCollecting in
+        queueSubscription = PasteStack.shared.$queue
+            .combineLatest(PasteStack.shared.$isCollecting, LanguagePreferenceStore.shared.$preferredLanguageCode)
+            .sink { queue, isCollecting, preferredLanguageCode in
             let count = queue.count
+            // AppKit accessibility labels have no SwiftUI environment to inherit a locale
+            // override from — resolved explicitly here so they track the in-app language
+            // picker exactly like the popover's own SwiftUI text does.
+            let locale: Locale = preferredLanguageCode.map(Locale.init(identifier:)) ?? .autoupdatingCurrent
 
             // Recomputed every time, against the current button.bounds — see the
             // comment where countLabel is created for why this can't just be done once.
@@ -197,13 +203,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 countLabel.textColor = count >= 99 ? .systemRed : .labelColor
             }
 
-            let itemWord = count == 1 ? "item" : "items"
             if isCollecting {
-                button.setAccessibilityLabel("PasteQueue, recording, \(count) \(itemWord) in queue")
+                button.setAccessibilityLabel(String(localized: "PasteQueue, recording, \(count) items in queue", locale: locale))
             } else if count > 0 {
-                button.setAccessibilityLabel("PasteQueue, \(count) \(itemWord) queued, not recording")
+                button.setAccessibilityLabel(String(localized: "PasteQueue, \(count) items queued, not recording", locale: locale))
             } else {
-                button.setAccessibilityLabel("PasteQueue, idle")
+                button.setAccessibilityLabel(String(localized: "PasteQueue, idle", locale: locale))
             }
         }
 
@@ -255,14 +260,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         uiLogger.debug("popoverDidClose")
         removePopoverEventMonitors()
         isClosingPopover = false
+        // Failsafe: if the popover is torn down mid-recording (e.g. an outside click)
+        // before ShortcutRecorderField's own onDisappear runs, this guarantees production
+        // hotkeys don't stay paused forever.
+        HotkeyManager.shared.resumeAfterRecording()
+        HotkeyManager.shared.escapeRecordingInterceptor = nil
     }
 
     private func makePopoverContentController(
         minimumQueueListHeight: CGFloat
-    ) -> NSHostingController<PasteStackMenu> {
+    ) -> NSHostingController<PopoverRootView> {
         NSHostingController(
-            rootView: PasteStackMenu(
+            rootView: PopoverRootView(
                 stack: PasteStack.shared,
+                hotkeyManager: HotkeyManager.shared,
+                languageStore: LanguagePreferenceStore.shared,
                 minimumQueueListHeight: minimumQueueListHeight
             ) { [weak self] in
                 self?.requestPaste(source: .button)
@@ -411,6 +423,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         escapeKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
             if event.keyCode == 53 {
+                // A ShortcutRecorderField currently recording claims Escape for itself
+                // (cancel the recording, keep the popover open) instead of the usual
+                // close-popover behavior. Routed through this single existing monitor
+                // rather than a second, independently-registered one, since AppKit doesn't
+                // document firing order between two local monitors for the same event type.
+                if let interceptor = HotkeyManager.shared.escapeRecordingInterceptor {
+                    interceptor()
+                    return nil
+                }
                 closePopover(reason: .escape)
                 return nil
             }

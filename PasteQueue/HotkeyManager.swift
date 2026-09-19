@@ -1,5 +1,6 @@
 import AppKit
 import Carbon
+import Combine
 
 internal enum KeyboardLayoutTranslator {
     typealias Translator = (_ keyCode: UInt16, _ modifierKeyState: UInt32) -> String?
@@ -22,6 +23,14 @@ internal enum KeyboardLayoutTranslator {
             }
         }
         return nil
+    }
+
+    /// Live variant used to resolve the current physical keyCode for an un-overridden
+    /// shortcut's default character (e.g. dedupe/display against "c"/"v") — always
+    /// re-queries the active keyboard layout, never caches a stale result.
+    static func commandKeyCode(for character: String) -> CGKeyCode? {
+        guard let translator = currentASCIICapableTranslator() else { return nil }
+        return commandKeyCode(for: character, translator: translator)
     }
 
     static func commandVKeyCode() -> CGKeyCode {
@@ -68,30 +77,71 @@ internal enum KeyboardLayoutTranslator {
     }
 }
 
-/// Registers two global hotkeys system-wide:
-///   ⌃⌘C  — toggle collecting mode on/off
-///   ⌃⌘V  — pop the next item off the queue and paste it
+/// Registers two global hotkeys system-wide, one per ShortcutAction:
+///   ⌃⌘C  — toggle collecting mode on/off (default; user-rebindable in Settings)
+///   ⌃⌘V  — pop the next item off the queue and paste it (default; user-rebindable)
 ///
 /// Needs BOTH a global and a local monitor. Per NSEvent's own documentation:
 /// "your handler will not be called for events that are sent to your own application"
 /// (addGlobalMonitorForEvents). PasteQueue becomes the active app the moment the user
-/// clicks the status item to open the popover — so a ⌃⌘C pressed while that popover is
+/// clicks the status item to open the popover — so a shortcut pressed while that popover is
 /// open targets PasteQueue itself, not "another" app, and the global-only monitor never
-/// sees it (isCollecting genuinely never changes; it's not a SwiftUI redraw problem).
-/// The local monitor covers exactly that case; the global one covers everything else.
+/// sees it. The local monitor covers exactly that case; the global one covers everything else.
 /// Both are passive here (local returns the event unmodified) — nothing else is listening
-/// for this exact combo, so there's no conflict in practice.
-final class HotkeyManager {
+/// for these exact combos by default, but a user-recorded override CAN collide with another
+/// app or the system (e.g. a bare ⌘V) — that's an accepted, user-chosen tradeoff, not a bug.
+///
+/// An un-overridden action matches via LIVE ASCII-layout translation (Dvorak/AZERTY-safe,
+/// unaffected by non-Latin IMEs) exactly as before. A user-recorded override matches by raw
+/// (keyCode, modifiers) instead — required regardless, since function keys have no ASCII
+/// character to translate.
+final class HotkeyManager: ObservableObject {
     static let shared = HotkeyManager()
+
+    typealias ActionHandler = () -> Void
+
+    @Published private(set) var overrides: [ShortcutAction: HotkeySpec] = [:]
+    /// Set while a ShortcutRecorderField is capturing a new combo, so the action about to
+    /// be re-recorded (and its sibling) don't also fire on the very keys being captured.
+    @Published private(set) var isPaused = false
+    /// Hook for AppDelegate's own Escape-closes-popover local monitor: when set, Escape
+    /// should call this instead of closing the popover. See PasteQueueApp.swift.
+    var escapeRecordingInterceptor: (() -> Void)?
+
     private var globalMonitor: Any?
     private var localMonitor: Any?
-    private var pasteRequestHandler: () -> Void = {
-        PasteStack.shared.pasteNext()
+    private var toggleCollectingHandler: ActionHandler
+    private var pasteRequestHandler: ActionHandler
+    private let shortcutStore: ShortcutStoring
+
+    convenience init() {
+        self.init(
+            shortcutStore: UserDefaultsShortcutStore(),
+            toggleCollectingHandler: { PasteStack.shared.toggleCollecting() },
+            pasteRequestHandler: { PasteStack.shared.pasteNext() }
+        )
     }
 
-    private init() {}
+    /// Both handlers default to a no-op (not PasteStack.shared) so tests that construct a
+    /// HotkeyManager directly never touch the production singleton unless they explicitly
+    /// opt in — mirrors PasteStack's own designated-init DI pattern.
+    init(
+        shortcutStore: ShortcutStoring,
+        toggleCollectingHandler: @escaping ActionHandler = {},
+        pasteRequestHandler: @escaping ActionHandler = {}
+    ) {
+        self.shortcutStore = shortcutStore
+        self.toggleCollectingHandler = toggleCollectingHandler
+        self.pasteRequestHandler = pasteRequestHandler
+        for action in ShortcutAction.allCases {
+            overrides[action] = shortcutStore.override(for: action)
+        }
+    }
 
-    func start(pasteRequestHandler: @escaping () -> Void = { PasteStack.shared.pasteNext() }) {
+    /// Installs the real global+local NSEvent monitors and wires the production paste
+    /// route. Only ever called from AppDelegate.applicationDidFinishLaunching, which itself
+    /// returns before this for the test host — never exercised by PasteQueueTests.
+    func start(pasteRequestHandler: @escaping ActionHandler = { PasteStack.shared.pasteNext() }) {
         self.pasteRequestHandler = pasteRequestHandler
         requestAccessibilityIfNeeded()
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
@@ -103,16 +153,70 @@ final class HotkeyManager {
         }
     }
 
-    private func handle(_ event: NSEvent) {
-        guard Self.shouldHandleShortcut(modifierFlags: event.modifierFlags, isRepeat: event.isARepeat) else { return }
+    // MARK: - Overrides
 
-        switch KeyboardLayoutTranslator.asciiCapableCharacter(for: event.keyCode)?.lowercased() {
-        case "c":
-            PasteStack.shared.toggleCollecting()
-        case "v":
+    func setOverride(_ spec: HotkeySpec?, for action: ShortcutAction) {
+        overrides[action] = spec
+        shortcutStore.setOverride(spec, for: action)
+    }
+
+    /// The spec currently in effect for an action: its override if customized, else the
+    /// LIVE default translated against the current keyboard layout (never frozen/cached) —
+    /// used for display and for dedupe-checking a freshly recorded combo against whatever
+    /// the OTHER action currently resolves to, override or not.
+    func effectiveSpec(for action: ShortcutAction) -> HotkeySpec? {
+        if let override = overrides[action] { return override }
+        guard let keyCode = KeyboardLayoutTranslator.commandKeyCode(for: action.defaultCharacter) else { return nil }
+        return HotkeySpec(keyCode: keyCode, modifierFlags: [.control, .command])
+    }
+
+    // MARK: - Recording pause
+
+    func pauseForRecording() {
+        isPaused = true
+    }
+
+    func resumeAfterRecording() {
+        isPaused = false
+    }
+
+    // MARK: - Matching
+
+    private func handle(_ event: NSEvent) {
+        guard let action = matchingAction(
+            keyCode: event.keyCode,
+            modifierFlags: event.modifierFlags,
+            isRepeat: event.isARepeat
+        ) else { return }
+        perform(action)
+    }
+
+    /// Exposed (not private) so tests can drive matching with synthetic values instead of
+    /// constructing real NSEvents or real global monitors — same reasoning as
+    /// shouldHandleShortcut below.
+    func matchingAction(keyCode: UInt16, modifierFlags: NSEvent.ModifierFlags, isRepeat: Bool) -> ShortcutAction? {
+        guard !isPaused, !isRepeat else { return nil }
+        for action in ShortcutAction.allCases {
+            if let override = overrides[action] {
+                if HotkeySpec(keyCode: keyCode, modifierFlags: modifierFlags) == override {
+                    return action
+                }
+                continue
+            }
+            guard Self.shouldHandleShortcut(modifierFlags: modifierFlags, isRepeat: isRepeat) else { continue }
+            if KeyboardLayoutTranslator.asciiCapableCharacter(for: keyCode)?.lowercased() == action.defaultCharacter {
+                return action
+            }
+        }
+        return nil
+    }
+
+    func perform(_ action: ShortcutAction) {
+        switch action {
+        case .startStopCollecting:
+            toggleCollectingHandler()
+        case .pasteNext:
             pasteRequestHandler()
-        default:
-            break
         }
     }
 

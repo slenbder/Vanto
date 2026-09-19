@@ -97,3 +97,21 @@ final class CleanupSchedulerRecorder {
         pendingActions.forEach { $0() }
     }
 }
+
+final class MockShortcutStore: ShortcutStoring {
+    private var overrides: [ShortcutAction: HotkeySpec] = [:]
+    private(set) var setOverrideCallCount = 0
+
+    func override(for action: ShortcutAction) -> HotkeySpec? {
+        overrides[action]
+    }
+
+    func setOverride(_ spec: HotkeySpec?, for action: ShortcutAction) {
+        setOverrideCallCount += 1
+        overrides[action] = spec
+    }
+}
+
+final class MockLanguagePreferenceStore: LanguagePreferenceStoring {
+    var preferredLanguageCode: String?
+}

@@ -39,38 +39,7 @@ struct PasteStackMenu: View {
                 Divider()
             }
 
-            if stack.launchAtLoginDesynced {
-                Button {
-                    stack.toggleLaunchAtLogin()
-                } label: {
-                    Text("⚠️ Launch at Login disabled")
-                        .lineLimit(nil)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .foregroundColor(.orange)
-                Text("This was turned off in System Settings. Click to re-enable.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Divider()
-            }
-
-            // Recording state and queue count are two independent dimensions of state
-            // (see PasteStack's type-level doc) — each gets its own view bound only to
-            // its own source of truth, rather than being folded into one combined phrase
-            // that would read as a single linear step ("Collecting… (N)" -> "Ready").
-            HStack(spacing: 6) {
-                recordingIndicator
-                Text("·")
-                    .foregroundColor(.secondary)
-                queueCountLabel
-            }
-            // The dot separator is purely visual — as three separate elements VoiceOver
-            // would stop on it and announce nothing, so it's folded into one label here.
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(statusAccessibilityLabel)
-
             if effectiveListHeight > 0 {
-                Divider()
                 // A ScrollView asked for its *ideal* height (no incoming height proposal,
                 // which is exactly what MenuBarExtra's .window style does when it measures
                 // this content to size its popover) reports zero — `.frame(maxHeight:)`
@@ -89,13 +58,18 @@ struct PasteStackMenu: View {
                 .frame(height: effectiveListHeight)
             }
 
+            // Single divider always present here (queue list or not) — it used to sit between
+            // the list/Quit-row above and the Start/Paste/Clear row below; now that Quit has
+            // merged into that same row, this is the one separator left doing that job.
             Divider()
 
-            // Bottom two rows, styled as plain text links rather than buttons —
-            // row 1 is the frequently-used actions, row 2 is app-level utilities.
+            // Frequently-used actions grouped on the leading edge, Quit pushed to the
+            // trailing edge of the same row by the Spacer between them.
             HStack(spacing: 10) {
-                Button(stack.isCollecting ? "Stop" : "Start") {
-                    stack.toggleCollecting()
+                if stack.isCollecting {
+                    Button("Stop") { stack.toggleCollecting() }
+                } else {
+                    Button("Start") { stack.toggleCollecting() }
                 }
 
                 Button("Paste") {
@@ -109,23 +83,6 @@ struct PasteStackMenu: View {
                 }
                 .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
                 .disabled(stack.queue.isEmpty)
-            }
-            .buttonStyle(.plain)
-            .font(.callout)
-
-            Divider()
-
-            HStack {
-                Button {
-                    stack.toggleLaunchAtLogin()
-                } label: {
-                    HStack(spacing: 4) {
-                        Text("Launch at Login")
-                        if stack.launchAtLoginEnabled {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
 
                 Spacer()
 
@@ -136,8 +93,6 @@ struct PasteStackMenu: View {
             .buttonStyle(.plain)
             .font(.callout)
         }
-        .padding()
-        .frame(width: 220)
         .onAppear {
             stack.refreshAccessibilityStatus()
             stack.refreshLaunchAtLoginStatus()
@@ -149,34 +104,6 @@ struct PasteStackMenu: View {
             let liveIDs = Set(newQueue.map(\.id))
             rowHeights = rowHeights.filter { liveIDs.contains($0.key) }
         }
-    }
-
-    /// Bound ONLY to isCollecting — never reads queue.count, so recording state can never
-    /// be inferred from (or confused with) how many items happen to be queued.
-    @ViewBuilder
-    private var recordingIndicator: some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(stack.isCollecting ? Color.red : Color.secondary)
-                .frame(width: 8, height: 8)
-            Text(stack.isCollecting ? "Recording" : "Stopped")
-                .font(.headline)
-        }
-    }
-
-    /// Bound ONLY to queue.count — never reads isCollecting, so the count reads as a fact
-    /// about the queue, not as a step in whatever the recording state happens to be doing.
-    @ViewBuilder
-    private var queueCountLabel: some View {
-        Text(stack.queue.count > 0 ? "\(stack.queue.count) in queue" : "Queue empty")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-    }
-
-    private var statusAccessibilityLabel: String {
-        let recordingPart = stack.isCollecting ? "Recording" : "Stopped"
-        let queuePart = stack.queue.count > 0 ? "\(stack.queue.count) in queue" : "queue empty"
-        return "\(recordingPart), \(queuePart)"
     }
 
     @ViewBuilder
