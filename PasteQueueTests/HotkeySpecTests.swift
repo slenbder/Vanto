@@ -4,14 +4,21 @@ import Carbon
 import XCTest
 
 final class HotkeySpecTests: XCTestCase {
-    // ANSI US physical keyCodes used throughout — matches the constants already relied on
-    // by HotkeyManagerShortcutTests (keyCode 9 == V's fallback keyCode).
+    // Fixed key codes for the injected test layout; classification is layout-independent.
     private let keyCodeC: UInt16 = 8
     private let keyCodeV: UInt16 = 9
     private let keyCodeSpace: UInt16 = 49
     private let keyCodeTab: UInt16 = 48
     private let keyCodeEscape: UInt16 = 53
     private let keyCodeF1 = UInt16(kVK_F1)
+
+    private func testCharacter(for keyCode: UInt16) -> String? {
+        switch keyCode {
+        case keyCodeC: return "c"
+        case keyCodeV: return "v"
+        default: return nil
+        }
+    }
 
     // MARK: - HotkeySpec equality/masking
 
@@ -70,7 +77,12 @@ final class HotkeySpecTests: XCTestCase {
     }
 
     func testClassifyAcceptsSingleBareModifierPlusLetter() {
-        let outcome = ShortcutRecording.classify(keyCode: keyCodeV, modifierFlags: [.command], isRepeat: false)
+        let outcome = ShortcutRecording.classify(
+            keyCode: keyCodeV,
+            modifierFlags: [.command],
+            isRepeat: false,
+            characterForKeyCode: testCharacter
+        )
         XCTAssertEqual(outcome, .captured(HotkeySpec(keyCode: keyCodeV, modifierFlags: [.command])))
     }
 
@@ -83,7 +95,8 @@ final class HotkeySpecTests: XCTestCase {
         let outcome = ShortcutRecording.classify(
             keyCode: keyCodeV,
             modifierFlags: [.command, .capsLock, .function],
-            isRepeat: false
+            isRepeat: false,
+            characterForKeyCode: testCharacter
         )
         XCTAssertEqual(outcome, .captured(HotkeySpec(keyCode: keyCodeV, modifierFlags: [.command])))
     }
@@ -91,8 +104,14 @@ final class HotkeySpecTests: XCTestCase {
     // MARK: - isSystemCopyPasteCutConflict
 
     func testSystemConflictDetectsBareCommandCVX() {
-        XCTAssertTrue(ShortcutRecording.isSystemCopyPasteCutConflict(HotkeySpec(keyCode: keyCodeC, modifierFlags: [.command])))
-        XCTAssertTrue(ShortcutRecording.isSystemCopyPasteCutConflict(HotkeySpec(keyCode: keyCodeV, modifierFlags: [.command])))
+        XCTAssertTrue(ShortcutRecording.isSystemCopyPasteCutConflict(
+            HotkeySpec(keyCode: keyCodeC, modifierFlags: [.command]),
+            characterForKeyCode: testCharacter
+        ))
+        XCTAssertTrue(ShortcutRecording.isSystemCopyPasteCutConflict(
+            HotkeySpec(keyCode: keyCodeV, modifierFlags: [.command]),
+            characterForKeyCode: testCharacter
+        ))
     }
 
     func testSystemConflictIgnoresAdditionalModifiers() {

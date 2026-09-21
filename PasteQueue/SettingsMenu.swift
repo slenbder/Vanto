@@ -13,8 +13,16 @@ struct SettingsMenu: View {
             // lives on hotkeyManager.recordingAction now — both rows observe the same
             // @ObservedObject, so there's no separate @State to thread through here anymore.
             VStack(alignment: .leading, spacing: 8) {
-                ShortcutRecorderField(action: .startStopCollecting, hotkeyManager: hotkeyManager)
-                ShortcutRecorderField(action: .pasteNext, hotkeyManager: hotkeyManager)
+                ShortcutRecorderField(
+                    action: .startStopCollecting,
+                    hotkeyManager: hotkeyManager,
+                    languageCode: languageStore.preferredLanguageCode
+                )
+                ShortcutRecorderField(
+                    action: .pasteNext,
+                    hotkeyManager: hotkeyManager,
+                    languageCode: languageStore.preferredLanguageCode
+                )
             }
 
             Divider()

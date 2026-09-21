@@ -54,7 +54,9 @@ action занял около 5.305 seconds. Build errors, runtime crashes и war
 - Файлы хранятся как `ClipboardFiles/<item UUID>/<original filename>`.
   Ownership validation, startup/Clear/remove cleanup и задержка удаления около
   двух секунд после paste остаются без изменений. Отдельного exit cleanup нет.
-- Hotkeys фиксированы. Базовая VoiceOver-поддержка не включает reorder parity.
+- На зафиксированном здесь коммите `f086cf1` hotkeys были фиксированы;
+  ветка `feature/settings-screen` добавляет переназначение. Базовая
+  VoiceOver-поддержка не включает reorder parity.
 - `copyItem` для захвата файла остаётся синхронным. Архитектура больших файлов
   — background copy, progress/cancellation, сохранение FIFO и race-safe cleanup
   — явно перенесена в v2. Large-file stress не блокирует v1; нельзя обещать

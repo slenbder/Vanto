@@ -22,15 +22,15 @@ enum ShortcutAction: String, CaseIterable, Codable {
     }
 
     /// User-facing name for the "already used by …" duplicate caption. The row's own label
-    /// (ShortcutRecorderField.actionLabel) renders the same two literals directly as Text
+    /// (ShortcutRecorderField.actionText) renders the same two literals directly as Text
     /// instead of calling this — this exists for contexts that need a plain String to
     /// interpolate into another message, where Text's automatic extraction doesn't apply.
-    func displayName(locale: Locale) -> String {
+    func displayName(locale: Locale, bundle: Bundle) -> String {
         switch self {
         case .startStopCollecting:
-            return String(localized: "Start/Stop Collecting", locale: locale)
+            return String(localized: "Start/Stop Collecting", bundle: bundle, locale: locale)
         case .pasteNext:
-            return String(localized: "Paste Next Item", locale: locale)
+            return String(localized: "Paste Next Item", bundle: bundle, locale: locale)
         }
     }
 }
@@ -106,14 +106,15 @@ enum ShortcutRecording {
     static func classify(
         keyCode: UInt16,
         modifierFlags: NSEvent.ModifierFlags,
-        isRepeat: Bool
+        isRepeat: Bool,
+        characterForKeyCode: (UInt16) -> String? = { KeyboardLayoutTranslator.asciiCapableCharacter(for: $0) }
     ) -> ShortcutRecordingOutcome {
         guard !isRepeat else { return .ignored }
         guard keyCode != escapeKeyCode else { return .cancelled }
 
         let modifiers = modifierFlags.intersection(HotkeySpec.relevantModifiers)
         guard !modifiers.isEmpty else { return .ignored }
-        guard isSupportedKey(keyCode) else { return .ignored }
+        guard isSupportedKey(keyCode, characterForKeyCode: characterForKeyCode) else { return .ignored }
 
         return .captured(HotkeySpec(keyCode: keyCode, modifierFlags: modifiers))
     }
@@ -121,9 +122,12 @@ enum ShortcutRecording {
     /// Letters, digits, and function keys only. Tab/Space/Return/Delete/Arrows are excluded
     /// even with a modifier held — they're far likelier to be brushed by accident mid-use
     /// than a dedicated F-key is, and the app's own Escape-to-cancel already claims Escape.
-    private static func isSupportedKey(_ keyCode: UInt16) -> Bool {
+    private static func isSupportedKey(
+        _ keyCode: UInt16,
+        characterForKeyCode: (UInt16) -> String?
+    ) -> Bool {
         if HotkeySpec.functionKeySymbols[keyCode] != nil { return true }
-        guard let character = KeyboardLayoutTranslator.asciiCapableCharacter(for: keyCode),
+        guard let character = characterForKeyCode(keyCode),
               let onlyCharacter = character.first,
               character.count == 1 else { return false }
         return onlyCharacter.isLetter || onlyCharacter.isNumber
@@ -132,9 +136,12 @@ enum ShortcutRecording {
     /// True only for a BARE single-⌘ combo whose key resolves to c/v/x — the literal
     /// system Copy/Paste/Cut shortcuts, the only combos that actively corrupt ordinary
     /// clipboard use elsewhere (see HotkeyManager's passive, non-blocking global monitor).
-    static func isSystemCopyPasteCutConflict(_ spec: HotkeySpec) -> Bool {
+    static func isSystemCopyPasteCutConflict(
+        _ spec: HotkeySpec,
+        characterForKeyCode: (UInt16) -> String? = { KeyboardLayoutTranslator.asciiCapableCharacter(for: $0) }
+    ) -> Bool {
         guard spec.modifierFlags == [.command] else { return false }
-        guard let character = KeyboardLayoutTranslator.asciiCapableCharacter(for: spec.keyCode)?.lowercased() else {
+        guard let character = characterForKeyCode(spec.keyCode)?.lowercased() else {
             return false
         }
         return ["c", "v", "x"].contains(character)

@@ -4,7 +4,7 @@ import Carbon
 import XCTest
 
 final class HotkeyManagerTests: XCTestCase {
-    // ANSI US physical keyCodes — same constants HotkeyManagerShortcutTests already relies on.
+    // Fixed key codes for the injected test layout; tests do not depend on the host layout.
     private let keyCodeC: UInt16 = 8
     private let keyCodeV: UInt16 = 9
     private let keyCodeF1 = UInt16(kVK_F1)
@@ -22,7 +22,21 @@ final class HotkeyManagerTests: XCTestCase {
         HotkeyManager(
             shortcutStore: store,
             toggleCollectingHandler: toggleCollecting.handler,
-            pasteRequestHandler: pasteNext.handler
+            pasteRequestHandler: pasteNext.handler,
+            characterForKeyCode: { keyCode in
+                switch keyCode {
+                case 8: return "c"
+                case 9: return "v"
+                default: return nil
+                }
+            },
+            keyCodeForCharacter: { character in
+                switch character {
+                case "c": return 8
+                case "v": return 9
+                default: return nil
+                }
+            }
         )
     }
 
@@ -70,6 +84,23 @@ final class HotkeyManagerTests: XCTestCase {
         XCTAssertEqual(
             manager.matchingAction(keyCode: keyCodeC, modifierFlags: [.control, .command], isRepeat: false),
             .startStopCollecting
+        )
+    }
+
+    func testSavedOverrideWinsWhenItCollidesWithALiveDefault() {
+        let manager = makeManager()
+        let defaultCollecting = manager.effectiveSpec(for: .startStopCollecting)!
+        manager.setOverride(defaultCollecting, for: .pasteNext)
+
+        XCTAssertEqual(manager.overridingAction(forDefault: .startStopCollecting), .pasteNext)
+        XCTAssertNil(manager.overridingAction(forDefault: .pasteNext))
+        XCTAssertEqual(
+            manager.matchingAction(
+                keyCode: defaultCollecting.keyCode,
+                modifierFlags: defaultCollecting.modifierFlags,
+                isRepeat: false
+            ),
+            .pasteNext
         )
     }
 

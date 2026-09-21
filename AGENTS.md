@@ -6,7 +6,7 @@
 
 The popover has two screens, split across `PopoverRootView.swift` (owns which screen is showing, outer width/padding, and the in-app locale override), `PopoverStatusRow.swift` (shared header: recording indicator, queue count, gear/close button), `PasteStackMenu.swift` (queue screen: list, drag-to-reorder, Start/Paste/Clear/Quit), `SettingsMenu.swift` (Settings screen: shortcut rows, language picker, Launch at Login, website/version), and `ShortcutRecorderField.swift` (one rebindable-shortcut row). `LanguagePreferenceStore.swift` holds the persisted language override and the 7 supported locales (`SupportedLanguage`); translated strings live in `PasteQueue/Localizable.xcstrings`.
 
-Clipboard value types and test seams live in `ClipboardItem.swift` and `PasteboardProviding.swift`. Assets are under `PasteQueue/Assets.xcassets` and `PasteQueue/PasteQueueIcon.icon` — note `menuBarIcon` (idle) and `menuBarIconFrame` (collecting) are currently mismatched artwork, a known open item, not something to silently "fix" in code.
+Clipboard value types and test seams live in `ClipboardItem.swift` and `PasteboardProviding.swift`. Assets are under `PasteQueue/Assets.xcassets` and `PasteQueue/PasteQueueIcon.icon`. `menuBarIcon` (idle) and `menuBarIconFrame` (collecting) share the same outer silhouette so the status item does not jump when its state changes.
 
 Unit tests live in `PasteQueueTests/`; keep mocks beside the tests that use them — `MockPasteboard.swift` now also holds `MockShortcutStore`, `MockLanguagePreferenceStore`, `MockLaunchAtLoginService`, and the paste/cleanup-scheduler recorders used across the suite. Accessibility evidence belongs in `a11y-test-artifacts/`. `project.yml` is the source of truth for project settings; regenerate `PasteQueue.xcodeproj` instead of editing it by hand.
 
@@ -25,7 +25,7 @@ Follow standard Swift conventions and Xcode formatting: four-space indentation, 
 
 ## Testing Guidelines
 
-Tests use XCTest and should be named `testBehaviorUnderCondition`. Use `MockPasteboard` for text-oriented unit tests; image and file tests intentionally touch `NSPasteboard.general`, so clear it during setup. Add regression coverage for queue ordering, capacity, cleanup, and state transitions. `HotkeyManagerTests`/`HotkeySpecTests` cover shortcut matching, overrides, and recording classification; `LanguagePreferenceStoreTests` covers the locale override. Both construct their subject directly via its designated DI init, never through `.shared`. Complete the manual checklist in `README.md` for hotkeys, files/images, Settings (shortcut rebinding, language switching), VoiceOver, Launch at Login, and menu-bar appearance.
+Tests use XCTest and should be named `testBehaviorUnderCondition`. Use `MockPasteboard` for text-oriented unit tests; image and file tests intentionally touch `NSPasteboard.general`, so clear it during setup. Add regression coverage for queue ordering, capacity, cleanup, and state transitions. `HotkeyManagerTests`/`HotkeySpecTests` cover shortcut matching, overrides, and recording classification with an injected test layout; `LanguagePreferenceStoreTests` covers the locale override and built translations. Construct managers and stores through their designated DI initializers, never through `.shared`. Complete the manual checklist in `README.md` for hotkeys, files/images, Settings (shortcut rebinding, language switching), VoiceOver, Launch at Login, and menu-bar appearance.
 
 ## Commit & Pull Request Guidelines
 

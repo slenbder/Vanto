@@ -6,8 +6,8 @@ enum PopoverScreen {
     case settings
 }
 
-/// Shared header across both popover screens: recording indicator + queue count (moved
-/// here verbatim from PasteStackMenu), plus the trailing gearshape button that switches to
+/// Shared header across both popover screens: recording indicator and queue count on
+/// separate lines, plus the trailing gearshape button that switches to
 /// Settings. The status text and the gear button are deliberately separate accessibility
 /// elements — folding the gear into the same `.accessibilityElement(children: .ignore)`
 /// group as the status text would make it permanently unreachable to VoiceOver.
@@ -16,15 +16,12 @@ struct PopoverStatusRow: View {
     @Binding var screen: PopoverScreen
 
     var body: some View {
-        HStack(spacing: 6) {
-            HStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
+            VStack(alignment: .leading, spacing: 2) {
                 recordingIndicator
-                Text("·")
-                    .foregroundColor(.secondary)
                 queueCountLabel
             }
-            // The dot separator is purely visual — as three separate elements VoiceOver
-            // would stop on it and announce nothing, so it's folded into one label here.
+            // Keep the two visual lines as one announcement for VoiceOver.
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusAccessibilityText)
 

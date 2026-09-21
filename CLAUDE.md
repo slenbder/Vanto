@@ -112,11 +112,8 @@ AppKit has established the button bounds.
 
 `menuBarIcon` (idle) and `menuBarIconFrame` (collecting — same outer contour,
 hollow, so the count label has room inside it) are meant to be a matched pair.
-As of the current icon artwork they are **not** — `menuBarIcon` was redesigned,
-`menuBarIconFrame` was not — so the status item visibly changes shape on
-collecting-state toggles. This needs new artwork, not a code fix; don't
-"repair" it by pointing both states at the same asset without confirming that
-with whoever owns the icon design.
+Their current SVGs share the same outer path. Keep those paths aligned when
+changing either icon so collecting-state toggles do not shift the silhouette.
 
 ### Hotkey matching
 
@@ -140,10 +137,12 @@ for their one real use — synthesizing an actual ⌘V keypress in
 `PasteStack.simulateCommandV()`, which genuinely needs the Command-modified
 table. Don't reuse them for anything in the matching/display path.
 
-`matchingAction()` resolves that translation once per call, not once per
-un-overridden `ShortcutAction` in its loop — it runs on the global monitor's
-hot path (every keystroke, system-wide), and the underlying TIS/Carbon lookup
-isn't cheap enough to redo per candidate action.
+`matchingAction()` checks persisted physical overrides first, then translates
+only keydowns with the exact default modifiers when an action still uses its
+default. The global monitor sees every system-wide keydown, so the underlying
+TIS/Carbon lookup must stay off the path for unrelated keys. If a layout
+change puts a live default on a saved override, the override wins and Settings
+shows the conflict on the default row.
 
 ### Rebindable shortcuts (Settings screen)
 
@@ -167,7 +166,7 @@ one being rebound — intentional (see `testPausingSuppressesAllMatchingUntilRes
 not something to "fix" into per-action suppression.
 
 Escape while recording is owned entirely by `AppDelegate`'s existing
-Escape-closes-popover local monitor via `HotkeyManager.escapeRecordingInterceptor`
+Escape-closes-popover local monitor via `HotkeyManager.cancelRecordingHandler`
 — not by `ShortcutRecorderField`'s own recording monitor, which explicitly
 lets Escape (`ShortcutRecording.escapeKeyCode`, the one definition three
 call sites share) pass through unswallowed. That pass-through guard matters
@@ -186,11 +185,10 @@ launch.
 `Localizable.xcstrings` covers 7 locales (`SupportedLanguage`: en, ru,
 zh-Hans, es, ja, de, pt-BR). `LanguagePreferenceStore` persists an optional
 in-app override (nil = follow system); `PopoverRootView` applies it via
-`.environment(\.locale:)` to the whole popover subtree. AppKit-side text
-(status-item accessibility labels in `PasteQueueApp.swift`) has no SwiftUI
-environment to inherit from, so it resolves the same preference explicitly
-through `String(localized:locale:)` — keep both in sync if the resolution
-rule ever changes.
+`.environment(\.locale:)` to the whole popover subtree. Strings built outside
+SwiftUI `Text` need `AppLocalization.bundle(for:)` as well as a locale: the
+locale argument alone formats values but does not select another `.lproj`.
+This applies to the status-item accessibility labels and shortcut captions.
 
 The popover's fixed width (`PopoverRootView`, 270pt) is sized to the longest
 string that actually ships across all 7 locales — verified by measuring
@@ -217,11 +215,11 @@ return before production singletons, polling, Accessibility prompts,
 login-item state, or production storage are touched. Tests must never use
 `NSPasteboard.general`.
 
-`HotkeyManagerTests`/`HotkeySpecTests` construct `HotkeyManager` directly via
-its designated DI init (`shortcutStore:toggleCollectingHandler:pasteRequestHandler:`),
-never through `.shared` — the zero-arg production init is `private` precisely
-so a test (or any other code) can't accidentally spin up a second,
-real-monitor-registering instance instead of injecting one.
+`HotkeyManagerTests` constructs `HotkeyManager` directly through its DI init,
+with a fixed key-to-character test layout. `HotkeySpecTests` injects the same
+kind of mapping into its classification checks. Neither uses `.shared` or the
+host's selected keyboard layout. The zero-arg production init remains private
+so tests cannot accidentally create a second instance with real monitors.
 
 ## Extending content types
 

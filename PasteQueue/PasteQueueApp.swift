@@ -169,6 +169,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             // override from — resolved explicitly here so they track the in-app language
             // picker exactly like the popover's own SwiftUI text does.
             let locale: Locale = preferredLanguageCode.map(Locale.init(identifier:)) ?? .autoupdatingCurrent
+            let localizedBundle = AppLocalization.bundle(for: preferredLanguageCode)
 
             // Recomputed every time, against the current button.bounds — see the
             // comment where countLabel is created for why this can't just be done once.
@@ -204,11 +205,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             }
 
             if isCollecting {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, recording, \(count) items in queue", locale: locale))
+                button.setAccessibilityLabel(String(localized: "PasteQueue, recording, \(count) items in queue", bundle: localizedBundle, locale: locale))
             } else if count > 0 {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, \(count) items queued, not recording", locale: locale))
+                button.setAccessibilityLabel(String(localized: "PasteQueue, \(count) items queued, not recording", bundle: localizedBundle, locale: locale))
             } else {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, idle", locale: locale))
+                button.setAccessibilityLabel(String(localized: "PasteQueue, idle", bundle: localizedBundle, locale: locale))
             }
         }
 
@@ -260,11 +261,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         uiLogger.debug("popoverDidClose")
         removePopoverEventMonitors()
         isClosingPopover = false
-        // Failsafe: if the popover is torn down mid-recording (e.g. an outside click)
-        // before ShortcutRecorderField's own onDisappear runs, this guarantees production
-        // hotkeys don't stay paused forever.
+        // Cancel through the field while its monitor is still available. Clearing only
+        // recordingAction here could make onDisappear skip monitor removal after close.
+        HotkeyManager.shared.cancelRecordingHandler?()
         HotkeyManager.shared.resumeAfterRecording()
-        HotkeyManager.shared.escapeRecordingInterceptor = nil
+        HotkeyManager.shared.cancelRecordingHandler = nil
     }
 
     private func makePopoverContentController(
@@ -428,8 +429,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 // close-popover behavior. Routed through this single existing monitor
                 // rather than a second, independently-registered one, since AppKit doesn't
                 // document firing order between two local monitors for the same event type.
-                if let interceptor = HotkeyManager.shared.escapeRecordingInterceptor {
-                    interceptor()
+                if let cancelRecording = HotkeyManager.shared.cancelRecordingHandler {
+                    cancelRecording()
                     return nil
                 }
                 closePopover(reason: .escape)

@@ -122,15 +122,17 @@ final class HotkeyManager: ObservableObject {
     /// threading a separately-owned @State/@Binding through SettingsMenu, so there's exactly
     /// one place this can drift out of sync with reality instead of two.
     @Published private(set) var recordingAction: ShortcutAction?
-    /// Hook for AppDelegate's own Escape-closes-popover local monitor: when set, Escape
-    /// should call this instead of closing the popover. See PasteQueueApp.swift.
-    var escapeRecordingInterceptor: (() -> Void)?
+    /// Cancels the active recorder and removes its local monitor. AppDelegate invokes
+    /// this for Escape and before a closing popover releases the recording state.
+    var cancelRecordingHandler: (() -> Void)?
 
     private var globalMonitor: Any?
     private var localMonitor: Any?
     private var toggleCollectingHandler: ActionHandler
     private var pasteRequestHandler: ActionHandler
     private let shortcutStore: ShortcutStoring
+    private let characterForKeyCode: (UInt16) -> String?
+    private let keyCodeForCharacter: (String) -> CGKeyCode?
 
     // Private: the only production call site is `shared` below. Kept as a *convenience*
     // init (not folded into `shared`'s own initializer) so it still funnels through the
@@ -151,11 +153,15 @@ final class HotkeyManager: ObservableObject {
     init(
         shortcutStore: ShortcutStoring,
         toggleCollectingHandler: @escaping ActionHandler = {},
-        pasteRequestHandler: @escaping ActionHandler = {}
+        pasteRequestHandler: @escaping ActionHandler = {},
+        characterForKeyCode: @escaping (UInt16) -> String? = { KeyboardLayoutTranslator.asciiCapableCharacter(for: $0) },
+        keyCodeForCharacter: @escaping (String) -> CGKeyCode? = { KeyboardLayoutTranslator.asciiCapableKeyCode(for: $0) }
     ) {
         self.shortcutStore = shortcutStore
         self.toggleCollectingHandler = toggleCollectingHandler
         self.pasteRequestHandler = pasteRequestHandler
+        self.characterForKeyCode = characterForKeyCode
+        self.keyCodeForCharacter = keyCodeForCharacter
         for action in ShortcutAction.allCases {
             overrides[action] = shortcutStore.override(for: action)
         }
@@ -192,8 +198,23 @@ final class HotkeyManager: ObservableObject {
         // asciiCapableKeyCode (not commandKeyCode) — see its doc comment above. Using the
         // Command-modified table here used to let this disagree with matchingAction, which
         // always resolves keyCode -> character under the unmodified table.
-        guard let keyCode = KeyboardLayoutTranslator.asciiCapableKeyCode(for: action.defaultCharacter) else { return nil }
+        guard let keyCode = keyCodeForCharacter(action.defaultCharacter) else { return nil }
         return HotkeySpec(keyCode: keyCode, modifierFlags: [.control, .command])
+    }
+
+    /// A layout change can move a live default onto a persisted override. The override
+    /// wins in matchingAction, so Settings can identify the default that needs rebinding.
+    func overridingAction(forDefault action: ShortcutAction) -> ShortcutAction? {
+        guard overrides[action] == nil else { return nil }
+        return ShortcutAction.allCases.first { otherAction in
+            guard otherAction != action,
+                  let override = overrides[otherAction],
+                  override.modifierFlags == [.control, .command] else { return false }
+            // Match the forward translation used by matchingAction, including layouts
+            // where more than one physical key produces the default character.
+            return characterForKeyCode(override.keyCode)?.lowercased()
+                == action.defaultCharacter
+        }
     }
 
     // MARK: - Recording pause
@@ -227,18 +248,22 @@ final class HotkeyManager: ObservableObject {
     /// shouldHandleShortcut below.
     func matchingAction(keyCode: UInt16, modifierFlags: NSEvent.ModifierFlags, isRepeat: Bool) -> ShortcutAction? {
         guard recordingAction == nil, !isRepeat else { return nil }
-        // Resolved once per call, not once per un-overridden action in the loop below — this
-        // runs on the GLOBAL monitor (every keystroke, system-wide), and the live keyboard-
-        // layout query it wraps (TIS/Carbon) isn't free enough to redo per candidate action.
-        let translatedCharacter = KeyboardLayoutTranslator.asciiCapableCharacter(for: keyCode)?.lowercased()
+
+        // A saved physical binding takes precedence if a later keyboard-layout change
+        // moves an uncustomized default onto the same key. Check it before translating:
+        // this global monitor sees every keydown, while TIS/Carbon lookup is relatively
+        // expensive and only matters for the exact default modifier combination.
+        let incomingSpec = HotkeySpec(keyCode: keyCode, modifierFlags: modifierFlags)
         for action in ShortcutAction.allCases {
-            if let override = overrides[action] {
-                if HotkeySpec(keyCode: keyCode, modifierFlags: modifierFlags) == override {
-                    return action
-                }
-                continue
-            }
-            guard Self.shouldHandleShortcut(modifierFlags: modifierFlags, isRepeat: isRepeat) else { continue }
+            if overrides[action] == incomingSpec { return action }
+        }
+
+        guard Self.shouldHandleShortcut(modifierFlags: modifierFlags, isRepeat: isRepeat),
+              ShortcutAction.allCases.contains(where: { overrides[$0] == nil }),
+              let translatedCharacter = characterForKeyCode(keyCode)?.lowercased()
+        else { return nil }
+
+        for action in ShortcutAction.allCases where overrides[action] == nil {
             if translatedCharacter == action.defaultCharacter {
                 return action
             }

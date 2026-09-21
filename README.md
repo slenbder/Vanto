@@ -5,16 +5,17 @@ them back one at a time in FIFO order (first copied, first pasted).
 
 ## ⌨️ Hotkeys — read this before you buy
 
-PasteQueue uses two global hotkeys. **They are hardcoded in v1 — not
-configurable:**
+PasteQueue uses two global hotkeys. These are the defaults; you can change
+either shortcut in Settings:
 
 - **⌃⌘C** (Control + Command + C) — start/stop collecting
 - **⌃⌘V** (Control + Command + V) — paste the next item in the queue
 
 Check these against any hotkey tools you already have running (Raycast,
-Ice, Rectangle, BetterTouchTool, etc.) *before* buying — if either combo
-is already bound to something else, it will conflict. Configurable
-hotkeys are planned for a future version, not v1.
+Ice, Rectangle, BetterTouchTool, etc.). The shortcuts are observed globally
+without blocking other apps, so a combination already used elsewhere can
+trigger both PasteQueue and that app's action. Rebind it in Settings if there
+is a conflict.
 
 ## Requirements
 
@@ -154,8 +155,8 @@ the final artifact.
 
 ## Known limitations (v1)
 
-- **Hotkeys are hardcoded.** ⌃⌘C / ⌃⌘V can't be remapped in v1; configurable
-  hotkeys are planned for a future version.
+- **Shortcut conflicts.** A custom shortcut can also trigger another app's
+  action because PasteQueue's keyboard monitor does not block that app.
 - **VoiceOver support is basic.** You can tell what state the app is in and
   perform the core actions, but:
   - Reordering the queue by dragging has no VoiceOver equivalent yet.

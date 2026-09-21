@@ -71,3 +71,15 @@ final class LanguagePreferenceStore: ObservableObject {
         store.preferredLanguageCode = code
     }
 }
+
+/// Foundation's locale argument controls formatting but does not select a different
+/// .lproj in the app bundle. Resolve the chosen catalog before localizing strings
+/// that are built outside SwiftUI's environment-aware Text views.
+enum AppLocalization {
+    static func bundle(for languageCode: String?, in appBundle: Bundle = .main) -> Bundle {
+        guard let languageCode,
+              let path = appBundle.path(forResource: languageCode, ofType: "lproj"),
+              let localizedBundle = Bundle(path: path) else { return appBundle }
+        return localizedBundle
+    }
+}
