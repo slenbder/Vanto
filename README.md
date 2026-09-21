@@ -130,6 +130,16 @@ the final artifact.
   check status-item toggle, outside click, and Escape closing.
 - **Queue cap** — copy 99+ items, confirm additional items are ignored while
   full and the count turns red at 99.
+- **Settings screen** — open it via the gear button. Rebind each shortcut to a
+  new combo and confirm the new key works and the old one no longer does;
+  confirm recording a combo already used by the other action shows the
+  "Already used by …" caption instead of saving; confirm Reset restores the
+  factory default. Confirm Escape cancels an in-progress recording without
+  closing the popover, and closing the popover mid-recording (outside click)
+  doesn't leave hotkeys stuck paused afterward. Switch the language picker
+  through a few locales and confirm both screens' text updates immediately,
+  with no truncated or wrapped labels — check at least ru, es, de, and one of
+  ja/zh-Hans (longest strings).
 - **Accessibility and VoiceOver** — test a fresh permission grant, status and
   queue announcements, all core buttons, and deletion focus. Re-test after any
   UI change.

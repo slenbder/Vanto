@@ -10,6 +10,10 @@ collection is active, ordinary ⌘C copies text, images, or files into a FIFO
 queue. ⌃⌘V or the Paste button sends the next item. Minimum target: macOS
 13.0; Apple Silicon only.
 
+The popover has two screens: the queue (default) and Settings, reached via
+the gear button in the shared header. Settings holds shortcut rebinding for
+both actions, an in-app language override (7 locales), and Launch at Login.
+
 ## Build & test
 
 The project file (`PasteQueue.xcodeproj`) is generated from `project.yml` via XcodeGen — edit `project.yml`, not the `.xcodeproj` directly.
@@ -36,14 +40,21 @@ Use README.md for the final manual release checklist.
 
 ## Architecture
 
-Six source files, including one protocol:
+Thirteen source files, including three protocols:
 
 | File | Role |
 |------|------|
 | `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, and paste routing |
 | `PasteStack.swift` | Singleton model: FIFO queue, clipboard polling, synthetic paste, Launch at Login |
-| `HotkeyManager.swift` | Registers global + local `NSEvent` monitors for ⌃⌘C / ⌃⌘V |
-| `PasteStackMenu.swift` | SwiftUI popover content with hand-rolled drag-to-reorder |
+| `HotkeyManager.swift` | Registers global + local `NSEvent` monitors for ⌃⌘C / ⌃⌘V, resolves live vs. overridden bindings, owns recording-pause state |
+| `HotkeySpec.swift` | `ShortcutAction` enum, `HotkeySpec` (keyCode + modifiers), and `ShortcutRecording`'s pure classification/validation logic for capturing a new combo |
+| `ShortcutStoring.swift` | `UserDefaults`-backed persistence for per-action shortcut overrides |
+| `LanguagePreferenceStore.swift` | `SupportedLanguage` (the 7 shipped locales) + persisted in-app language override, independent of system locale |
+| `PopoverRootView.swift` | True root of the popover content: owns which of the two screens is showing, the shared status row, outer padding/width, and the `.environment(\.locale:)` override |
+| `PopoverStatusRow.swift` | Shared header across both screens — recording indicator, queue count, and the gear/close button that switches screens |
+| `PasteStackMenu.swift` | Queue screen: item list with hand-rolled drag-to-reorder, Start/Paste/Clear/Quit |
+| `SettingsMenu.swift` | Settings screen: shortcut recorder rows, language picker, Launch at Login, website/version row |
+| `ShortcutRecorderField.swift` | One rebindable-shortcut row — owns the recording-mode local `NSEvent` monitor, delegates classification to `HotkeySpec.swift`, persists through `HotkeyManager` |
 | `ClipboardItem.swift` | `ClipboardItem` enum (`.text`, `.image`, `.file`) + `QueuedClipboardItem` wrapper |
 | `PasteboardProviding.swift` | Complete pasteboard seam for change count, text, image/file reads, and content replacement |
 
@@ -83,11 +94,14 @@ The popover uses `.applicationDefined` with explicit closing for the status
 item, outside click, and a drained queue. Escape is handled by a local key
 monitor while PasteQueue is receiving keyboard events; its behavior after
 focus returns to the external application has not been separately confirmed. A
-fresh hosting controller is created at each opening. That opening's initial
-list height is passed as its minimum (capped by the view at 230 pt), keeping
-controls stable while a queue is consumed; reopening recalculates a compact
-height. During sequential paste the popover remains available while items
-remain and closes after the final item.
+fresh hosting controller wrapping `PopoverRootView` is created at each opening
+— `screen` always starts back at `.queue` on reopen, matching every other
+piece of popover state (drag state, recording state, …) already resetting.
+That opening's initial list height is passed as `PopoverRootView`'s minimum
+(capped by `PasteStackMenu` at 230 pt), keeping controls stable while a queue
+is consumed; reopening recalculates a compact height. During sequential paste
+the popover remains available while items remain and closes after the final
+item.
 
 ### Status item ownership
 
@@ -95,6 +109,14 @@ remain and closes after the final item.
 tracks the status-bar button's effective appearance. The count is a separate
 `CenteredLabelView`; keep its frame calculation in the queue subscription after
 AppKit has established the button bounds.
+
+`menuBarIcon` (idle) and `menuBarIconFrame` (collecting — same outer contour,
+hollow, so the count label has room inside it) are meant to be a matched pair.
+As of the current icon artwork they are **not** — `menuBarIcon` was redesigned,
+`menuBarIconFrame` was not — so the status item visibly changes shape on
+collecting-state toggles. This needs new artwork, not a code fix; don't
+"repair" it by pointing both states at the same asset without confirming that
+with whoever owns the icon design.
 
 ### Hotkey matching
 
@@ -105,6 +127,78 @@ misses events when PasteQueue itself is active, and the local monitor covers
 that case. Caps Lock and non-shortcut device flags do not prevent matching;
 Shift and Option do. Key-repeat events are ignored.
 
+An un-overridden action's default binding is resolved live against the
+current keyboard layout in **both** directions — `matchingAction()` (keyCode
+→ character, unmodified state) and `effectiveSpec()` (character → keyCode,
+same unmodified state via `KeyboardLayoutTranslator.asciiCapableKeyCode`).
+These two must stay on the same modifier-state table: `effectiveSpec()` used
+to go through the Command-modified table instead (`commandKeyCode`), which on
+a layout where that table disagrees with the unmodified one made Settings
+display/dedupe-check a different physical key than the one that actually
+fires. `commandKeyCode`/`commandVKeyCode` still exist and are still correct
+for their one real use — synthesizing an actual ⌘V keypress in
+`PasteStack.simulateCommandV()`, which genuinely needs the Command-modified
+table. Don't reuse them for anything in the matching/display path.
+
+`matchingAction()` resolves that translation once per call, not once per
+un-overridden `ShortcutAction` in its loop — it runs on the global monitor's
+hot path (every keystroke, system-wide), and the underlying TIS/Carbon lookup
+isn't cheap enough to redo per candidate action.
+
+### Rebindable shortcuts (Settings screen)
+
+Each `ShortcutAction` (`startStopCollecting`, `pasteNext`) has a factory
+default (`defaultCharacter`, live-translated as above) and an optional
+persisted override (`HotkeySpec`: raw keyCode + modifiers, matched exactly,
+not layout-translated — required regardless, since function keys have no
+ASCII character). `HotkeyManager.effectiveSpec(for:)` returns the override if
+set, else the live default; `ShortcutRecorderField` uses it for both display
+and duplicate-checking a freshly recorded combo against every *other*
+`ShortcutAction` (loop over `.allCases`, not a hardcoded pair — extending the
+enum should not require touching this check).
+
+Recording is single-flight across rows: `HotkeyManager.recordingAction`
+(`ShortcutAction?`) is the one place that state lives — both
+`ShortcutRecorderField` rows read it directly via `@ObservedObject
+hotkeyManager`, so starting to record one row is automatically visible to the
+other without a separately-threaded `@State`/`@Binding` to keep in sync.
+While non-nil, `matchingAction()` suppresses **both** actions, not just the
+one being rebound — intentional (see `testPausingSuppressesAllMatchingUntilResumed`),
+not something to "fix" into per-action suppression.
+
+Escape while recording is owned entirely by `AppDelegate`'s existing
+Escape-closes-popover local monitor via `HotkeyManager.escapeRecordingInterceptor`
+— not by `ShortcutRecorderField`'s own recording monitor, which explicitly
+lets Escape (`ShortcutRecording.escapeKeyCode`, the one definition three
+call sites share) pass through unswallowed. That pass-through guard matters
+regardless of which monitor AppKit happens to call first for a given event —
+without it, the recording monitor's default "swallow everything" behavior
+would eat Escape itself if it were ever invoked before AppDelegate's monitor.
+
+Persistence (`ShortcutStoring` / `UserDefaultsShortcutStore`, key
+`shortcutOverride.<action>`) logs on encode/decode failure instead of
+silently discarding — a custom binding that fails to persist should look
+like a logged error, not a binding that quietly reverted to default on next
+launch.
+
+### Localization
+
+`Localizable.xcstrings` covers 7 locales (`SupportedLanguage`: en, ru,
+zh-Hans, es, ja, de, pt-BR). `LanguagePreferenceStore` persists an optional
+in-app override (nil = follow system); `PopoverRootView` applies it via
+`.environment(\.locale:)` to the whole popover subtree. AppKit-side text
+(status-item accessibility labels in `PasteQueueApp.swift`) has no SwiftUI
+environment to inherit from, so it resolves the same preference explicitly
+through `String(localized:locale:)` — keep both in sync if the resolution
+rule ever changes.
+
+The popover's fixed width (`PopoverRootView`, 270pt) is sized to the longest
+string that actually ships across all 7 locales — verified by measuring
+`NSFont`-rendered widths, not by eyeballing screenshots. If a new locale is
+added or a string is lengthened, re-measure before assuming 270 still holds;
+the previous 240pt regressed silently to visible truncation/wrapping in ru/es/de
+before this was caught.
+
 ### Drag-to-reorder in PasteStackMenu
 
 Reordering is a hand-rolled `DragGesture`, not `List(onMove:)`. Keep its named
@@ -114,12 +208,20 @@ reintroduces translation drift.
 ## Test isolation
 
 Tests inject `MockPasteboard`, the ⌘V sender, cleanup scheduler,
-Accessibility state, Launch at Login service, and a unique temporary storage
-directory; automatic polling is disabled. Image and file tests remain in
-memory except for files created under those temporary directories. The test
-host must return before production singletons, polling, Accessibility prompts,
+Accessibility state, Launch at Login service, a shortcut store
+(`MockShortcutStore`), a language preference store
+(`MockLanguagePreferenceStore`), and a unique temporary storage directory;
+automatic polling is disabled. Image and file tests remain in memory except
+for files created under those temporary directories. The test host must
+return before production singletons, polling, Accessibility prompts,
 login-item state, or production storage are touched. Tests must never use
 `NSPasteboard.general`.
+
+`HotkeyManagerTests`/`HotkeySpecTests` construct `HotkeyManager` directly via
+its designated DI init (`shortcutStore:toggleCollectingHandler:pasteRequestHandler:`),
+never through `.shared` — the zero-arg production init is `private` precisely
+so a test (or any other code) can't accidentally spin up a second,
+real-monitor-registering instance instead of injecting one.
 
 ## Extending content types
 
