@@ -7,25 +7,26 @@ enum PopoverScreen {
 }
 
 /// Shared header across both popover screens: recording indicator and queue count on
-/// separate lines, plus the trailing gearshape button that switches to
+/// one line, plus the trailing gearshape button that switches to
 /// Settings. The status text and the gear button are deliberately separate accessibility
 /// elements — folding the gear into the same `.accessibilityElement(children: .ignore)`
 /// group as the status text would make it permanently unreachable to VoiceOver.
 struct PopoverStatusRow: View {
     @ObservedObject var stack: PasteStack
     @Binding var screen: PopoverScreen
+    let displayedQueueCount: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 6) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: 8) {
+            HStack(spacing: 8) {
                 recordingIndicator
                 queueCountLabel
             }
-            // Keep the two visual lines as one announcement for VoiceOver.
+            // Keep the two visual labels as one announcement for VoiceOver.
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(statusAccessibilityText)
 
-            Spacer()
+            Spacer(minLength: 8)
 
             Button {
                 screen = (screen == .queue) ? .settings : .queue
@@ -54,22 +55,19 @@ struct PopoverStatusRow: View {
                 .frame(width: 8, height: 8)
             Text(stack.isCollecting ? "Recording" : "Stopped")
                 .font(.headline)
+                .fixedSize(horizontal: true, vertical: false)
         }
     }
 
-    /// Bound ONLY to queue.count — never reads isCollecting, so the count reads as a fact
-    /// about the queue, not as a step in whatever the recording state happens to be doing.
-    @ViewBuilder
+    /// Localized by the root view, which inserts the German visual line break.
+    /// The HStack centers the two-line block beside the unchanged recording indicator;
+    /// both lines start at the same leading edge.
     private var queueCountLabel: some View {
-        if stack.queue.count > 0 {
-            Text("\(stack.queue.count) items in queue")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        } else {
-            Text("Queue empty")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
+        Text(verbatim: displayedQueueCount)
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: true, vertical: true)
     }
 
     /// Built from Text (not a plain String) so it stays environment-locale-aware — a plain

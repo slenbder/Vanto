@@ -335,6 +335,130 @@ final class PasteStackTests: XCTestCase {
         XCTAssertFalse(stack.isCollecting)
     }
 
+    func testPasteAllTextUsesQueueOrderAndOneCommandWithoutTrimmingFragments() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let cleanup = CleanupSchedulerRecorder()
+        let stack = makeStack(
+            pasteboard: mock,
+            commandVRecorder: recorder,
+            scheduleCleanup: cleanup.schedule
+        )
+        stack.queue = [
+            QueuedClipboardItem(content: .text(" A ")),
+            QueuedClipboardItem(content: .text("B\n")),
+            QueuedClipboardItem(content: .text("C")),
+        ]
+        stack.move(fromOffsets: IndexSet(integer: 2), toOffset: 0)
+        stack.toggleCollecting()
+        let expectedIDs = stack.queue.map(\.id)
+
+        let result = stack.pasteAllText(separator: " / ", expectedIDs: expectedIDs)
+
+        XCTAssertEqual(result, .commandPosted)
+        XCTAssertEqual(mock.writtenItems, [.text("C /  A  / B\n")])
+        XCTAssertEqual(mock.replaceContentsCallCount, 1)
+        XCTAssertEqual(recorder.requestCount, 1)
+        XCTAssertTrue(cleanup.delays.isEmpty)
+        XCTAssertTrue(stack.queue.isEmpty)
+        XCTAssertFalse(stack.isCollecting)
+
+        stack.checkPasteboard()
+        XCTAssertTrue(stack.queue.isEmpty, "The combined paste must not be captured as a new copy")
+    }
+
+    func testPasteAllTextRejectsMixedQueueWithoutChangingPasteboardOrFileCache() throws {
+        let source = try writeSourceFile(named: "attachment.txt", contents: "file bytes")
+        let mock = MockPasteboard()
+        mock.fileURLs = [source]
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+        mock.changeCount = 1
+        stack.checkPasteboard()
+        guard case .file(let storedURL, _) = stack.queue[0].content else {
+            return XCTFail("expected a cached file")
+        }
+        stack.queue.append(QueuedClipboardItem(content: .text("A")))
+        let expectedIDs = stack.queue.map(\.id)
+
+        let result = stack.pasteAllText(separator: "\n", expectedIDs: expectedIDs)
+
+        XCTAssertEqual(result, .containsNonText)
+        XCTAssertEqual(stack.queue.map(\.id), expectedIDs)
+        XCTAssertEqual(mock.replaceContentsCallCount, 0)
+        XCTAssertEqual(recorder.factoryRequestCount, 0)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: storedURL.path))
+        stack.clear()
+    }
+
+    func testPasteAllTextCapturesPendingCopyAndRequiresUpdatedPreview() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+        stack.queue = [
+            QueuedClipboardItem(content: .text("A")),
+            QueuedClipboardItem(content: .text("B")),
+        ]
+        stack.toggleCollecting()
+        let expectedIDs = stack.queue.map(\.id)
+        mock.changeCount += 1
+        mock.stringValue = "C"
+
+        let result = stack.pasteAllText(separator: ", ", expectedIDs: expectedIDs)
+
+        XCTAssertEqual(result, .queueChanged)
+        XCTAssertEqual(stack.queue.map(\.content), [.text("A"), .text("B"), .text("C")])
+        XCTAssertEqual(mock.replaceContentsCallCount, 0)
+        XCTAssertEqual(recorder.factoryRequestCount, 0)
+        XCTAssertTrue(stack.isCollecting)
+    }
+
+    func testPasteAllTextPreservesQueueWhenPreparationOrWriteFails() {
+        for failure in [PasteAttemptResult.accessibilityUnavailable, .eventCreationFailed, .pasteboardWriteFailed] {
+            let mock = MockPasteboard()
+            let recorder = CommandVRecorder()
+            let stack = makeStack(
+                pasteboard: mock,
+                commandVRecorder: recorder,
+                accessibilityTrustProvider: { failure != .accessibilityUnavailable }
+            )
+            stack.queue = [
+                QueuedClipboardItem(content: .text("A")),
+                QueuedClipboardItem(content: .text("B")),
+            ]
+            stack.toggleCollecting()
+            if failure == .eventCreationFailed { recorder.shouldCreateEvents = false }
+            if failure == .pasteboardWriteFailed { mock.replaceContentsResult = false }
+            let expectedIDs = stack.queue.map(\.id)
+
+            let result = stack.pasteAllText(separator: "\n", expectedIDs: expectedIDs)
+
+            XCTAssertEqual(result, failure)
+            XCTAssertEqual(stack.queue.map(\.id), expectedIDs)
+            XCTAssertTrue(stack.isCollecting)
+            XCTAssertEqual(recorder.requestCount, 0)
+            XCTAssertTrue(mock.writtenItems.isEmpty)
+        }
+    }
+
+    func testPasteAllTextRejectsEmptyOrReorderedQueue() {
+        let mock = MockPasteboard()
+        let recorder = CommandVRecorder()
+        let stack = makeStack(pasteboard: mock, commandVRecorder: recorder)
+        XCTAssertEqual(stack.pasteAllText(separator: " ", expectedIDs: []), .queueEmpty)
+
+        stack.queue = [
+            QueuedClipboardItem(content: .text("A")),
+            QueuedClipboardItem(content: .text("B")),
+        ]
+        let expectedIDs = stack.queue.map(\.id)
+        stack.move(fromOffsets: IndexSet(integer: 1), toOffset: 0)
+
+        XCTAssertEqual(stack.pasteAllText(separator: " ", expectedIDs: expectedIDs), .queueChanged)
+        XCTAssertEqual(mock.replaceContentsCallCount, 0)
+        XCTAssertEqual(recorder.factoryRequestCount, 0)
+    }
+
     func testClearEmptiesTheQueue() {
         let mock = MockPasteboard()
         let stack = makeStack(pasteboard: mock)

@@ -78,15 +78,16 @@ struct ShortcutRecorderField: View {
                     Text(currentSpec?.displayString ?? action.defaultDisplayString)
                 }
             }
-                .font(.callout.monospaced())
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                // minWidth so a short spec like "⌃⌘C" still gets the same visual weight as a
-                // longer one, instead of shrink-wrapping down to a cramped-looking sliver.
-                .frame(minWidth: 54)
-                // RoundedRectangle with a small fixed radius instead of Capsule (radius =
-                // height/2, i.e. fully pill-shaped) — a noticeably squarer field per request.
-                .background(RoundedRectangle(cornerRadius: 6).fill(Color.primary.opacity(0.08)))
+            .font(.callout.weight(.medium))
+            .tracking(1)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 5)
+            // minWidth so a short spec like "⌃⌘C" still gets the same visual weight as a
+            // longer one, instead of shrink-wrapping down to a cramped-looking sliver.
+            .frame(minWidth: 54)
+            // RoundedRectangle with a small fixed radius instead of Capsule (radius =
+            // height/2, i.e. fully pill-shaped) — a noticeably squarer field per request.
+            .background(RoundedRectangle(cornerRadius: 6).fill(Color.primary.opacity(0.08)))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(actionText)

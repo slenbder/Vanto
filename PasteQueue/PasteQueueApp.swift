@@ -63,6 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var isRestoringFocusForPaste = false
     private var activationObserver: NSObjectProtocol?
     private var activationTimeout: DispatchWorkItem?
+    private var pendingBulkPasteID: UUID?
     private var globalMouseMonitor: Any?
     private var localMouseMonitor: Any?
     private var escapeKeyMonitor: Any?
@@ -71,6 +72,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private enum PasteRequestSource: String {
         case button
         case hotkey
+    }
+
+    private enum PasteRequestKind {
+        case next
+        case allText(separator: String, expectedIDs: [UUID])
     }
 
     private enum PopoverCloseReason: String {
@@ -259,6 +265,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     func popoverDidClose(_ notification: Notification) {
         uiLogger.debug("popoverDidClose")
+        cancelPendingBulkPaste()
         removePopoverEventMonitors()
         isClosingPopover = false
         // Cancel through the field while its monitor is still available. Clearing only
@@ -276,10 +283,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 stack: PasteStack.shared,
                 hotkeyManager: HotkeyManager.shared,
                 languageStore: LanguagePreferenceStore.shared,
-                minimumQueueListHeight: minimumQueueListHeight
-            ) { [weak self] in
-                self?.requestPaste(source: .button)
-            }
+                minimumQueueListHeight: minimumQueueListHeight,
+                onPaste: { [weak self] in
+                    self?.requestPaste(source: .button)
+                },
+                onPasteAll: { [weak self] separator, expectedIDs, completion in
+                    guard let self else {
+                        completion(.recipientUnavailable)
+                        return
+                    }
+                    self.requestPaste(
+                        source: .button,
+                        kind: .allText(separator: separator, expectedIDs: expectedIDs),
+                        completion: completion
+                    )
+                },
+                onCancelPasteAll: { [weak self] in
+                    self?.cancelPendingBulkPaste()
+                }
+            )
         )
     }
 
@@ -292,16 +314,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         pasteRecipientApplication = frontmost
     }
 
-    private func requestPaste(source: PasteRequestSource) {
+    private func requestPaste(
+        source: PasteRequestSource,
+        kind: PasteRequestKind = .next,
+        completion: ((PasteAttemptResult) -> Void)? = nil
+    ) {
         uiLogger.debug("paste requested source=\(source.rawValue, privacy: .public)")
-        guard !isRestoringFocusForPaste else { return }
+        guard !isRestoringFocusForPaste else {
+            reportPasteResult(.requestInProgress, for: kind, completion: completion)
+            return
+        }
 
         let beganInPopover = popover?.isShown == true
         guard beganInPopover else {
-            guard !NSApp.isActive else { return }
+            guard !NSApp.isActive else {
+                reportPasteResult(.recipientUnavailable, for: kind, completion: completion)
+                return
+            }
             let queueCountBeforePaste = PasteStack.shared.queue.count
-            let result = PasteStack.shared.pasteNext()
+            let result = performPaste(kind)
             uiLogger.debug("paste attempt outcome=\(result.rawValue, privacy: .public) queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+            reportPasteResult(result, for: kind, completion: completion)
             return
         }
 
@@ -309,39 +342,110 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
               isExternalApplication(recipient),
               !recipient.isTerminated else {
             uiLogger.debug("recipient restore failed")
+            reportPasteResult(.recipientUnavailable, for: kind, completion: completion)
             return
         }
 
+        let bulkPasteID: UUID?
+        if case .allText = kind {
+            bulkPasteID = UUID()
+            pendingBulkPasteID = bulkPasteID
+        } else {
+            bulkPasteID = nil
+        }
         isRestoringFocusForPaste = true
         uiLogger.debug("recipient restore started")
-        activateRecipientAndPaste(recipient, beganInPopover: beganInPopover)
+        activateRecipientAndPaste(
+            recipient,
+            beganInPopover: beganInPopover,
+            kind: kind,
+            bulkPasteID: bulkPasteID,
+            completion: completion
+        )
     }
 
     private func activateRecipientAndPaste(
         _ recipient: NSRunningApplication,
-        beganInPopover: Bool
+        beganInPopover: Bool,
+        kind: PasteRequestKind,
+        bulkPasteID: UUID?,
+        completion: ((PasteAttemptResult) -> Void)?
     ) {
         guard !recipient.isTerminated,
               recipient.activate(options: [.activateIgnoringOtherApps]) else {
             uiLogger.debug("recipient restore failed")
+            pendingBulkPasteID = nil
             finishFocusRestore(success: false)
+            reportPasteResult(
+                .recipientUnavailable,
+                for: kind,
+                completion: completion,
+                restorePopoverFocus: true
+            )
             return
         }
 
         waitForActivation(of: recipient) { [weak self] success in
             guard let self else { return }
+            if let bulkPasteID {
+                guard pendingBulkPasteID == bulkPasteID else { return }
+                pendingBulkPasteID = nil
+            }
             finishFocusRestore(success: success)
             if success {
                 uiLogger.debug("recipient restore confirmed")
                 let queueCountBeforePaste = PasteStack.shared.queue.count
-                let result = PasteStack.shared.pasteNext()
+                let result = performPaste(kind)
                 uiLogger.debug("paste attempt outcome=\(result.rawValue, privacy: .public) queueCountBefore=\(queueCountBeforePaste, privacy: .public) queueCountAfter=\(PasteStack.shared.queue.count, privacy: .public)")
+                reportPasteResult(
+                    result,
+                    for: kind,
+                    completion: completion,
+                    restorePopoverFocus: true
+                )
                 if beganInPopover, result == .commandPosted, PasteStack.shared.queue.isEmpty {
                     closePopover(reason: .queueDrained)
                 }
             } else {
                 uiLogger.debug("recipient restore failed")
+                reportPasteResult(
+                    .recipientUnavailable,
+                    for: kind,
+                    completion: completion,
+                    restorePopoverFocus: true
+                )
             }
+        }
+    }
+
+    private func cancelPendingBulkPaste() {
+        guard pendingBulkPasteID != nil else { return }
+        pendingBulkPasteID = nil
+        finishFocusRestore(success: true)
+    }
+
+    private func reportPasteResult(
+        _ result: PasteAttemptResult,
+        for kind: PasteRequestKind,
+        completion: ((PasteAttemptResult) -> Void)?,
+        restorePopoverFocus: Bool = false
+    ) {
+        completion?(result)
+        if restorePopoverFocus,
+           case .allText = kind,
+           result != .commandPosted,
+           popover?.isShown == true {
+            NSApp.activate(ignoringOtherApps: true)
+            popover?.contentViewController?.view.window?.makeKeyAndOrderFront(nil)
+        }
+    }
+
+    private func performPaste(_ kind: PasteRequestKind) -> PasteAttemptResult {
+        switch kind {
+        case .next:
+            return PasteStack.shared.pasteNext()
+        case .allText(let separator, let expectedIDs):
+            return PasteStack.shared.pasteAllText(separator: separator, expectedIDs: expectedIDs)
         }
     }
 
@@ -445,6 +549,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
               popover?.isShown == true else { return }
         isClosingPopover = true
         uiLogger.debug("popover close requested reason=\(reason.rawValue, privacy: .public)")
+        cancelPendingBulkPaste()
         popover?.close()
     }
 

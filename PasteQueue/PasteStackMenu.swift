@@ -4,6 +4,8 @@ struct PasteStackMenu: View {
     @ObservedObject var stack: PasteStack
     let minimumQueueListHeight: CGFloat
     let onPaste: () -> Void
+    let onPasteAll: (String, [UUID], @escaping (PasteAttemptResult) -> Void) -> Void
+    let onCancelPasteAll: () -> Void
 
     // Manual drag-to-reorder state. AppKit's List backing draws its own insertion-line +
     // lifted-ghost visuals during onMove drags with no public SwiftUI hook to suppress
@@ -12,11 +14,16 @@ struct PasteStackMenu: View {
     @State private var rawTranslation: CGFloat = 0
     @State private var swapCompensation: CGFloat = 0
     @State private var rowHeights: [UUID: CGFloat] = [:]
+    @State private var showingPasteAll = false
 
     private static let rowSpacing: CGFloat = 8
     private static let fallbackRowHeight: CGFloat = 32
     private static let maxListHeight: CGFloat = 230
     private static let dragCoordinateSpace = "queueRows"
+    // Positive value moves the scroller toward the window edge and carries rows with it.
+    private static let scrollerOutset: CGFloat = 6
+    // Distance from each row's right edge to the scroller; changes only the row width.
+    private static let rowTrailingInset: CGFloat = 16
 
     // The dragged row's live vertical offset: raw finger/cursor translation minus however
     // much has already been "spent" on live array swaps, so the row keeps tracking the
@@ -26,6 +33,29 @@ struct PasteStackMenu: View {
     }
 
     var body: some View {
+        Group {
+            if showingPasteAll {
+                PasteAllTextView(
+                    stack: stack,
+                    onBack: { showingPasteAll = false },
+                    onCancelPending: onCancelPasteAll,
+                    onPaste: onPasteAll
+                )
+            } else {
+                queueContent
+            }
+        }
+        .onAppear {
+            stack.refreshAccessibilityStatus()
+            stack.refreshLaunchAtLoginStatus()
+        }
+        .onChange(of: stack.queue) { newQueue in
+            let liveIDs = Set(newQueue.map(\.id))
+            rowHeights = rowHeights.filter { liveIDs.contains($0.key) }
+        }
+    }
+
+    private var queueContent: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !stack.isAccessibilityTrusted {
                 Button("⚠️ Accessibility required") {
@@ -39,7 +69,7 @@ struct PasteStackMenu: View {
                 Divider()
             }
 
-            if effectiveListHeight > 0 {
+            if !stack.queue.isEmpty && effectiveListHeight > 0 {
                 // A ScrollView asked for its *ideal* height (no incoming height proposal,
                 // which is exactly what MenuBarExtra's .window style does when it measures
                 // this content to size its popover) reports zero — `.frame(maxHeight:)`
@@ -53,38 +83,54 @@ struct PasteStackMenu: View {
                             queueRow(index: index, entry: entry)
                         }
                     }
+                    // The hover background extends 2 points beyond each row. Keep its
+                    // rounded top and bottom inside the ScrollView's clipped bounds.
+                    .padding(.vertical, 3)
+                    // Reserve a clear lane for the overlay scroller, including its
+                    // wider hovered state; row backgrounds end before this lane.
+                    .padding(.trailing, Self.rowTrailingInset)
                     .coordinateSpace(name: Self.dragCoordinateSpace)
                 }
                 .frame(height: effectiveListHeight)
+                .padding(.trailing, -Self.scrollerOutset)
             }
 
-            // Single divider always present here (queue list or not) — it used to sit between
-            // the list/Quit-row above and the Start/Paste/Clear row below; now that Quit has
-            // merged into that same row, this is the one separator left doing that job.
-            Divider()
+            // The header divider is enough when the queue has no rows.
+            if !stack.queue.isEmpty {
+                Divider()
+            }
 
-            // Frequently-used actions grouped on the leading edge, Quit pushed to the
-            // trailing edge of the same row by the Spacer between them.
-            HStack(spacing: 10) {
-                if stack.isCollecting {
-                    Button("Stop") { stack.toggleCollecting() }
-                } else {
-                    Button("Start") { stack.toggleCollecting() }
+            HStack(alignment: .bottom, spacing: 10) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
+                        if stack.isCollecting {
+                            Button("Stop") { stack.toggleCollecting() }
+                        } else {
+                            Button("Start") { stack.toggleCollecting() }
+                        }
+
+                        Button("Paste") {
+                            onPaste()
+                        }
+                        .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
+                        .disabled(stack.queue.isEmpty)
+
+                        Button("Clear") {
+                            stack.clear()
+                        }
+                        .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
+                        .disabled(stack.queue.isEmpty)
+                    }
+
+                    if stack.queue.count >= 2 {
+                        Button("Combine and Paste…") {
+                            showingPasteAll = true
+                        }
+                        .accessibilityHint("Combines text items into one paste with a chosen separator.")
+                    }
                 }
 
-                Button("Paste") {
-                    onPaste()
-                }
-                .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
-                .disabled(stack.queue.isEmpty)
-
-                Button("Clear") {
-                    stack.clear()
-                }
-                .foregroundColor(stack.queue.isEmpty ? .secondary : .primary)
-                .disabled(stack.queue.isEmpty)
-
-                Spacer()
+                Spacer(minLength: 4)
 
                 Button("Quit") {
                     NSApp.terminate(nil)
@@ -92,17 +138,6 @@ struct PasteStackMenu: View {
             }
             .buttonStyle(.plain)
             .font(.callout)
-        }
-        .onAppear {
-            stack.refreshAccessibilityStatus()
-            stack.refreshLaunchAtLoginStatus()
-        }
-        // rowHeights is keyed by item id and only ever grows via queueRow's onAppear —
-        // prune entries whose item has left the queue (paste, delete, clear) so it doesn't
-        // accumulate one stale entry per item ever queued over the app's lifetime.
-        .onChange(of: stack.queue) { newQueue in
-            let liveIDs = Set(newQueue.map(\.id))
-            rowHeights = rowHeights.filter { liveIDs.contains($0.key) }
         }
     }
 
@@ -221,6 +256,9 @@ private struct QueueRowView: View {
     let entry: QueuedClipboardItem
     let onDelete: () -> Void
 
+    // Gap between the delete button and the right edge of its row highlight.
+    private static let deleteButtonTrailingInset: CGFloat = 0
+
     @State private var isHovering = false
     // .disabled(!isHovering) alone makes the delete button permanently unreachable for
     // VoiceOver, which never hovers with a pointer — this tracks VoiceOver's on/off state
@@ -276,13 +314,15 @@ private struct QueueRowView: View {
             .disabled(!isHovering && !isVoiceOverRunning)
             .accessibilityLabel("Delete item \(index + 1)")
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 8)
         .padding(.vertical, 2)
-        .padding(.trailing, 8)
-        .background(
-            Capsule()
+        .padding(.trailing, Self.deleteButtonTrailingInset)
+        .background {
+            RoundedRectangle(cornerRadius: 10)
                 .fill(Color.primary.opacity(isHovering ? 0.08 : 0))
-        )
+                // Paint into the existing inter-row gap without changing row heights.
+                .padding(.vertical, -2)
+        }
         .onHover { hovering in
             isHovering = hovering
         }
@@ -313,16 +353,28 @@ private struct QueueRowView: View {
         QueuedClipboardItem(content: .text("third")),
     ]
     stack.isCollecting = true
-    return PasteStackMenu(stack: stack, minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue)) {
-        stack.pasteNext()
-    }
+    return PasteStackMenu(
+        stack: stack,
+        minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue),
+        onPaste: { stack.pasteNext() },
+        onPasteAll: { separator, ids, completion in
+            completion(stack.pasteAllText(separator: separator, expectedIDs: ids))
+        },
+        onCancelPasteAll: {}
+    )
 }
 
 #Preview("Long queue") {
     let stack = PasteStack()
     stack.queue = (1...25).map { QueuedClipboardItem(content: .text("clipboard item number \($0)")) }
     stack.isCollecting = true
-    return PasteStackMenu(stack: stack, minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue)) {
-        stack.pasteNext()
-    }
+    return PasteStackMenu(
+        stack: stack,
+        minimumQueueListHeight: PasteStackMenu.listHeight(for: stack.queue),
+        onPaste: { stack.pasteNext() },
+        onPasteAll: { separator, ids, completion in
+            completion(stack.pasteAllText(separator: separator, expectedIDs: ids))
+        },
+        onCancelPasteAll: {}
+    )
 }

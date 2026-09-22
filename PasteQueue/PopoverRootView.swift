@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 /// True root of the popover content. Owns which of the two screens is showing, the shared
@@ -15,25 +16,71 @@ struct PopoverRootView: View {
     @ObservedObject var languageStore: LanguagePreferenceStore
     let minimumQueueListHeight: CGFloat
     let onPaste: () -> Void
+    let onPasteAll: (String, [UUID], @escaping (PasteAttemptResult) -> Void) -> Void
+    let onCancelPasteAll: () -> Void
 
     @State private var screen: PopoverScreen = .queue
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            PopoverStatusRow(stack: stack, screen: $screen)
+            PopoverStatusRow(
+                stack: stack,
+                screen: $screen,
+                displayedQueueCount: displayedQueueCount
+            )
+            Divider()
 
             switch screen {
             case .queue:
-                PasteStackMenu(stack: stack, minimumQueueListHeight: minimumQueueListHeight, onPaste: onPaste)
+                PasteStackMenu(
+                    stack: stack,
+                    minimumQueueListHeight: minimumQueueListHeight,
+                    onPaste: onPaste,
+                    onPasteAll: onPasteAll,
+                    onCancelPasteAll: onCancelPasteAll
+                )
             case .settings:
                 SettingsMenu(stack: stack, hotkeyManager: hotkeyManager, languageStore: languageStore)
             }
         }
         .padding()
-        // The status and count use separate lines so long plural forms fit beside the
-        // Settings button. Shortcut rows still need enough room for localized labels.
-        .frame(width: 270)
+        .frame(width: popoverWidth)
         .environment(\.locale, resolvedLocale)
+    }
+
+    /// Grow only when the localized status needs more room than the ordinary
+    /// 270-point popover. The queue and Settings share this width.
+    private var popoverWidth: CGFloat {
+        let locale = resolvedLocale
+        let bundle = AppLocalization.bundle(for: languageStore.preferredLanguageCode)
+        let status = stack.isCollecting
+            ? String(localized: "Recording", bundle: bundle, locale: locale)
+            : String(localized: "Stopped", bundle: bundle, locale: locale)
+        let statusWidth = (status as NSString).size(
+            withAttributes: [.font: NSFont.preferredFont(forTextStyle: .headline)]
+        ).width
+        let countFont = NSFont.preferredFont(forTextStyle: .subheadline)
+        let countWidth = displayedQueueCount.split(separator: "\n").map {
+            ($0 as NSString).size(withAttributes: [.font: countFont]).width
+        }.max() ?? 0
+        // Dot + its gap, label gap, gear + its gap, outer padding, and a little
+        // allowance for SwiftUI/AppKit text metrics and fractional point rounding.
+        return max(270, ceil(statusWidth + countWidth + 8 + 4 + 8 + 8 + 18 + 32 + 12))
+    }
+
+    private var displayedQueueCount: String {
+        let locale = resolvedLocale
+        let bundle = AppLocalization.bundle(for: languageStore.preferredLanguageCode)
+        let count = stack.queue.isEmpty
+            ? String(localized: "Queue empty", bundle: bundle, locale: locale)
+            : String(localized: "\(stack.queue.count) items in queue", bundle: bundle, locale: locale)
+
+        // Only the visual header is split; the accessibility announcement remains
+        // the ordinary, uninterrupted localized sentence.
+        guard !stack.queue.isEmpty,
+              locale.language.languageCode?.identifier == "de",
+              let lastSpace = count.lastIndex(of: " ") else { return count }
+        return String(count[..<lastSpace]) + "\n" + String(count[count.index(after: lastSpace)...])
     }
 
     private var resolvedLocale: Locale {

@@ -14,6 +14,10 @@ enum LaunchAtLoginStatus {
 
 enum PasteAttemptResult: String, Equatable {
     case queueEmpty
+    case queueChanged
+    case containsNonText
+    case recipientUnavailable
+    case requestInProgress
     case accessibilityUnavailable
     case eventCreationFailed
     case pasteboardWriteFailed
@@ -355,25 +359,9 @@ final class PasteStack: ObservableObject {
             return .queueEmpty
         }
 
-        refreshAccessibilityStatus()
-        guard isAccessibilityTrusted else {
-            return .accessibilityUnavailable
-        }
-
-        guard let postCommandV = commandVEventFactory() else {
-            return .eventCreationFailed
-        }
-
         let item = queue.first!
-        let pasteboardWriteSucceeded = pasteboard.replaceContents(with: item.content)
-        // clearContents() can change the pasteboard even when the subsequent write fails.
-        // Always sync to the resulting count so polling cannot treat our own attempt as Copy.
-        lastChangeCount = pasteboard.changeCount
-        guard pasteboardWriteSucceeded else {
-            return .pasteboardWriteFailed
-        }
-
-        postCommandV()
+        let result = postPaste(item.content)
+        guard result == .commandPosted else { return result }
 
         queue.removeFirst()
         logger.debug("queue removeFirst queue.count=\(self.queue.count, privacy: .public)")
@@ -391,6 +379,50 @@ final class PasteStack: ObservableObject {
         scheduleCleanup(2) { [weak self] in
             self?.deleteStoredFile(for: item)
         }
+        return .commandPosted
+    }
+
+    /// Pastes exactly the queue the user previewed. A final clipboard poll can add a copy
+    /// just before confirmation; in that case the UI must show the new preview first.
+    @discardableResult
+    func pasteAllText(separator: String, expectedIDs: [UUID]) -> PasteAttemptResult {
+        if isCollecting {
+            checkPasteboard()
+        }
+
+        guard !queue.isEmpty else {
+            flashRequested.send()
+            return .queueEmpty
+        }
+        guard queue.map(\.id) == expectedIDs else { return .queueChanged }
+
+        var fragments: [String] = []
+        for item in queue {
+            guard case .text(let text) = item.content else { return .containsNonText }
+            fragments.append(text)
+        }
+
+        let result = postPaste(.text(fragments.joined(separator: separator)))
+        guard result == .commandPosted else { return result }
+
+        queue.removeAll()
+        stopCollecting(reason: .queueDrained)
+        logger.debug("queue removeAll after combined paste")
+        return .commandPosted
+    }
+
+    private func postPaste(_ content: ClipboardItem) -> PasteAttemptResult {
+        refreshAccessibilityStatus()
+        guard isAccessibilityTrusted else { return .accessibilityUnavailable }
+        guard let postCommandV = commandVEventFactory() else { return .eventCreationFailed }
+
+        let pasteboardWriteSucceeded = pasteboard.replaceContents(with: content)
+        // clearContents() can change the pasteboard even when the subsequent write fails.
+        // Always sync to the resulting count so polling cannot treat our own attempt as Copy.
+        lastChangeCount = pasteboard.changeCount
+        guard pasteboardWriteSucceeded else { return .pasteboardWriteFailed }
+
+        postCommandV()
         return .commandPosted
     }
 
