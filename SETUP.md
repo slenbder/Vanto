@@ -42,6 +42,26 @@ System Settings → Privacy & Security → Accessibility. If a rebuilt app stops
 receiving shortcuts, remove the stale entry and add the current build again
 before treating it as a code issue.
 
+## Release configuration
+
+The first release targets direct website download for Apple Silicon.
+`project.yml` declares version 0.1/build 1. The computed Release
+configuration builds arm64 only and enables Hardened Runtime; Debug keeps it
+off. Automatic signing still resolves to Apple Development on this host. A
+successful build or the historical `dist/PasteQueue.dmg` is not a release
+candidate.
+
+For direct distribution outside the Mac App Store, build an Archive with the
+intended version/build, export with a **Developer ID Application** identity and a
+secure timestamp, notarize the exact distribution container, staple its
+ticket, and verify the exact artifact users will download. Keep App Sandbox
+off for this app's global hotkeys and synthetic paste. Apple's
+[notarization guide](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)
+describes the signing and Hardened Runtime requirements. The Mac App Store is
+a separate path whose sandbox and review feasibility has not been proven for
+this app. See `docs/RELEASE_HANDOFF.md` for the remaining product and manual QA
+decisions.
+
 ## Tests
 
 Run the isolated unit-test target with:
@@ -58,6 +78,5 @@ build or release-signing setting. Tests inject pasteboard and system-service
 dependencies, disable automatic polling, and use unique temporary storage
 directories. They must not read from or write to `NSPasteboard.general`.
 
-No successful full run on the current HEAD is asserted here. Record the actual
-result when the command is run in a suitable environment, and complete the
-manual release checklist in `README.md` against the final build.
+Record the actual result for the commit being released, then complete the
+manual release checklist in `README.md` against the signed final artifact.

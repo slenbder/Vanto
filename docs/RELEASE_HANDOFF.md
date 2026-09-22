@@ -1,100 +1,96 @@
-# PasteQueue — компактная передача подготовки v1
+# PasteQueue — контрольная точка перед первым релизом
 
-Контрольная точка: 16 сентября 2026, ветка `main`, HEAD `f086cf1`.
-Репозиторий: `/Users/kira/Documents/PasteQueue`.
+Дата проверки: 22 сентября 2026. Рабочая ветка: `codex/paste-all-text`.
+Перед продолжением сверить `git status -sb`, `git branch -vv`, `git log -8
+--oneline --decorate`, `git remote -v` и настройки `project.yml`. Этот файл
+описывает состояние исходников и оставшиеся ворота выпуска; готовый артефакт
+не опубликован.
 
-Remote обновлён перед интеграцией. Ветка `codex/v1-release-hardening`
-опубликована, затем локальный `main` fast-forward без merge-коммита обновлён
-с `fc6bc94` до `f086cf1` и отправлен в `origin/main`. Публикация релиза и
-удаление локальной/remote feature-ветки не выполнялись. `AGENTS.md` и каталог
-`docs/` остаются untracked; этот handoff также не staged и не закоммичен.
+## Что есть в продукте
 
-## Новые принятые коммиты
+- Очередь до 99 текстовых, графических и файловых элементов; последовательная
+  вставка в порядке очереди, ручное изменение порядка, удаление и очистка.
+- Два экрана popover: очередь и Settings. В настройках — переназначение двух
+  глобальных сочетаний, выбор одного из 7 языков и Launch at Login.
+- «Объединить и вставить…» для минимум двух текстовых элементов: шесть вариантов
+  разделителя, включая пользовательский, короткое превью и одна команда ⌘V
+  с полным объединённым текстом. Превью защищено сравнением ID очереди.
+  Последний успешно применённый разделитель хранится в UserDefaults.
+- Выход с экрана подтверждения или закрытие popover отменяет ожидающую
+  пакетную вставку. При ошибке после перехода к приложению получателя popover
+  снова получает фокус и показывает причину. Очередь расходуется лишь после
+  `commandPosted`; это не подтверждение фактической вставки в чужое приложение.
+- Заголовок, разделители и список обновлены: при пустой очереди остаётся один
+  разделитель, немецкий счётчик визуально разбит на две строки, прокрутка и
+  подсветка строк имеют отдельные настраиваемые отступы. Изменение UI после
+  последней ручной приёмки нужно подтвердить на финальной сборке.
 
-Базовая release-hardening работа до `1ece6ca` сохраняется. После неё приняты:
+## Доказанная проверка
 
-| Коммит | Результат |
-| --- | --- |
-| `2c53fbd` | Актуализированы `README.md`, `SETUP.md` и `CLAUDE.md`; `project.yml` и код не менялись |
-| `9aa3ed3` | Исходящий синтетический Command-V учитывает ASCII-capable layout и Command modifier state; ANSI key code 9 оставлен fallback |
-| `06193a1` | Элемент очереди и его файловый кэш сохраняются, если недоступен Accessibility, не создались события или не записался pasteboard; успешная отправка по-прежнему расходует только FIFO-head |
-| `f086cf1` | Из unified logging удалены пользовательские пути и публичные error descriptions; диагностика оставлена через operation, `NSError.domain`/code и безопасный item UUID |
+На рабочем дереве 22 сентября полный `PasteQueueTests` прошёл: **64 теста,
+0 ошибок**. Команда:
 
-## Принятые проверки и границы доказанного
+```sh
+xcodebuild test -scheme PasteQueue -destination 'platform=macOS,arch=arm64' \
+  -only-testing:PasteQueueTests \
+  -derivedDataPath /private/tmp/PasteQueueDerivedData \
+  CODE_SIGNING_ALLOWED=NO
+```
 
-- Ранее успешно проходили изолированные наборы из 13 и 16 XCTest после
-  изоляции системных ресурсов и изменения файлового storage.
-- Для layout-aware Command-V целевой набор прошёл полностью: 4/4 tests passed,
-  0 failures. Он покрывает поиск не-ANSI key code, Command modifier state и
-  fallback.
-- На следующем этапе прошли 23 PasteStackTests, 0 failures. Regression-сценарии
-  подтверждают сохранение FIFO-head, отсутствие cleanup/Command-V при отказе
-  и сохранение файлового кэша при неудачной записи pasteboard.
-- Для `f086cf1` Xcode build diagnostics прошли без ошибок и предупреждений в
-  `PasteStack.swift`; `git diff --check` прошёл. Поиск не нашёл logger с
-  `sourceURL.path`/`url.path`, public `localizedDescription` или production
-  `print()`. XCTest и UI для этой log-only правки не запускались.
-- Кирилл вручную принимал основные пользовательские сценарии по этапам:
-  текст/изображения/файлы и исходные имена; TextEdit/Finder; Paste-кнопка и
-  hotkey; последовательная вставка и высота popover; быстрый Copy→Paste;
-  Caps Lock/repeat; status item и внешний клик; Launch at Login toggle;
-  ABC/U.S., Dvorak и Dvorak–QWERTY ⌘ для кнопки и hotkey; сохранение элемента
-  при отключённом Accessibility и успешную повторную вставку после возврата
-  разрешения.
+`CODE_SIGNING_ALLOWED=NO` применялось только к локальному тестированию. Эти
+тесты покрывают модель, сепараторы, настройки и отказные сценарии; они не
+проверяют реальное переключение фокуса, вставку в другое приложение, VoiceOver,
+подпись или установку. Полный ручной список — в `README.md`.
 
-На HEAD `f086cf1` выполнен полный `PasteQueueTests` через Xcode: 27 tests
-passed, 0 failed, 0 skipped. XCTest reported 0.051 (0.058) seconds; полный test
-action занял около 5.305 seconds. Build errors, runtime crashes и warnings
-отсутствовали. `NSCocoaErrorDomain code=260` был ожидаемым логом failure-path
-теста, а не test failure.
+Неподписанная проверочная Release-сборка на этой же машине завершилась
+`BUILD SUCCEEDED`: исполняемый файл `arm64`, Info.plist содержит версию
+`0.1 (1)`. Команда использовала `CODE_SIGNING_ALLOWED=NO`, поэтому полученный
+app имеет ad-hoc подпись и **не является** дистрибутивом. Эта проверка не
+доказывает работу Hardened Runtime после Developer ID подписи.
 
-## Зафиксированные границы v1
+## Текущее состояние выпуска
 
-- App Sandbox выключен; очередь не сохраняется между запусками; лимит — 99.
-- Файлы хранятся как `ClipboardFiles/<item UUID>/<original filename>`.
-  Ownership validation, startup/Clear/remove cleanup и задержка удаления около
-  двух секунд после paste остаются без изменений. Отдельного exit cleanup нет.
-- На зафиксированном здесь коммите `f086cf1` hotkeys были фиксированы;
-  ветка `feature/settings-screen` добавляет переназначение. Базовая
-  VoiceOver-поддержка не включает reorder parity.
-- `copyItem` для захвата файла остаётся синхронным. Архитектура больших файлов
-  — background copy, progress/cancellation, сохранение FIFO и race-safe cleanup
-  — явно перенесена в v2. Large-file stress не блокирует v1; нельзя обещать
-  отзывчивость для очень больших файлов без этой отдельной работы.
+- Для первого выпуска выбран прямой download с сайта и только Apple Silicon.
+  `project.yml` задаёт версию **0.1**, build **1**, macOS **13.0**. После
+  `xcodegen generate` вычисленная Release-конфигурация:
+  `ARCHS = arm64`, `ENABLE_HARDENED_RUNTIME = YES`,
+  `ENABLE_APP_SANDBOX = NO`. Debug сохраняет Hardened Runtime выключенным.
+  Автоматическая подпись пока выбирает **Apple Development**.
+- Проверка Keychain на этом Mac нашла **1 Apple Development** и **0 Developer
+  ID Application** identities. Это снимок данного хоста, не вывод о статусе
+  учётной записи Apple. Developer ID подпись и нотарификация сейчас не
+  выполнены.
+- `dist/` игнорируется Git и содержит исторический dev-артефакт; он не является
+  кандидатом для покупателей. Новый подписанный и нотарифицированный контейнер
+  ещё не собран и не проверен через Gatekeeper.
+- Кнопка сайта в `SettingsMenu.swift` пока ведёт на временный адрес
+  `pastequeue-first-look.slenbder.chatgpt.site`; до выпуска нужен окончательный
+  адрес продукта и поддержки.
+- Платёж, доставка покупки, лицензия, возвраты, политика приватности, канал
+  поддержки, release notes и цена в этом репозитории не утверждены.
 
-## Оставшийся финальный release checklist
+## Ворота до публикации
 
-1. **Выполнено.** Полный `PasteQueueTests` на HEAD `f086cf1` прошёл через
-   Xcode: 27 passed, 0 failed, 0 skipped. Команда для повторения:
+1. **Выполнено:** выбран прямой сайт и arm64; Release-конфигурация включает
+   Hardened Runtime. App Sandbox остаётся выключенным. До распространения
+   по-прежнему требуются Developer ID Application, secure timestamp,
+   notarization и stapling. Mac App Store — отдельный непроверенный путь.
+   См. [документацию Apple](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution).
+2. **Частично выполнено:** `project.yml` обновлён, проект сгенерирован,
+   вычисленные Release-настройки сверены. Далее собрать Archive и
+   экспортировать точный кандидат. Версию/build увеличить перед повторным
+   публичным кандидатом.
+3. На точном кандидате выполнить полный XCTest и ручной checklist из README:
+   Accessibility с чистым разрешением, горячие клавиши, смешанный FIFO,
+   файлы/изображения, пакетная вставка с отменой и ошибкой, оба экрана,
+   VoiceOver, 99 элементов, локализации, Launch at Login после входа в систему,
+   светлое/тёмное меню. Проверить поддерживаемую версию macOS и чистый Mac.
+4. Для прямого канала подписать правильным сертификатом, нотарифицировать и
+   прикрепить ticket к распространяемому контейнеру. Проверить подпись,
+   архитектуру, entitlements, версию, notarization и Gatekeeper именно на этом
+   контейнере; не переносить выводы со старого DMG.
+5. Завершить сайт, платёж, доставку, поддержку и юридические тексты. Заменить
+   временную ссылку в Settings; согласовать release notes, цену и публикацию.
 
-   ```sh
-   xcodebuild test -scheme PasteQueue -destination 'platform=macOS' \
-     -only-testing:PasteQueueTests \
-     -derivedDataPath /private/tmp/PasteQueueDerivedData \
-     CODE_SIGNING_ALLOWED=NO
-   ```
-
-   `CODE_SIGNING_ALLOWED=NO` относится только к тестам, не к release signing.
-   Прежний CLI-запуск блокировался на sandbox-exec/plugin/asset tooling до
-   выполнения тестов. При повторении использовать подходящее окружение или
-   Xcode и не считать blocked-запуск результатом тестов.
-2. Собрать точный release artifact и пройти на нём краткий ручной checklist из
-   `README.md`: collection/hotkeys, смешанный FIFO, single/multi-file и Photos,
-   popover/Paste/focus/close/Escape, delete/Clear/reorder, cap 99, VoiceOver,
-   Launch at Login после logout/restart, light/dark menu-bar appearance.
-3. Проверить поддерживаемые версии macOS и Apple Silicon, свежую Accessibility-
-   permission, установку в `/Applications`, первый запуск и известное поведение
-   secure-input полей.
-4. Зафиксировать version/build number и решения по Developer ID, Hardened
-   Runtime, notarization и Gatekeeper; проверить именно распространяемый
-   артефакт, затем выбрать/проверить упаковку (например, DMG).
-5. Согласовать лицензию, цену/платную доставку, release notes, GitHub Release и
-   личный Homebrew tap.
-6. **Частично выполнено.** Feature-ветка опубликована, а `main` fast-forward
-   обновлён и отправлен в `origin/main` на `f086cf1`. Публикация релиза и
-   уборка локальной/remote feature-ветки требуют отдельной актуальной команды.
-
-При продолжении сначала сверить `git status --short`, `git log -12 --oneline
---decorate`, `git branch -vv` и этот checklist. Не возвращать большие файлы
-в scope v1 и не расширять cache lifecycle, signing или distribution без
-отдельного решения.
+Факт успешной сборки или push ветки не закрывает эти ворота. Большие файлы,
+фоновое копирование и доступный VoiceOver reorder остаются задачами после v1.

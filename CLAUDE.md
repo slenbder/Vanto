@@ -13,6 +13,8 @@ queue. ⌃⌘V or the Paste button sends the next item. Minimum target: macOS
 The popover has two screens: the queue (default) and Settings, reached via
 the gear button in the shared header. Settings holds shortcut rebinding for
 both actions, an in-app language override (7 locales), and Launch at Login.
+The queue screen also opens a short confirmation view for combining all queued
+text into one paste with a chosen separator.
 
 ## Build & test
 
@@ -36,11 +38,18 @@ xcodebuild test -scheme PasteQueue -destination 'platform=macOS' \
 Do not claim tests passed unless they were run successfully on the current HEAD.
 Use README.md for the final manual release checklist.
 
+The first release is planned for direct website download on Apple Silicon.
+`project.yml` declares version 0.1/build 1; its Release configuration now
+targets arm64 only and enables Hardened Runtime. Automatic signing still
+resolves to Apple Development on this host, so it is not a distributable build. Check
+`docs/RELEASE_HANDOFF.md` for the current release gate before changing signing
+or publishing an artifact.
+
 **App Sandbox must be OFF.** A sandboxed app cannot post synthetic keyboard events or register global key monitors — this is a hard requirement, not optional.
 
 ## Architecture
 
-Thirteen source files, including three protocols:
+Fifteen Swift source files:
 
 | File | Role |
 |------|------|
@@ -52,7 +61,9 @@ Thirteen source files, including three protocols:
 | `LanguagePreferenceStore.swift` | `SupportedLanguage` (the 7 shipped locales) + persisted in-app language override, independent of system locale |
 | `PopoverRootView.swift` | True root of the popover content: owns which of the two screens is showing, the shared status row, outer padding/width, and the `.environment(\.locale:)` override |
 | `PopoverStatusRow.swift` | Shared header across both screens — recording indicator, queue count, and the gear/close button that switches screens |
-| `PasteStackMenu.swift` | Queue screen: item list with hand-rolled drag-to-reorder, Start/Paste/Clear/Quit |
+| `PasteStackMenu.swift` | Queue screen: item list with hand-rolled drag-to-reorder, actions, scrolling geometry, and entry to combined paste |
+| `PasteAllTextView.swift` | Combined-text confirmation, separator picker, preview, validation feedback, and cancellation on departure |
+| `TextJoinPreferences.swift` | Separator values and `UserDefaults` persistence for the last successful choice |
 | `SettingsMenu.swift` | Settings screen: shortcut recorder rows, language picker, Launch at Login, website/version row |
 | `ShortcutRecorderField.swift` | One rebindable-shortcut row — owns the recording-mode local `NSEvent` monitor, delegates classification to `HotkeySpec.swift`, persists through `HotkeyManager` |
 | `ClipboardItem.swift` | `ClipboardItem` enum (`.text`, `.image`, `.file`) + `QueuedClipboardItem` wrapper |
@@ -64,12 +75,23 @@ Thirteen source files, including three protocols:
 synthetic ⌘V. `AppDelegate` owns window/application concerns: it remembers the
 external frontmost app before opening the menu, restores that recipient for a
 paste requested from the popover, and calls `PasteStack.pasteNext()` only after
-focus restoration succeeds. Hotkey requests are routed through `AppDelegate`.
+focus restoration succeeds. Combined paste follows the same focus route through
+`PasteStack.pasteAllText(separator:expectedIDs:)`; hotkey requests still use
+ordinary sequential paste. An unsuccessful combined request brings the popover
+forward so its error is visible. Hotkey requests are routed through `AppDelegate`.
 
 Clipboard polling runs every 0.25 seconds while collection is active.
 `pasteNext()` first captures a pending pasteboard change when collection is on,
 then consumes the FIFO head. It does not capture external clipboard content
 when collection is off.
+
+`pasteAllText` first checks for a pending copy, compares the current queue IDs
+with the IDs shown in the confirmation view, requires every item to be text,
+joins full strings without trimming, and posts one synthetic ⌘V. It drains the
+queue only after `commandPosted`; that result does not prove insertion into the
+target app. The separator choice is stored only after that result. Back,
+leaving the confirmation view, and popover closure cancel a pending wait for
+recipient activation. Keep this cancellation scoped to combined paste.
 
 ### Critical ordering in `checkPasteboard()`
 
@@ -101,7 +123,10 @@ That opening's initial list height is passed as `PopoverRootView`'s minimum
 (capped by `PasteStackMenu` at 230 pt), keeping controls stable while a queue
 is consumed; reopening recalculates a compact height. During sequential paste
 the popover remains available while items remain and closes after the final
-item.
+item. If the queue becomes empty while the popover is open, the empty list and
+its lower divider disappear; the shared header divider remains. The row hover
+background extends slightly into the inter-row gap, so ScrollView content has
+top/bottom inset to keep its rounded edges from clipping.
 
 ### Status item ownership
 
@@ -190,18 +215,23 @@ SwiftUI `Text` need `AppLocalization.bundle(for:)` as well as a locale: the
 locale argument alone formats values but does not select another `.lproj`.
 This applies to the status-item accessibility labels and shortcut captions.
 
-The popover's fixed width (`PopoverRootView`, 270pt) is sized to the longest
-string that actually ships across all 7 locales — verified by measuring
-`NSFont`-rendered widths, not by eyeballing screenshots. If a new locale is
-added or a string is lengthened, re-measure before assuming 270 still holds;
-the previous 240pt regressed silently to visible truncation/wrapping in ru/es/de
-before this was caught.
+`PopoverRootView` uses 270 pt as its minimum width and measures the current
+localized status/count with AppKit fonts to grow only when needed. The German
+visual queue count breaks before its final word and its two lines are
+left-aligned; the VoiceOver announcement remains a single sentence. Keep the
+same visual text and width calculation in sync when changing this layout.
 
 ### Drag-to-reorder in PasteStackMenu
 
 Reordering is a hand-rolled `DragGesture`, not `List(onMove:)`. Keep its named
 coordinate space on the stable rows container; moving it to the offset row
 reintroduces translation drift.
+
+Three distances can be tuned separately in `PasteStackMenu.swift`:
+`scrollerOutset` moves the ScrollView's right edge toward the window edge,
+`rowTrailingInset` sets the gap from row highlight to scroller without moving
+the left edge, and `deleteButtonTrailingInset` sets the delete button's gap
+inside the row highlight. Keep the latter in `QueueRowView`.
 
 ## Test isolation
 
@@ -220,6 +250,8 @@ with a fixed key-to-character test layout. `HotkeySpecTests` injects the same
 kind of mapping into its classification checks. Neither uses `.shared` or the
 host's selected keyboard layout. The zero-arg production init remains private
 so tests cannot accidentally create a second instance with real monitors.
+`TextJoinPreferenceTests` uses a separate `UserDefaults` suite and removes it
+after each test.
 
 ## Extending content types
 

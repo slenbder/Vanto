@@ -4,7 +4,7 @@
 
 `PasteQueue/` contains the Swift 5 application code. `PasteQueueApp.swift` owns the menu-bar lifecycle, `PasteStack.swift` manages the FIFO clipboard queue, and `HotkeyManager.swift` registers global shortcuts and resolves live vs. user-overridden bindings (`HotkeySpec.swift` holds the shortcut/recording types, `ShortcutStoring.swift` persists per-action overrides to `UserDefaults`).
 
-The popover has two screens, split across `PopoverRootView.swift` (owns which screen is showing, outer width/padding, and the in-app locale override), `PopoverStatusRow.swift` (shared header: recording indicator, queue count, gear/close button), `PasteStackMenu.swift` (queue screen: list, drag-to-reorder, Start/Paste/Clear/Quit), `SettingsMenu.swift` (Settings screen: shortcut rows, language picker, Launch at Login, website/version), and `ShortcutRecorderField.swift` (one rebindable-shortcut row). `LanguagePreferenceStore.swift` holds the persisted language override and the 7 supported locales (`SupportedLanguage`); translated strings live in `PasteQueue/Localizable.xcstrings`.
+The popover has queue and Settings screens, split across `PopoverRootView.swift` (screen selection, dynamic width, shared divider, locale), `PopoverStatusRow.swift` (recording state, queue count, gear/close button), `PasteStackMenu.swift` (queue list, drag-to-reorder, actions, scrolling geometry), `SettingsMenu.swift` (shortcuts, language, Launch at Login, website/version), and `ShortcutRecorderField.swift` (one shortcut row). `PasteAllTextView.swift` is the queue screen's confirmation view for combining text; `TextJoinPreferences.swift` defines its separators and persisted choice. `LanguagePreferenceStore.swift` holds the language override and 7 supported locales; translated strings live in `PasteQueue/Localizable.xcstrings`.
 
 Clipboard value types and test seams live in `ClipboardItem.swift` and `PasteboardProviding.swift`. Assets are under `PasteQueue/Assets.xcassets` and `PasteQueue/PasteQueueIcon.icon`. `menuBarIcon` (idle) and `menuBarIconFrame` (collecting) share the same outer silhouette so the status item does not jump when its state changes.
 
@@ -14,18 +14,22 @@ Unit tests live in `PasteQueueTests/`; keep mocks beside the tests that use them
 
 - `xcodegen generate` regenerates the Xcode project after changes to `project.yml`.
 - `xcodebuild -scheme PasteQueue -configuration Debug build` builds the app from Terminal.
-- `xcodebuild test -scheme PasteQueue -destination 'platform=macOS'` runs all XCTest tests.
+- `xcodebuild test -scheme PasteQueue -destination 'platform=macOS,arch=arm64' -only-testing:PasteQueueTests -derivedDataPath /private/tmp/PasteQueueDerivedData CODE_SIGNING_ALLOWED=NO` runs the isolated XCTest target locally; this setting is never a release signing choice.
 - Open `PasteQueue.xcodeproj` and use Cmd-R for interactive development or Cmd-U for tests.
 
 The app must remain unsandboxed: global event monitoring and synthetic paste events do not work with App Sandbox enabled. Running hotkey flows also requires macOS Accessibility permission.
+
+The first release targets direct website download for Apple Silicon. `project.yml` sets version 0.1/build 1, arm64-only Release and Hardened Runtime on for Release while keeping Debug off. Current Release builds still use Apple Development signing because no Developer ID Application identity is available on this host. Do not describe a Debug build or the historical `dist/` image as distributable. Use `docs/RELEASE_HANDOFF.md` for the remaining gate and validate the exact candidate artifact before publication.
 
 ## Coding Style & Naming Conventions
 
 Follow standard Swift conventions and Xcode formatting: four-space indentation, braces on the declaration line, `UpperCamelCase` for types, and `lowerCamelCase` for methods and properties. Prefer focused files named after their primary type. Keep model state changes in `PasteStack`; UI-specific behavior belongs in SwiftUI/AppKit views. When extending clipboard formats, update capture, paste, and row-display branches together, and preserve file detection before image detection.
 
+For combined text paste, require at least two text items in the UI, preserve the previewed queue IDs until confirmation, and drain the queue only after a paste command is posted. Back, leaving the confirmation view, and popover closure cancel a pending recipient-activation wait. The completion callback must show failures in the popover. Keep ordinary sequential Paste behavior independent of these changes.
+
 ## Testing Guidelines
 
-Tests use XCTest and should be named `testBehaviorUnderCondition`. Use `MockPasteboard` for text-oriented unit tests; image and file tests intentionally touch `NSPasteboard.general`, so clear it during setup. Add regression coverage for queue ordering, capacity, cleanup, and state transitions. `HotkeyManagerTests`/`HotkeySpecTests` cover shortcut matching, overrides, and recording classification with an injected test layout; `LanguagePreferenceStoreTests` covers the locale override and built translations. Construct managers and stores through their designated DI initializers, never through `.shared`. Complete the manual checklist in `README.md` for hotkeys, files/images, Settings (shortcut rebinding, language switching), VoiceOver, Launch at Login, and menu-bar appearance.
+Tests use XCTest and should be named `testBehaviorUnderCondition`. All clipboard tests use `MockPasteboard`, including image and file cases; they must not touch `NSPasteboard.general`. Add regression coverage for queue ordering, capacity, cleanup, and state transitions. `PasteStackTests` and `TextJoinPreferenceTests` cover combined paste and separator persistence; `HotkeyManagerTests`/`HotkeySpecTests` cover shortcut matching and recording with an injected test layout; `LanguagePreferenceStoreTests` covers locale override and translations. Construct managers and stores through their designated DI initializers, never through `.shared`. Complete the manual checklist in `README.md` on the final artifact, including cancellation/errors in combined paste and both popover screens.
 
 ## Commit & Pull Request Guidelines
 

@@ -1,7 +1,7 @@
 # PasteQueue
 
 A minimal menu-bar utility for collecting text, images, and files, then pasting
-them back one at a time in FIFO order (first copied, first pasted).
+them back in queue order. Text items can also be combined into one paste.
 
 ## ⌨️ Hotkeys — read this before you buy
 
@@ -24,9 +24,10 @@ is a conflict.
 
 ## Installing
 
-The distribution format for the first release has not been finalized. If you
-receive a `PasteQueue.app`, move it to `/Applications` before enabling Launch at
-Login. See `SETUP.md` to build the app from source.
+The first release is planned as a direct download from the PasteQueue website
+for Apple Silicon Macs. The package format has not been finalized. If you
+receive a `PasteQueue.app`, move it to `/Applications` before enabling Launch
+at Login. See `SETUP.md` to build the app from source.
 
 ## Uninstalling
 
@@ -43,8 +44,9 @@ clean system:
   queued does not perform a separate exit cleanup, so copies can remain until
   the next launch. Safe to delete manually while PasteQueue is not running.
 - **`~/Library/Preferences/com.slenbder.pastequeue.plist`** — your Launch at
-  Login preference. Safe to delete; `defaults delete com.slenbder.pastequeue`
-  also works from Terminal.
+  Login choice, shortcut overrides, language choice, and last-used text
+  separator. Safe to delete; `defaults delete com.slenbder.pastequeue` also
+  works from Terminal.
 - **Launch at Login entry** — macOS does *not* clean this up when you delete
   the app. If you had "Launch at Login" enabled, go to **System Settings →
   General → Login Items & Extensions** after deleting the app and remove
@@ -63,9 +65,9 @@ rm -f ~/Library/Preferences/com.slenbder.pastequeue.plist
 macOS opening behavior depends on how the specific artifact was signed,
 notarized, and distributed. Follow the instructions shipped with that build and
 do not bypass a security warning unless you trust its source. Developer ID,
-notarization, Hardened Runtime, and the final release package are still release
-decisions; this README does not claim a particular Gatekeeper outcome in
-advance.
+notarization, and the final release package still need verification; enabling
+Hardened Runtime in Release settings alone does not establish a Gatekeeper
+outcome.
 
 ## First run
 
@@ -97,6 +99,15 @@ advance.
    drag rows to reorder them, switch collection with **Start**/**Stop**, or use
    **Paste**. During sequential pasting from an open menu, it remains available
    while items remain and closes after the last item is pasted.
+6. With at least two items queued, choose **Combine and Paste…** to join text
+   into one paste. Choose a new line, blank line, space, comma and space, no
+   separator, or a custom separator. The preview shows a shortened sample;
+   the full text is pasted in the current queue order. Every queued item must
+   be text. The last successfully used separator is remembered. **Back** or
+   closing the menu cancels an in-flight request; a failed request keeps the
+   queue and brings the error back into view. Once PasteQueue posts the paste
+   command successfully, it drains the queue. As with ordinary Paste, it
+   cannot confirm that the destination app actually inserted the text.
 
 The queue holds at most 99 items — anything copied past that is silently
 ignored (no alert) until you paste some off or clear the queue. The counter
@@ -105,8 +116,8 @@ you're full.
 
 ## Launch at Login
 
-The menu has a **Launch at Login** item with a checkmark showing current
-state — click it to toggle. Uses `SMAppService` (macOS 13+), so it only
+The **Settings** screen has a **Launch at Login** item with a checkmark showing
+current state — click it to toggle. Uses `SMAppService` (macOS 13+), so it only
 works once the app is actually installed in `/Applications` (an `.app`
 launched straight out of Xcode's DerivedData can fail to register — that's
 expected, not a bug).
@@ -128,7 +139,18 @@ the final artifact.
   both button and hotkey: focus must return to the external recipient, the menu
   must remain available while items remain, and it must close after the last
   item. Reopen it with a shorter queue and confirm its height is compact. Also
-  check status-item toggle, outside click, and Escape closing.
+  check status-item toggle, outside click, and Escape closing. Check the
+  header divider on both screens, a single divider when the queue is empty,
+  and the first row's hover outline beside the scroll bar.
+- **Combine and Paste** — reorder three text items, choose a preset and then a
+  custom separator, and confirm the full combined text appears once in TextEdit.
+  Confirm Back changes nothing, closing the menu during recipient activation
+  cancels the paste, the last successful separator returns on reopening,
+  mixed text/file or text/image queues cannot be combined, and the queue stays
+  intact when the target app or Accessibility permission is unavailable. If
+  focus moved to the target before failure, confirm the panel and error become
+  visible again. Repeat in VoiceOver and German at 99 items; the German count
+  intentionally takes two left-aligned lines.
 - **Queue cap** — copy 99+ items, confirm additional items are ignored while
   full and the count turns red at 99.
 - **Settings screen** — open it via the gear button. Rebind each shortcut to a
@@ -139,8 +161,7 @@ the final artifact.
   closing the popover, and closing the popover mid-recording (outside click)
   doesn't leave hotkeys stuck paused afterward. Switch the language picker
   through a few locales and confirm both screens' text updates immediately,
-  with no truncated or wrapped labels — check at least ru, es, de, and one of
-  ja/zh-Hans (longest strings).
+  with no truncated labels — check at least ru, es, de, and one of ja/zh-Hans.
 - **Accessibility and VoiceOver** — test a fresh permission grant, status and
   queue announcements, all core buttons, and deletion focus. Re-test after any
   UI change.
@@ -151,7 +172,8 @@ the final artifact.
 - **Final artifact** — run the full automated test target, smoke-test on the
   supported macOS versions, and verify installation, first launch, permissions,
   signing, notarization, and Gatekeeper behavior on the exact artifact that will
-  be distributed.
+  be distributed. Replace the Settings screen's current website placeholder
+  with the real product/support destination before shipping.
 
 ## Known limitations (v1)
 
@@ -185,8 +207,8 @@ the final artifact.
 - No persistence — the queue lives in memory and resets when you quit. That's
   intentional for this use case; add it later if you ever want the queue to
   survive a relaunch.
-- Developer ID signing, notarization, Hardened Runtime, packaging, and paid
-  delivery remain separate release decisions; none is implied by the current
-  source tree.
+- Release builds now target Apple Silicon and enable Hardened Runtime.
+  Developer ID signing, notarization, packaging, and paid delivery still need
+  completion and verification on the final downloadable artifact.
 
 See `SETUP.md` for building from source.
