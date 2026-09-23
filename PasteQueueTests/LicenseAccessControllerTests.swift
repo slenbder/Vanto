@@ -168,6 +168,94 @@ final class LicenseAccessControllerTests: XCTestCase {
         XCTAssertTrue(controller.grantsAccess)
     }
 
+    func testDeactivationReleasesInstanceAndFallsBackToExpiredTrial() async {
+        let current = start.addingTimeInterval(20 * 24 * 60 * 60)
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "instance-1",
+                activatedAt: start,
+                lastValidatedAt: start
+            )
+        )
+        let service = MockLicenseService()
+        let controller = makeController(
+            now: current,
+            trialStartedAt: start,
+            credentialStore: store,
+            service: service
+        )
+
+        await controller.deactivateCurrentDevice()
+
+        XCTAssertEqual(service.deactivatedInstanceIDs, ["instance-1"])
+        XCTAssertNil(store.credential)
+        XCTAssertFalse(controller.grantsAccess)
+        XCTAssertEqual(
+            controller.state,
+            .expired(expiredAt: start.addingTimeInterval(TrialAccessController.trialDuration))
+        )
+    }
+
+    func testOfflineDeactivationKeepsLicenseActive() async {
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "instance-1",
+                activatedAt: start,
+                lastValidatedAt: start
+            )
+        )
+        let service = MockLicenseService(deactivateError: URLError(.notConnectedToInternet))
+        let controller = makeController(
+            now: start,
+            trialStartedAt: start,
+            credentialStore: store,
+            service: service
+        )
+
+        await controller.deactivateCurrentDevice()
+
+        XCTAssertEqual(controller.state, .licensed)
+        XCTAssertEqual(controller.deactivationError, .noNetwork)
+        XCTAssertNotNil(store.credential)
+    }
+
+    func testTrialWarningsAppearOnceAtSevenThreeAndOneDayThresholds() {
+        let warningStore = MockTrialWarningStore()
+        var current = start.addingTimeInterval(7 * 24 * 60 * 60)
+        let trialStore = AccessMockTrialStore(
+            record: TrialRecord(startedAt: start, latestObservedAt: start)
+        )
+        let trialController = TrialAccessController(store: trialStore, now: { current })
+        let controller = LicenseAccessController(
+            trialController: trialController,
+            credentialStore: MockLicenseCredentialStore(),
+            licenseService: MockLicenseService(),
+            checkoutURL: URL(string: "https://example.com/buy"),
+            trialWarningStore: warningStore,
+            now: { current },
+            instanceName: { "Test Mac" }
+        )
+
+        controller.prepareTrialWarning()
+        XCTAssertEqual(controller.trialWarningDays, 7)
+        controller.dismissTrialWarning()
+        controller.prepareTrialWarning()
+        XCTAssertNil(controller.trialWarningDays)
+
+        current = start.addingTimeInterval(11 * 24 * 60 * 60)
+        controller.refresh()
+        controller.prepareTrialWarning()
+        XCTAssertEqual(controller.trialWarningDays, 3)
+
+        current = start.addingTimeInterval(13.5 * 24 * 60 * 60)
+        controller.refresh()
+        controller.prepareTrialWarning()
+        XCTAssertEqual(controller.trialWarningDays, 1)
+        XCTAssertEqual(warningStore.shownThresholds, [1, 3, 7])
+    }
+
     private func makeController(
         now current: Date,
         trialStartedAt: Date,
@@ -186,6 +274,18 @@ final class LicenseAccessControllerTests: XCTestCase {
             now: { current },
             instanceName: { "Test Mac" }
         )
+    }
+}
+
+private final class MockTrialWarningStore: TrialWarningStoring {
+    var shownThresholds: Set<Int> = []
+
+    func hasShownWarning(daysRemaining: Int) -> Bool {
+        shownThresholds.contains(daysRemaining)
+    }
+
+    func markWarningShown(daysRemaining: Int) {
+        shownThresholds.insert(daysRemaining)
     }
 }
 
@@ -241,6 +341,7 @@ private final class MockLicenseService: LicenseServicing {
     var validation: LicenseValidation
     var activateError: Error?
     var validateError: Error?
+    var deactivateError: Error?
     var activatedKeys: [String] = []
     var validatedInstanceIDs: [String] = []
     var deactivatedInstanceIDs: [String] = []
@@ -257,12 +358,14 @@ private final class MockLicenseService: LicenseServicing {
             activationUsage: 1
         ),
         activateError: Error? = nil,
-        validateError: Error? = nil
+        validateError: Error? = nil,
+        deactivateError: Error? = nil
     ) {
         self.activation = activation
         self.validation = validation
         self.activateError = activateError
         self.validateError = validateError
+        self.deactivateError = deactivateError
     }
 
     func activate(licenseKey: String, instanceName: String) async throws -> LicenseActivation {
@@ -279,5 +382,6 @@ private final class MockLicenseService: LicenseServicing {
 
     func deactivate(licenseKey: String, instanceID: String) async throws {
         deactivatedInstanceIDs.append(instanceID)
+        if let deactivateError { throw deactivateError }
     }
 }

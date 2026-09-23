@@ -454,7 +454,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 service: "com.slenbder.pastequeue.license\(keychainSuffix)"
             ),
             licenseService: configuration.map { LemonSqueezyLicenseClient(configuration: $0) },
-            checkoutURL: configuration?.checkoutURL
+            checkoutURL: configuration?.checkoutURL,
+            trialWarningStore: UserDefaultsTrialWarningStore(
+                key: "trial-warning-thresholds-v1\(keychainSuffix)"
+            )
         )
     }
 

@@ -1,6 +1,34 @@
 import AppKit
 import SwiftUI
 
+struct TrialWarningView: View {
+    let daysRemaining: Int
+    let checkoutURL: URL?
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "clock.badge.exclamationmark")
+                .foregroundColor(.orange)
+            Text("Trial: \(daysRemaining) days left")
+                .font(.caption)
+            Spacer(minLength: 4)
+            if let checkoutURL {
+                Button("Buy License") {
+                    NSWorkspace.shared.open(checkoutURL)
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+            }
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss")
+        }
+    }
+}
+
 struct LicenseGateView: View {
     @ObservedObject var accessController: LicenseAccessController
 
@@ -32,14 +60,31 @@ struct LicenseGateView: View {
 struct LicenseSettingsSection: View {
     @ObservedObject var accessController: LicenseAccessController
     @State private var showsActivation = false
+    @State private var showsDeactivationConfirmation = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             switch accessController.state {
             case .licensed:
-                Label("License active", systemImage: "checkmark.seal.fill")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Label("License active", systemImage: "checkmark.seal.fill")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Button(accessController.isDeactivating ? "Deactivating…" : "Deactivate This Mac") {
+                        accessController.clearDeactivationError()
+                        showsDeactivationConfirmation = true
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(accessController.isDeactivating)
+                }
+                .font(.callout)
+
+                if let error = accessController.deactivationError {
+                    Text(deactivationMessage(for: error))
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             case .trial(let daysRemaining, _):
                 HStack {
                     Text("Trial: \(daysRemaining) days left")
@@ -68,6 +113,33 @@ struct LicenseSettingsSection: View {
             if newState == .licensed {
                 showsActivation = false
             }
+        }
+        .confirmationDialog(
+            "Deactivate This Mac?",
+            isPresented: $showsDeactivationConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Deactivate", role: .destructive) {
+                Task {
+                    await accessController.deactivateCurrentDevice()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("PasteQueue will stop working on this Mac when the trial has ended. This frees one of your three device slots.")
+        }
+    }
+
+    private func deactivationMessage(for error: LicenseDeactivationError) -> LocalizedStringKey {
+        switch error {
+        case .noNetwork:
+            return "Connect to the internet to deactivate this Mac."
+        case .storageUnavailable:
+            return "The device slot was released, but the local license could not be removed. Try again."
+        case .configurationUnavailable:
+            return "License deactivation is not configured in this build."
+        case .serviceUnavailable:
+            return "The license service is unavailable. Try again later."
         }
     }
 }

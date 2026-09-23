@@ -18,6 +18,35 @@ protocol LicenseCredentialStoring {
     func delete() throws
 }
 
+protocol TrialWarningStoring {
+    func hasShownWarning(daysRemaining: Int) -> Bool
+    func markWarningShown(daysRemaining: Int)
+}
+
+final class UserDefaultsTrialWarningStore: TrialWarningStoring {
+    private let defaults: UserDefaults
+    private let key: String
+
+    init(defaults: UserDefaults = .standard, key: String = "trial-warning-thresholds-v1") {
+        self.defaults = defaults
+        self.key = key
+    }
+
+    func hasShownWarning(daysRemaining: Int) -> Bool {
+        shownThresholds.contains(daysRemaining)
+    }
+
+    func markWarningShown(daysRemaining: Int) {
+        var thresholds = shownThresholds
+        thresholds.insert(daysRemaining)
+        defaults.set(Array(thresholds).sorted(), forKey: key)
+    }
+
+    private var shownThresholds: Set<Int> {
+        Set(defaults.array(forKey: key) as? [Int] ?? [])
+    }
+}
+
 enum KeychainLicenseCredentialStoreError: Error {
     case unexpectedData
     case unhandledStatus(OSStatus)
@@ -119,6 +148,13 @@ enum LicenseActivationError: Equatable {
     case serviceUnavailable
 }
 
+enum LicenseDeactivationError: Equatable {
+    case noNetwork
+    case storageUnavailable
+    case configurationUnavailable
+    case serviceUnavailable
+}
+
 @MainActor
 final class LicenseAccessController: ObservableObject {
     static let validationInterval: TimeInterval = 7 * 24 * 60 * 60
@@ -126,12 +162,16 @@ final class LicenseAccessController: ObservableObject {
     @Published private(set) var state: LicenseAccessState
     @Published private(set) var isActivating = false
     @Published private(set) var activationError: LicenseActivationError?
+    @Published private(set) var isDeactivating = false
+    @Published private(set) var deactivationError: LicenseDeactivationError?
+    @Published private(set) var trialWarningDays: Int?
 
     let checkoutURL: URL?
 
     private let trialController: TrialAccessController
     private let credentialStore: LicenseCredentialStoring
     private let licenseService: LicenseServicing?
+    private let trialWarningStore: TrialWarningStoring?
     private let now: () -> Date
     private let instanceName: () -> String
     private var credential: LicenseCredential?
@@ -141,6 +181,7 @@ final class LicenseAccessController: ObservableObject {
         credentialStore: LicenseCredentialStoring,
         licenseService: LicenseServicing?,
         checkoutURL: URL?,
+        trialWarningStore: TrialWarningStoring? = nil,
         now: @escaping () -> Date = Date.init,
         instanceName: @escaping () -> String = {
             Host.current().localizedName.map { "PasteQueue on \($0)" } ?? "PasteQueue Mac"
@@ -150,6 +191,7 @@ final class LicenseAccessController: ObservableObject {
         self.credentialStore = credentialStore
         self.licenseService = licenseService
         self.checkoutURL = checkoutURL
+        self.trialWarningStore = trialWarningStore
         self.now = now
         self.instanceName = instanceName
         state = Self.state(from: trialController.state)
@@ -219,6 +261,7 @@ final class LicenseAccessController: ObservableObject {
             }
 
             credential = newCredential
+            trialWarningDays = nil
             state = .licensed
         } catch {
             activationError = Self.activationError(from: error)
@@ -270,6 +313,67 @@ final class LicenseAccessController: ObservableObject {
         activationError = nil
     }
 
+    func deactivateCurrentDevice() async {
+        guard let credential else { return }
+        guard let licenseService else {
+            deactivationError = .configurationUnavailable
+            return
+        }
+
+        isDeactivating = true
+        deactivationError = nil
+        defer { isDeactivating = false }
+
+        do {
+            try await licenseService.deactivate(
+                licenseKey: credential.licenseKey,
+                instanceID: credential.instanceID
+            )
+            do {
+                try credentialStore.delete()
+            } catch {
+                logStorageFailure(error)
+                deactivationError = .storageUnavailable
+                return
+            }
+
+            self.credential = nil
+            trialWarningDays = nil
+            trialController.refresh()
+            state = Self.state(from: trialController.state)
+        } catch {
+            deactivationError = Self.deactivationError(from: error)
+            state = .licensed
+        }
+    }
+
+    func clearDeactivationError() {
+        deactivationError = nil
+    }
+
+    func prepareTrialWarning() {
+        guard case .trial(let daysRemaining, _) = state,
+              let threshold = Self.warningThreshold(for: daysRemaining),
+              let trialWarningStore else {
+            trialWarningDays = nil
+            return
+        }
+
+        if trialWarningDays == threshold {
+            return
+        }
+        guard !trialWarningStore.hasShownWarning(daysRemaining: threshold) else {
+            trialWarningDays = nil
+            return
+        }
+        trialWarningStore.markWarningShown(daysRemaining: threshold)
+        trialWarningDays = threshold
+    }
+
+    func dismissTrialWarning() {
+        trialWarningDays = nil
+    }
+
     private func invalidateStoredCredential() {
         do {
             try credentialStore.delete()
@@ -277,6 +381,7 @@ final class LicenseAccessController: ObservableObject {
             logStorageFailure(error)
         }
         credential = nil
+        trialWarningDays = nil
         trialController.refresh()
         state = Self.state(from: trialController.state)
     }
@@ -290,6 +395,13 @@ final class LicenseAccessController: ObservableObject {
         case .storageUnavailable:
             return .storageUnavailable
         }
+    }
+
+    private static func warningThreshold(for daysRemaining: Int) -> Int? {
+        if daysRemaining <= 1 { return 1 }
+        if daysRemaining <= 3 { return 3 }
+        if daysRemaining <= 7 { return 7 }
+        return nil
     }
 
     private static func activationError(from error: Error) -> LicenseActivationError {
@@ -324,6 +436,20 @@ final class LicenseAccessController: ObservableObject {
             }
             return .serviceUnavailable
         }
+    }
+
+    private static func deactivationError(from error: Error) -> LicenseDeactivationError {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost, .cannotFindHost,
+                 .cannotConnectToHost, .dnsLookupFailed, .timedOut:
+                return .noNetwork
+            default:
+                return .serviceUnavailable
+            }
+        }
+
+        return .serviceUnavailable
     }
 
     private func logStorageFailure(_ error: Error) {

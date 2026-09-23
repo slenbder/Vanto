@@ -42,6 +42,15 @@ struct PopoverRootView: View {
             )
             Divider()
 
+            if let warningDays = accessController.trialWarningDays {
+                TrialWarningView(
+                    daysRemaining: warningDays,
+                    checkoutURL: accessController.checkoutURL,
+                    onDismiss: accessController.dismissTrialWarning
+                )
+                Divider()
+            }
+
             switch screen {
             case .queue:
                 PasteStackMenu(
@@ -62,6 +71,9 @@ struct PopoverRootView: View {
         }
         .padding()
         .frame(width: popoverWidth)
+        .onAppear {
+            accessController.prepareTrialWarning()
+        }
     }
 
     /// Grow only when the localized status needs more room than the ordinary
