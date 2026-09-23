@@ -34,8 +34,11 @@
 		992A1B6E83F0EDEC786FD07A /* MockPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65655535468346D3640E0109 /* MockPasteboard.swift */; };
 		9BDD75AFCA31CA451F9265F7 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */; };
 		A2554169AB2F2247401AC077 /* PasteQueueApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9120492BC3070642E4907B5D /* PasteQueueApp.swift */; };
+		A4D958E1C352D6B53480240D /* AppUpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2661E94104E380037804EC61 /* AppUpdateController.swift */; };
 		B4667A1078086D65A8735FDD /* PopoverStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */; };
 		B6181F961A331A1642AF4F44 /* TextJoinPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD0D0306CB884156471C9B4A /* TextJoinPreferences.swift */; };
+		D0D07F56EC9A3A250F82ECE1 /* AppUpdateControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0962D0BC7F61F167D7ABD466 /* AppUpdateControllerTests.swift */; };
+		D523C68769820903B6558D6F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = D657781B1ADE0B0FE370F722 /* Sparkle */; };
 		E6B4612BC01D930602F8A6A9 /* PasteAllTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0478BCF0B0B26484F931DAFF /* PasteAllTextView.swift */; };
 		FB61462722C6EACD32F7A3CF /* HotkeySpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */; };
 /* End PBXBuildFile section */
@@ -52,15 +55,18 @@
 
 /* Begin PBXFileReference section */
 		0478BCF0B0B26484F931DAFF /* PasteAllTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteAllTextView.swift; sourceTree = "<group>"; };
+		0962D0BC7F61F167D7ABD466 /* AppUpdateControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateControllerTests.swift; sourceTree = "<group>"; };
 		170F484A230B1FF826B2EA31 /* PasteStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStack.swift; sourceTree = "<group>"; };
 		178563EB14A18621693882F3 /* PasteQueueIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = PasteQueueIcon.icon; sourceTree = "<group>"; };
 		1DB85656CAECC86D5B49BD04 /* TrialAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessController.swift; sourceTree = "<group>"; };
 		2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverStatusRow.swift; sourceTree = "<group>"; };
 		24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpecTests.swift; sourceTree = "<group>"; };
 		2635B0376615070BEE470FF3 /* TrialAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessControllerTests.swift; sourceTree = "<group>"; };
+		2661E94104E380037804EC61 /* AppUpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateController.swift; sourceTree = "<group>"; };
 		2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackTests.swift; sourceTree = "<group>"; };
 		32A80C87B00102D37AC7E4C6 /* LicenseAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessController.swift; sourceTree = "<group>"; };
 		36E67A5BDE0C5DFF02FEC62F /* TextJoinPreferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextJoinPreferenceTests.swift; sourceTree = "<group>"; };
+		3C73C9CEFBB8AA85846300EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		42687F9A5FFBBF3006F1C3CC /* LicenseActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseActivationView.swift; sourceTree = "<group>"; };
 		465A07FD839334047E3C971F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStore.swift; sourceTree = "<group>"; };
@@ -86,6 +92,17 @@
 		EBE3D34118DA9326B75ED5F7 /* LicenseAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessControllerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		8D03E9A9272649B72277DA1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D523C68769820903B6558D6F /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		8B9030C9B34575B9C4C2FC2D = {
 			isa = PBXGroup;
@@ -99,6 +116,7 @@
 		93AA64AD2C56D7894C7BDA2E /* PasteQueueTests */ = {
 			isa = PBXGroup;
 			children = (
+				0962D0BC7F61F167D7ABD466 /* AppUpdateControllerTests.swift */,
 				85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */,
 				24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */,
 				527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */,
@@ -124,10 +142,12 @@
 		E6F5AEF051EAA8C4AE0D1586 /* PasteQueue */ = {
 			isa = PBXGroup;
 			children = (
+				2661E94104E380037804EC61 /* AppUpdateController.swift */,
 				528CD81459766BBCBF3FC34E /* Assets.xcassets */,
 				E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */,
 				4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */,
 				B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */,
+				3C73C9CEFBB8AA85846300EA /* Info.plist */,
 				480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */,
 				56CAEB3DF587F4F7BEA557E6 /* LemonSqueezyLicenseClient.swift */,
 				32A80C87B00102D37AC7E4C6 /* LicenseAccessController.swift */,
@@ -159,6 +179,7 @@
 			buildPhases = (
 				4A7269AB5FCF932C8DAEDBD4 /* Sources */,
 				F87F7C86AA1C5FD64375F078 /* Resources */,
+				8D03E9A9272649B72277DA1F /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,6 +187,7 @@
 			);
 			name = PasteQueue;
 			packageProductDependencies = (
+				D657781B1ADE0B0FE370F722 /* Sparkle */,
 			);
 			productName = PasteQueue;
 			productReference = D8A6A57A3F89CBEF1CA96864 /* PasteQueue.app */;
@@ -223,6 +245,9 @@
 			);
 			mainGroup = 8B9030C9B34575B9C4C2FC2D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				44B88466D11EBF14A53D375E /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DE8AF57C84CD46519F6338CB /* Products */;
 			projectDirPath = "";
@@ -252,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0D07F56EC9A3A250F82ECE1 /* AppUpdateControllerTests.swift in Sources */,
 				11E1060081FA415BE8E21568 /* HotkeyManagerTests.swift in Sources */,
 				FB61462722C6EACD32F7A3CF /* HotkeySpecTests.swift in Sources */,
 				4A46E02B7E214C4AE3063A3F /* LanguagePreferenceStoreTests.swift in Sources */,
@@ -268,6 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4D958E1C352D6B53480240D /* AppUpdateController.swift in Sources */,
 				32E652E0D3699814EE84684F /* ClipboardItem.swift in Sources */,
 				9BDD75AFCA31CA451F9265F7 /* HotkeyManager.swift in Sources */,
 				7D08D5A453D5A9478342E4CC /* HotkeySpec.swift in Sources */,
@@ -312,8 +339,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6D5U6N6YZA;
 				ENABLE_HARDENED_RUNTIME = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_FILE = PasteQueue/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -392,8 +418,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6D5U6N6YZA;
 				ENABLE_HARDENED_RUNTIME = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_FILE = PasteQueue/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -542,6 +567,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		44B88466D11EBF14A53D375E /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D657781B1ADE0B0FE370F722 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 44B88466D11EBF14A53D375E /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0F48336F7766B75314BE0618 /* Project object */;
 }

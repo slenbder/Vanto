@@ -62,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var flashSubscription: AnyCancellable?
     private var accessSubscription: AnyCancellable?
     private var trialExpirationTimer: Timer?
+    private var updateController: AppUpdateController?
     private var pasteRecipientApplication: NSRunningApplication?
     private var isRestoringFocusForPaste = false
     private var activationObserver: NSObjectProtocol?
@@ -98,6 +99,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         // Hide the Dock icon — this is a menu-bar-only utility.
         NSApp.setActivationPolicy(.accessory)
+        updateController = AppUpdateController()
         let accessController = makeAccessController()
         self.accessController = accessController
         accessSubscription = accessController.$state.sink { [weak self] state in
