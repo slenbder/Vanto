@@ -24,6 +24,7 @@ targets:
         SUAllowsAutomaticUpdates: true
         SUAutomaticallyUpdate: true
         SUEnableAutomaticChecks: true
+        SUFeedURL: https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml
         SUPublicEDKey: /W0oJKwTBhrso84bzRUsrUsT8IU1bR8+1aixWVbGOv8=
     settings:
       base:

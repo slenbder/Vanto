@@ -26,6 +26,8 @@
 	<true/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>/W0oJKwTBhrso84bzRUsrUsT8IU1bR8+1aixWVbGOv8=</string>
 </dict>

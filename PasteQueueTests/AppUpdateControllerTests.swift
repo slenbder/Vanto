@@ -31,15 +31,19 @@ final class AppUpdateControllerTests: XCTestCase {
         ]))
     }
 
-    func testBundledSettingsEnableAutomaticUpdatesButWaitForProductionFeed() throws {
+    func testBundledSettingsEnableAutomaticUpdatesFromProductionFeed() throws {
         let info = try XCTUnwrap(Bundle.main.infoDictionary)
         let bundledPublicKey = try XCTUnwrap(info["SUPublicEDKey"] as? String)
+        let feedURL = try XCTUnwrap(info["SUFeedURL"] as? String)
 
         XCTAssertEqual(info["SUEnableAutomaticChecks"] as? Bool, true)
         XCTAssertEqual(info["SUAllowsAutomaticUpdates"] as? Bool, true)
         XCTAssertEqual(info["SUAutomaticallyUpdate"] as? Bool, true)
         XCTAssertEqual(Data(base64Encoded: bundledPublicKey)?.count, 32)
-        XCTAssertNil(info["SUFeedURL"])
-        XCTAssertNil(SparkleUpdateConfiguration.load(from: info))
+        XCTAssertEqual(
+            feedURL,
+            "https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml"
+        )
+        XCTAssertNotNil(SparkleUpdateConfiguration.load(from: info))
     }
 }

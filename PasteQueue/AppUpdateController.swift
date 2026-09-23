@@ -22,9 +22,8 @@ struct SparkleUpdateConfiguration: Equatable {
     }
 }
 
-/// Starts Sparkle only after both release values are embedded in Info.plist. This keeps
-/// development builds quiet and prevents Sparkle from presenting a configuration error while
-/// the production appcast is still being prepared.
+/// Starts Sparkle only after both release values are embedded in Info.plist, preventing the
+/// updater from presenting a configuration error when a local build is missing either value.
 @MainActor
 final class AppUpdateController {
     private(set) var updaterController: SPUStandardUpdaterController?
