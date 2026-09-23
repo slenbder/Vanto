@@ -86,6 +86,10 @@ app имеет ad-hoc подпись и **не является** дистриб
   поддержки, release notes и цена ещё не готовы.
 - Приватный Sparkle EdDSA-ключ хранится в локальном Keychain в записи
   `com.slenbder.pastequeue`; защищённая резервная копия ещё не сделана.
+- `.github/workflows/ci.yml` проверяет PR и push в `main` на Apple Silicon:
+  пересоздаёт проект, запускает XCTest и компилирует Release без подписи. Этот
+  workflow не публикует артефакты; первый результат GitHub Actions нужно
+  подтвердить после push ветки.
 
 ## Ворота до публикации
 
