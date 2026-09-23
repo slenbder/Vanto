@@ -6,6 +6,7 @@ struct SettingsMenu: View {
     @ObservedObject var stack: PasteStack
     @ObservedObject var hotkeyManager: HotkeyManager
     @ObservedObject var languageStore: LanguagePreferenceStore
+    @ObservedObject var accessController: LicenseAccessController
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -32,6 +33,10 @@ struct SettingsMenu: View {
             Divider()
 
             launchAtLoginSection
+
+            Divider()
+
+            LicenseSettingsSection(accessController: accessController)
 
             Divider()
 

@@ -11,17 +11,24 @@
 		11E1060081FA415BE8E21568 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */; };
 		183FC893964C5251788FF8D5 /* LanguagePreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */; };
 		18E6CFED2EC423EFB03FD46E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 528CD81459766BBCBF3FC34E /* Assets.xcassets */; };
+		1A26814CB48BF4E1EAE5753C /* LicenseAccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A80C87B00102D37AC7E4C6 /* LicenseAccessController.swift */; };
 		1CBB4AC2AF49121992D35BC0 /* PasteStackMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9208B0DE1CB41D6CDACC1E2 /* PasteStackMenu.swift */; };
+		1F753AE01E1A7139712F290D /* LemonSqueezyLicenseClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A319F2D6D0833C5F22909A83 /* LemonSqueezyLicenseClientTests.swift */; };
 		25773BF0BEC1EA5F523240BC /* ShortcutRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */; };
 		26968079B750BA0E08E5D3B2 /* PasteStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */; };
+		2FF9DACABCA44A9A9EEDD0EE /* LicenseAccessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE3D34118DA9326B75ED5F7 /* LicenseAccessControllerTests.swift */; };
+		30156E18FFC6C7266152357C /* TrialAccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB85656CAECC86D5B49BD04 /* TrialAccessController.swift */; };
 		32E652E0D3699814EE84684F /* ClipboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */; };
 		37BFCE000515332E7669FD47 /* ShortcutStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */; };
 		3EC6B04D8528F1A4D884B694 /* PasteStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170F484A230B1FF826B2EA31 /* PasteStack.swift */; };
 		4A46E02B7E214C4AE3063A3F /* LanguagePreferenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */; };
+		4A5FE48B97551D099BC22661 /* TrialAccessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2635B0376615070BEE470FF3 /* TrialAccessControllerTests.swift */; };
 		5A141DBBDA76AF9E6E26853F /* PopoverRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C78ED48C8CDD0045F3EA3391 /* PopoverRootView.swift */; };
 		5CD63F2F22A71250EC7B0B25 /* PasteboardProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */; };
+		62B1DF6F6BE16B97F7128B77 /* LemonSqueezyLicenseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CAEB3DF587F4F7BEA557E6 /* LemonSqueezyLicenseClient.swift */; };
 		666F47969565F0FE25FD3C43 /* TextJoinPreferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E67A5BDE0C5DFF02FEC62F /* TextJoinPreferenceTests.swift */; };
 		7D08D5A453D5A9478342E4CC /* HotkeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */; };
+		7DC6DD40484EBD3645B8FDDF /* LicenseActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42687F9A5FFBBF3006F1C3CC /* LicenseActivationView.swift */; };
 		7E5CD219BF1550727879683E /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 465A07FD839334047E3C971F /* Localizable.xcstrings */; };
 		851BF0F37FCA6A751BD5B166 /* SettingsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0E5A625ED24921506144AE /* SettingsMenu.swift */; };
 		992A1B6E83F0EDEC786FD07A /* MockPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65655535468346D3640E0109 /* MockPasteboard.swift */; };
@@ -47,22 +54,28 @@
 		0478BCF0B0B26484F931DAFF /* PasteAllTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteAllTextView.swift; sourceTree = "<group>"; };
 		170F484A230B1FF826B2EA31 /* PasteStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStack.swift; sourceTree = "<group>"; };
 		178563EB14A18621693882F3 /* PasteQueueIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = PasteQueueIcon.icon; sourceTree = "<group>"; };
+		1DB85656CAECC86D5B49BD04 /* TrialAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessController.swift; sourceTree = "<group>"; };
 		2135C07CC2A713B0B912EDB7 /* PopoverStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverStatusRow.swift; sourceTree = "<group>"; };
 		24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpecTests.swift; sourceTree = "<group>"; };
+		2635B0376615070BEE470FF3 /* TrialAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessControllerTests.swift; sourceTree = "<group>"; };
 		2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackTests.swift; sourceTree = "<group>"; };
+		32A80C87B00102D37AC7E4C6 /* LicenseAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessController.swift; sourceTree = "<group>"; };
 		36E67A5BDE0C5DFF02FEC62F /* TextJoinPreferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextJoinPreferenceTests.swift; sourceTree = "<group>"; };
+		42687F9A5FFBBF3006F1C3CC /* LicenseActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseActivationView.swift; sourceTree = "<group>"; };
 		465A07FD839334047E3C971F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStore.swift; sourceTree = "<group>"; };
 		4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
 		527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStoreTests.swift; sourceTree = "<group>"; };
 		528CD81459766BBCBF3FC34E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		54D1FD43BC2B929DE1CE83D2 /* PasteQueueTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PasteQueueTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56CAEB3DF587F4F7BEA557E6 /* LemonSqueezyLicenseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemonSqueezyLicenseClient.swift; sourceTree = "<group>"; };
 		65655535468346D3640E0109 /* MockPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPasteboard.swift; sourceTree = "<group>"; };
 		6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderField.swift; sourceTree = "<group>"; };
 		7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutStoring.swift; sourceTree = "<group>"; };
 		85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
 		8B0E5A625ED24921506144AE /* SettingsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMenu.swift; sourceTree = "<group>"; };
 		9120492BC3070642E4907B5D /* PasteQueueApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteQueueApp.swift; sourceTree = "<group>"; };
+		A319F2D6D0833C5F22909A83 /* LemonSqueezyLicenseClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemonSqueezyLicenseClientTests.swift; sourceTree = "<group>"; };
 		B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpec.swift; sourceTree = "<group>"; };
 		B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardProviding.swift; sourceTree = "<group>"; };
 		B9208B0DE1CB41D6CDACC1E2 /* PasteStackMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackMenu.swift; sourceTree = "<group>"; };
@@ -70,6 +83,7 @@
 		C78ED48C8CDD0045F3EA3391 /* PopoverRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverRootView.swift; sourceTree = "<group>"; };
 		D8A6A57A3F89CBEF1CA96864 /* PasteQueue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PasteQueue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E070C7618F5A26FB8BCCEB24 /* ClipboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItem.swift; sourceTree = "<group>"; };
+		EBE3D34118DA9326B75ED5F7 /* LicenseAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessControllerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -88,9 +102,12 @@
 				85B7CF7FFF2433BF87ABFE8C /* HotkeyManagerTests.swift */,
 				24DA1B44A90A80D204C74259 /* HotkeySpecTests.swift */,
 				527F4C9EBCE06AA724FAD8C9 /* LanguagePreferenceStoreTests.swift */,
+				A319F2D6D0833C5F22909A83 /* LemonSqueezyLicenseClientTests.swift */,
+				EBE3D34118DA9326B75ED5F7 /* LicenseAccessControllerTests.swift */,
 				65655535468346D3640E0109 /* MockPasteboard.swift */,
 				2DB95A19318010D0F5A4F661 /* PasteStackTests.swift */,
 				36E67A5BDE0C5DFF02FEC62F /* TextJoinPreferenceTests.swift */,
+				2635B0376615070BEE470FF3 /* TrialAccessControllerTests.swift */,
 			);
 			path = PasteQueueTests;
 			sourceTree = "<group>";
@@ -112,6 +129,9 @@
 				4A751B5C6E7CDFBC548E294E /* HotkeyManager.swift */,
 				B0B5B941CF5CBD6ABCA35DD3 /* HotkeySpec.swift */,
 				480C596D58CCDF6795C756B5 /* LanguagePreferenceStore.swift */,
+				56CAEB3DF587F4F7BEA557E6 /* LemonSqueezyLicenseClient.swift */,
+				32A80C87B00102D37AC7E4C6 /* LicenseAccessController.swift */,
+				42687F9A5FFBBF3006F1C3CC /* LicenseActivationView.swift */,
 				465A07FD839334047E3C971F /* Localizable.xcstrings */,
 				0478BCF0B0B26484F931DAFF /* PasteAllTextView.swift */,
 				B863ECEAD09F51055FAA2930 /* PasteboardProviding.swift */,
@@ -125,6 +145,7 @@
 				6C73FDC470D8629370B89505 /* ShortcutRecorderField.swift */,
 				7A095CDCDCEA00724CDBAFDF /* ShortcutStoring.swift */,
 				BD0D0306CB884156471C9B4A /* TextJoinPreferences.swift */,
+				1DB85656CAECC86D5B49BD04 /* TrialAccessController.swift */,
 			);
 			path = PasteQueue;
 			sourceTree = "<group>";
@@ -234,9 +255,12 @@
 				11E1060081FA415BE8E21568 /* HotkeyManagerTests.swift in Sources */,
 				FB61462722C6EACD32F7A3CF /* HotkeySpecTests.swift in Sources */,
 				4A46E02B7E214C4AE3063A3F /* LanguagePreferenceStoreTests.swift in Sources */,
+				1F753AE01E1A7139712F290D /* LemonSqueezyLicenseClientTests.swift in Sources */,
+				2FF9DACABCA44A9A9EEDD0EE /* LicenseAccessControllerTests.swift in Sources */,
 				992A1B6E83F0EDEC786FD07A /* MockPasteboard.swift in Sources */,
 				26968079B750BA0E08E5D3B2 /* PasteStackTests.swift in Sources */,
 				666F47969565F0FE25FD3C43 /* TextJoinPreferenceTests.swift in Sources */,
+				4A5FE48B97551D099BC22661 /* TrialAccessControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +272,9 @@
 				9BDD75AFCA31CA451F9265F7 /* HotkeyManager.swift in Sources */,
 				7D08D5A453D5A9478342E4CC /* HotkeySpec.swift in Sources */,
 				183FC893964C5251788FF8D5 /* LanguagePreferenceStore.swift in Sources */,
+				62B1DF6F6BE16B97F7128B77 /* LemonSqueezyLicenseClient.swift in Sources */,
+				1A26814CB48BF4E1EAE5753C /* LicenseAccessController.swift in Sources */,
+				7DC6DD40484EBD3645B8FDDF /* LicenseActivationView.swift in Sources */,
 				E6B4612BC01D930602F8A6A9 /* PasteAllTextView.swift in Sources */,
 				A2554169AB2F2247401AC077 /* PasteQueueApp.swift in Sources */,
 				3EC6B04D8528F1A4D884B694 /* PasteStack.swift in Sources */,
@@ -259,6 +286,7 @@
 				25773BF0BEC1EA5F523240BC /* ShortcutRecorderField.swift in Sources */,
 				37BFCE000515332E7669FD47 /* ShortcutStoring.swift in Sources */,
 				B6181F961A331A1642AF4F44 /* TextJoinPreferences.swift in Sources */,
+				30156E18FFC6C7266152357C /* TrialAccessController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
