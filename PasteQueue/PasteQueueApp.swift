@@ -62,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var flashSubscription: AnyCancellable?
     private var accessSubscription: AnyCancellable?
     private var trialExpirationTimer: Timer?
+    private var licenseValidationTimer: Timer?
     private var updateController: AppUpdateController?
     private var pasteRecipientApplication: NSRunningApplication?
     private var isRestoringFocusForPaste = false
@@ -117,13 +118,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         )
         PasteStack.shared.refreshLaunchAtLoginStatus()
         setUpStatusItem()
-        Task {
-            await accessController.validateIfNeeded()
-        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         trialExpirationTimer?.invalidate()
+        licenseValidationTimer?.invalidate()
         removePopoverEventMonitors()
     }
 
@@ -421,6 +420,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private func handleAccessState(_ state: LicenseAccessState) {
         trialExpirationTimer?.invalidate()
         trialExpirationTimer = nil
+        licenseValidationTimer?.invalidate()
+        licenseValidationTimer = nil
 
         switch state {
         case .trial(_, let expiresAt):
@@ -435,9 +436,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             if PasteStack.shared.isCollecting {
                 PasteStack.shared.toggleCollecting()
             }
-        case .licensed, .storageUnavailable:
+        case .licensed:
+            scheduleLicenseValidation()
+        case .storageUnavailable:
             break
         }
+    }
+
+    private func scheduleLicenseValidation() {
+        licenseValidationTimer?.invalidate()
+        licenseValidationTimer = nil
+        guard let accessController,
+              let nextValidationAt = accessController.nextValidationAt else { return }
+
+        let timer = Timer(fire: nextValidationAt, interval: 0, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, let accessController = self.accessController else { return }
+                await accessController.validateIfNeeded()
+                self.scheduleLicenseValidation()
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        licenseValidationTimer = timer
     }
 
     private func makeAccessController() -> LicenseAccessController {

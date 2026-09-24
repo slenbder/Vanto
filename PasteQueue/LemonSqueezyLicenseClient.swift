@@ -67,6 +67,7 @@ struct LicenseValidation: Equatable {
 
 enum LemonSqueezyLicenseError: Error, Equatable {
     case invalidResponse
+    case httpError(statusCode: Int, message: String)
     case rejected(message: String)
     case productMismatch
     case inactiveLicense
@@ -183,9 +184,16 @@ final class LemonSqueezyLicenseClient: LicenseServicing {
         request.httpBody = components.percentEncodedQuery?.data(using: .utf8)
 
         let (data, urlResponse) = try await session.data(for: request)
-        guard let httpResponse = urlResponse as? HTTPURLResponse,
-              (200..<300).contains(httpResponse.statusCode) else {
+        guard let httpResponse = urlResponse as? HTTPURLResponse else {
             throw LemonSqueezyLicenseError.invalidResponse
+        }
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            let message = (try? decoder.decode(LemonErrorResponse.self, from: data).error)
+                ?? "License request failed."
+            throw LemonSqueezyLicenseError.httpError(
+                statusCode: httpResponse.statusCode,
+                message: message
+            )
         }
 
         do {
@@ -194,6 +202,10 @@ final class LemonSqueezyLicenseClient: LicenseServicing {
             throw LemonSqueezyLicenseError.invalidResponse
         }
     }
+}
+
+private struct LemonErrorResponse: Decodable {
+    let error: String?
 }
 
 private struct LemonLicenseMetadata: Decodable {

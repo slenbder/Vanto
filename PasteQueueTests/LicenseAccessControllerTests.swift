@@ -128,6 +128,81 @@ final class LicenseAccessControllerTests: XCTestCase {
         )
     }
 
+    func testNotFoundValidationDeletesStaleCredential() async {
+        let current = start.addingTimeInterval(20 * 24 * 60 * 60)
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "missing-instance",
+                activatedAt: start,
+                lastValidatedAt: start
+            )
+        )
+        let service = MockLicenseService(
+            validateError: LemonSqueezyLicenseError.httpError(
+                statusCode: 404,
+                message: "License key instance not found."
+            )
+        )
+        let controller = makeController(
+            now: current,
+            trialStartedAt: start,
+            credentialStore: store,
+            service: service
+        )
+
+        await controller.validateIfNeeded()
+
+        XCTAssertNil(store.credential)
+        XCTAssertFalse(controller.grantsAccess)
+    }
+
+    func testServerValidationFailureKeepsPaidAccessAndSchedulesRetry() async {
+        var current = start.addingTimeInterval(20 * 24 * 60 * 60)
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "instance-1",
+                activatedAt: start,
+                lastValidatedAt: start
+            )
+        )
+        let service = MockLicenseService(
+            validateError: LemonSqueezyLicenseError.httpError(
+                statusCode: 503,
+                message: "Service unavailable."
+            )
+        )
+        let trialController = TrialAccessController(
+            store: AccessMockTrialStore(
+                record: TrialRecord(startedAt: start, latestObservedAt: start)
+            ),
+            now: { current }
+        )
+        let controller = LicenseAccessController(
+            trialController: trialController,
+            credentialStore: store,
+            licenseService: service,
+            checkoutURL: URL(string: "https://example.com/buy"),
+            now: { current },
+            instanceName: { "Test Mac" }
+        )
+
+        await controller.validateIfNeeded()
+
+        XCTAssertEqual(controller.state, .licensed)
+        let retryAt = current.addingTimeInterval(LicenseAccessController.validationRetryInterval)
+        XCTAssertEqual(controller.nextValidationAt, retryAt)
+
+        current = current.addingTimeInterval(60 * 60)
+        controller.refresh()
+        XCTAssertEqual(
+            controller.nextValidationAt,
+            retryAt,
+            "Ordinary app activity must not keep postponing a failed validation retry."
+        )
+    }
+
     func testRecentValidationSkipsNetworkRequest() async {
         let current = start.addingTimeInterval(2 * 24 * 60 * 60)
         let credential = LicenseCredential(
@@ -148,6 +223,37 @@ final class LicenseAccessControllerTests: XCTestCase {
 
         XCTAssertTrue(service.validatedInstanceIDs.isEmpty)
         XCTAssertEqual(controller.state, .licensed)
+        XCTAssertEqual(
+            controller.nextValidationAt,
+            start.addingTimeInterval(LicenseAccessController.validationInterval)
+        )
+    }
+
+    func testValidationSaveFailureDoesNotScheduleImmediateRetry() async {
+        let current = start.addingTimeInterval(8 * 24 * 60 * 60)
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "instance-1",
+                activatedAt: start,
+                lastValidatedAt: start
+            ),
+            saveError: MockLicenseCredentialStore.TestError.unavailable
+        )
+        let controller = makeController(
+            now: current,
+            trialStartedAt: start,
+            credentialStore: store,
+            service: MockLicenseService()
+        )
+
+        await controller.validateIfNeeded()
+
+        XCTAssertEqual(controller.state, .licensed)
+        XCTAssertEqual(
+            controller.nextValidationAt,
+            current.addingTimeInterval(LicenseAccessController.validationInterval)
+        )
     }
 
     func testActivationLimitGetsSpecificUserFacingError() async {
@@ -166,6 +272,42 @@ final class LicenseAccessControllerTests: XCTestCase {
 
         XCTAssertEqual(controller.activationError, .activationLimitReached)
         XCTAssertTrue(controller.grantsAccess)
+    }
+
+    func testHTTPActivationLimitGetsSpecificUserFacingError() async {
+        let service = MockLicenseService(
+            activateError: LemonSqueezyLicenseError.httpError(
+                statusCode: 400,
+                message: "This license key has reached the activation limit."
+            )
+        )
+        let controller = makeController(
+            now: start,
+            trialStartedAt: start,
+            service: service
+        )
+
+        await controller.activate(licenseKey: "KEY")
+
+        XCTAssertEqual(controller.activationError, .activationLimitReached)
+    }
+
+    func testHTTPNotFoundActivationGetsInvalidKeyError() async {
+        let service = MockLicenseService(
+            activateError: LemonSqueezyLicenseError.httpError(
+                statusCode: 404,
+                message: "License key not found."
+            )
+        )
+        let controller = makeController(
+            now: start,
+            trialStartedAt: start,
+            service: service
+        )
+
+        await controller.activate(licenseKey: "MISSING")
+
+        XCTAssertEqual(controller.activationError, .invalidKey)
     }
 
     func testDeactivationReleasesInstanceAndFallsBackToExpiredTrial() async {
@@ -219,6 +361,65 @@ final class LicenseAccessControllerTests: XCTestCase {
         XCTAssertEqual(controller.state, .licensed)
         XCTAssertEqual(controller.deactivationError, .noNetwork)
         XCTAssertNotNil(store.credential)
+    }
+
+    func testLocalDeactivationCleanupRetryDoesNotCallServerTwice() async {
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "instance-1",
+                activatedAt: start,
+                lastValidatedAt: start
+            ),
+            deleteError: MockLicenseCredentialStore.TestError.unavailable
+        )
+        let service = MockLicenseService()
+        let controller = makeController(
+            now: start.addingTimeInterval(20 * 24 * 60 * 60),
+            trialStartedAt: start,
+            credentialStore: store,
+            service: service
+        )
+
+        await controller.deactivateCurrentDevice()
+        XCTAssertEqual(controller.deactivationError, .storageUnavailable)
+        XCTAssertEqual(service.deactivatedInstanceIDs, ["instance-1"])
+
+        store.deleteError = nil
+        await controller.deactivateCurrentDevice()
+
+        XCTAssertEqual(service.deactivatedInstanceIDs, ["instance-1"])
+        XCTAssertNil(store.credential)
+        XCTAssertFalse(controller.grantsAccess)
+    }
+
+    func testMissingServerInstanceStillClearsLocalCredentialOnDeactivation() async {
+        let store = MockLicenseCredentialStore(
+            credential: LicenseCredential(
+                licenseKey: "KEY",
+                instanceID: "missing-instance",
+                activatedAt: start,
+                lastValidatedAt: start
+            )
+        )
+        let service = MockLicenseService(
+            deactivateError: LemonSqueezyLicenseError.httpError(
+                statusCode: 404,
+                message: "License key instance not found."
+            )
+        )
+        let controller = makeController(
+            now: start.addingTimeInterval(20 * 24 * 60 * 60),
+            trialStartedAt: start,
+            credentialStore: store,
+            service: service
+        )
+
+        await controller.deactivateCurrentDevice()
+
+        XCTAssertNil(store.credential)
+        XCTAssertFalse(controller.grantsAccess)
+        XCTAssertNil(controller.deactivationError)
     }
 
     func testTrialWarningsAppearOnceAtSevenThreeAndOneDayThresholds() {

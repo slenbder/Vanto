@@ -158,6 +158,7 @@ enum LicenseDeactivationError: Equatable {
 @MainActor
 final class LicenseAccessController: ObservableObject {
     static let validationInterval: TimeInterval = 7 * 24 * 60 * 60
+    static let validationRetryInterval: TimeInterval = 6 * 60 * 60
 
     @Published private(set) var state: LicenseAccessState
     @Published private(set) var isActivating = false
@@ -175,6 +176,9 @@ final class LicenseAccessController: ObservableObject {
     private let now: () -> Date
     private let instanceName: () -> String
     private var credential: LicenseCredential?
+    private var needsLocalCredentialCleanup = false
+    private var retryValidationAt: Date?
+    private var isValidating = false
 
     init(
         trialController: TrialAccessController,
@@ -209,6 +213,14 @@ final class LicenseAccessController: ObservableObject {
 
     var grantsAccess: Bool {
         state.grantsAccess
+    }
+
+    /// The next time the app should ask the service to validate the stored instance. A failed
+    /// due check keeps access available and retries later instead of spinning continuously.
+    var nextValidationAt: Date? {
+        guard !isValidating, let credential, licenseService != nil else { return nil }
+        return retryValidationAt
+            ?? credential.lastValidatedAt.addingTimeInterval(Self.validationInterval)
     }
 
     func refresh() {
@@ -261,6 +273,7 @@ final class LicenseAccessController: ObservableObject {
             }
 
             credential = newCredential
+            retryValidationAt = nil
             trialWarningDays = nil
             state = .licensed
         } catch {
@@ -273,9 +286,14 @@ final class LicenseAccessController: ObservableObject {
     /// response removes the credential and falls back to the local trial state.
     func validateIfNeeded(force: Bool = false) async {
         guard var credential, let licenseService else { return }
-        guard force || now().timeIntervalSince(credential.lastValidatedAt) >= Self.validationInterval else {
-            return
-        }
+        guard !isValidating else { return }
+        let currentDate = now()
+        let dueAt = retryValidationAt
+            ?? credential.lastValidatedAt.addingTimeInterval(Self.validationInterval)
+        guard force || currentDate >= dueAt else { return }
+
+        isValidating = true
+        defer { isValidating = false }
 
         do {
             let validation = try await licenseService.validate(
@@ -288,12 +306,14 @@ final class LicenseAccessController: ObservableObject {
             }
 
             credential.lastValidatedAt = now()
+            retryValidationAt = nil
+            self.credential = credential
             do {
                 try credentialStore.save(credential)
-                self.credential = credential
             } catch {
                 // The existing credential remains usable. A Keychain write failure must not
-                // lock out someone whose license was just confirmed by the server.
+                // lock out someone whose license was just confirmed by the server. Keep the
+                // refreshed timestamp in memory so the running app does not retry in a loop.
                 logStorageFailure(error)
             }
             state = .licensed
@@ -301,10 +321,15 @@ final class LicenseAccessController: ObservableObject {
             switch error {
             case .productMismatch, .inactiveLicense, .missingInstance:
                 invalidateStoredCredential()
-            case .invalidResponse, .rejected:
+            case .httpError(let statusCode, _)
+                where Self.definitiveCredentialStatusCodes.contains(statusCode):
+                invalidateStoredCredential()
+            case .invalidResponse, .httpError, .rejected:
+                retryValidationAt = now().addingTimeInterval(Self.validationRetryInterval)
                 state = .licensed
             }
         } catch {
+            retryValidationAt = now().addingTimeInterval(Self.validationRetryInterval)
             state = .licensed
         }
     }
@@ -315,36 +340,56 @@ final class LicenseAccessController: ObservableObject {
 
     func deactivateCurrentDevice() async {
         guard let credential else { return }
-        guard let licenseService else {
-            deactivationError = .configurationUnavailable
-            return
-        }
 
         isDeactivating = true
         deactivationError = nil
         defer { isDeactivating = false }
 
-        do {
-            try await licenseService.deactivate(
-                licenseKey: credential.licenseKey,
-                instanceID: credential.instanceID
-            )
-            do {
-                try credentialStore.delete()
-            } catch {
-                logStorageFailure(error)
-                deactivationError = .storageUnavailable
+        if !needsLocalCredentialCleanup {
+            guard let licenseService else {
+                deactivationError = .configurationUnavailable
                 return
             }
 
-            self.credential = nil
-            trialWarningDays = nil
-            trialController.refresh()
-            state = Self.state(from: trialController.state)
-        } catch {
-            deactivationError = Self.deactivationError(from: error)
-            state = .licensed
+            do {
+                try await licenseService.deactivate(
+                    licenseKey: credential.licenseKey,
+                    instanceID: credential.instanceID
+                )
+                needsLocalCredentialCleanup = true
+            } catch let error as LemonSqueezyLicenseError {
+                if case .httpError(let statusCode, _) = error,
+                   Self.definitiveCredentialStatusCodes.contains(statusCode) {
+                    // The server no longer recognizes this key/instance. For a user-requested
+                    // deactivation, removing the stale local credential is the correct recovery.
+                    needsLocalCredentialCleanup = true
+                } else {
+                    deactivationError = Self.deactivationError(from: error)
+                    state = .licensed
+                    return
+                }
+            } catch {
+                deactivationError = Self.deactivationError(from: error)
+                state = .licensed
+                return
+            }
         }
+
+        do {
+            try credentialStore.delete()
+        } catch {
+            logStorageFailure(error)
+            deactivationError = .storageUnavailable
+            state = .licensed
+            return
+        }
+
+        needsLocalCredentialCleanup = false
+        self.credential = nil
+        retryValidationAt = nil
+        trialWarningDays = nil
+        trialController.refresh()
+        state = Self.state(from: trialController.state)
     }
 
     func clearDeactivationError() {
@@ -381,6 +426,7 @@ final class LicenseAccessController: ObservableObject {
             logStorageFailure(error)
         }
         credential = nil
+        retryValidationAt = nil
         trialWarningDays = nil
         trialController.refresh()
         state = Self.state(from: trialController.state)
@@ -425,17 +471,30 @@ final class LicenseAccessController: ObservableObject {
             return .invalidKey
         case .invalidResponse:
             return .serviceUnavailable
+        case .httpError(let statusCode, let message):
+            if statusCode == 429 || statusCode >= 500 {
+                return .serviceUnavailable
+            }
+            return activationError(fromServerMessage: message, statusCode: statusCode)
         case .rejected(let message):
-            let normalizedMessage = message.lowercased()
-            if normalizedMessage.contains("activation limit") {
-                return .activationLimitReached
-            }
-            if normalizedMessage.contains("license key")
-                && (normalizedMessage.contains("invalid") || normalizedMessage.contains("not found")) {
-                return .invalidKey
-            }
-            return .serviceUnavailable
+            return activationError(fromServerMessage: message)
         }
+    }
+
+    private static func activationError(
+        fromServerMessage message: String,
+        statusCode: Int? = nil
+    ) -> LicenseActivationError {
+        let normalizedMessage = message.lowercased()
+        if normalizedMessage.contains("activation limit") {
+            return .activationLimitReached
+        }
+        if statusCode == 404
+            || normalizedMessage.contains("license key")
+                && (normalizedMessage.contains("invalid") || normalizedMessage.contains("not found")) {
+            return .invalidKey
+        }
+        return .serviceUnavailable
     }
 
     private static func deactivationError(from error: Error) -> LicenseDeactivationError {
@@ -451,6 +510,8 @@ final class LicenseAccessController: ObservableObject {
 
         return .serviceUnavailable
     }
+
+    private static let definitiveCredentialStatusCodes: Set<Int> = [400, 404, 422]
 
     private func logStorageFailure(_ error: Error) {
         let nsError = error as NSError

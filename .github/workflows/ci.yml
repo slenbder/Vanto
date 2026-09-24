@@ -30,6 +30,9 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
+      - name: Verify generated project is committed
+        run: git diff --exit-code -- PasteQueue.xcodeproj PasteQueue/Info.plist
+
       - name: Run unit tests
         run: >-
           xcodebuild test

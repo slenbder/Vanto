@@ -76,13 +76,10 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
         let session = MockURLSession { request in
             Self.response(
                 for: request,
+                statusCode: 400,
                 json: """
                 {
-                  "activated": false,
-                  "error": "This license key has reached the activation limit.",
-                  "license_key": {"status":"active","activation_limit":3,"activation_usage":3},
-                  "instance": null,
-                  "meta": {"store_id":480340,"product_id":1379329,"variant_id":2154757}
+                  "error": "This license key has reached the activation limit."
                 }
                 """
             )
@@ -94,7 +91,33 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
         } catch let error as LemonSqueezyLicenseError {
             XCTAssertEqual(
                 error,
-                .rejected(message: "This license key has reached the activation limit.")
+                .httpError(
+                    statusCode: 400,
+                    message: "This license key has reached the activation limit."
+                )
+            )
+        }
+    }
+
+    func testValidationPreservesNotFoundStatusAndMessage() async throws {
+        let session = MockURLSession { request in
+            Self.response(
+                for: request,
+                statusCode: 404,
+                json: #"{"error":"License key instance not found."}"#
+            )
+        }
+
+        do {
+            _ = try await makeClient(session: session).validate(
+                licenseKey: "TEST-KEY",
+                instanceID: "missing-instance"
+            )
+            XCTFail("Expected HTTP error")
+        } catch let error as LemonSqueezyLicenseError {
+            XCTAssertEqual(
+                error,
+                .httpError(statusCode: 404, message: "License key instance not found.")
             )
         }
     }
@@ -135,9 +158,13 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
         )
     }
 
-    private static func response(for request: URLRequest, json: String) -> (HTTPURLResponse, Data) {
+    private static func response(
+        for request: URLRequest,
+        statusCode: Int = 200,
+        json: String
+    ) -> (HTTPURLResponse, Data) {
         (
-            HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!,
+            HTTPURLResponse(url: request.url!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!,
             Data(json.utf8)
         )
     }
