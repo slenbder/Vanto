@@ -21,6 +21,13 @@ Regenerate the project after changing `project.yml`:
 xcodegen generate
 ```
 
+XcodeGen also writes `PasteQueue/Info.plist` from `info.properties` in
+`project.yml`, so edit keys there. CI regenerates both files and fails if the
+committed copies differ.
+
+The only package dependency is Sparkle 2.10.0 (Swift Package Manager, pinned
+with `exactVersion`). Xcode resolves it on the first build.
+
 ## Build
 
 ```sh
@@ -42,6 +49,24 @@ System Settings → Privacy & Security → Accessibility. If a rebuilt app stops
 receiving shortcuts, remove the stale entry and add the current build again
 before treating it as a code issue.
 
+## Licensing configuration
+
+Lemon Squeezy values are per-configuration build settings in `project.yml`,
+embedded into Info.plist:
+
+| Setting | Debug | Release |
+|---------|-------|---------|
+| `LEMON_SQUEEZY_STORE_ID` | 480340 | 480340 |
+| `LEMON_SQUEEZY_PRODUCT_ID` | 1379329 (test mode) | 1379630 (live) |
+| `LEMON_SQUEEZY_VARIANT_ID` | 2154757 (test mode) | 2155206 (live) |
+| `LEMON_SQUEEZY_CHECKOUT_URL` | test checkout | live checkout |
+
+A pre-build script fails `xcodebuild archive` when any value is empty, so a
+Release archive cannot ship without a working purchase path. Debug builds keep
+their trial and license in separate Keychain items (`….debug`), so development
+never uses up the real trial on your Mac. To test the post-trial screen,
+delete the `com.slenbder.pastequeue.trial.debug` item in Keychain Access.
+
 ## Release configuration
 
 The first release targets direct website download for Apple Silicon.
@@ -61,6 +86,19 @@ describes the signing and Hardened Runtime requirements. The Mac App Store is
 a separate path whose sandbox and review feasibility has not been proven for
 this app. See `docs/RELEASE_HANDOFF.md` for the remaining product and manual QA
 decisions.
+
+Updates are delivered by Sparkle from `appcast.xml` on `main`. The embedded
+`SUPublicEDKey` must match the private EdDSA key in the local Keychain (item
+`com.slenbder.pastequeue`); sign each update archive with Sparkle's
+`sign_update`. Add the appcast entry only after the artifact is uploaded and
+verified: that push is what ships the update.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on pull requests to `main`, pushes to `main`,
+and manual dispatch, on a `macos-15` Apple Silicon runner. It regenerates the
+project, checks for drift, runs `PasteQueueTests`, and compiles Release
+without signing. It does not archive, sign, or publish anything.
 
 ## Tests
 
