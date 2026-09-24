@@ -170,7 +170,11 @@ final class HotkeyManager: ObservableObject {
     /// Installs the real global+local NSEvent monitors and wires the production paste
     /// route. Only ever called from AppDelegate.applicationDidFinishLaunching, which itself
     /// returns before this for the test host — never exercised by PasteQueueTests.
-    func start(pasteRequestHandler: @escaping ActionHandler = { PasteStack.shared.pasteNext() }) {
+    func start(
+        toggleCollectingHandler: @escaping ActionHandler = { PasteStack.shared.toggleCollecting() },
+        pasteRequestHandler: @escaping ActionHandler = { PasteStack.shared.pasteNext() }
+    ) {
+        self.toggleCollectingHandler = toggleCollectingHandler
         self.pasteRequestHandler = pasteRequestHandler
         requestAccessibilityIfNeeded()
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in

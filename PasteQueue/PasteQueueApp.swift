@@ -53,12 +53,17 @@ final class CenteredLabelView: NSView {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var statusItem: NSStatusItem?
     private var countLabel: CenteredLabelView?
     private var popover: NSPopover?
     private var queueSubscription: AnyCancellable?
     private var flashSubscription: AnyCancellable?
+    private var accessSubscription: AnyCancellable?
+    private var trialExpirationTimer: Timer?
+    private var licenseValidationTimer: Timer?
+    private var updateController: AppUpdateController?
     private var pasteRecipientApplication: NSRunningApplication?
     private var isRestoringFocusForPaste = false
     private var activationObserver: NSObjectProtocol?
@@ -68,6 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var localMouseMonitor: Any?
     private var escapeKeyMonitor: Any?
     private var isClosingPopover = false
+    private var accessController: LicenseAccessController?
 
     private enum PasteRequestSource: String {
         case button
@@ -94,14 +100,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         // Hide the Dock icon — this is a menu-bar-only utility.
         NSApp.setActivationPolicy(.accessory)
-        HotkeyManager.shared.start { [weak self] in
-            self?.requestPaste(source: .hotkey)
+        updateController = AppUpdateController()
+        let accessController = makeAccessController()
+        self.accessController = accessController
+        accessSubscription = accessController.$state.sink { [weak self] state in
+            Task { @MainActor [weak self] in
+                self?.handleAccessState(state)
+            }
         }
+        HotkeyManager.shared.start(
+            toggleCollectingHandler: { [weak self] in
+                self?.requestToggleCollecting()
+            },
+            pasteRequestHandler: { [weak self] in
+                self?.requestPaste(source: .hotkey)
+            }
+        )
         PasteStack.shared.refreshLaunchAtLoginStatus()
         setUpStatusItem()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        trialExpirationTimer?.invalidate()
+        licenseValidationTimer?.invalidate()
         removePopoverEventMonitors()
     }
 
@@ -246,21 +267,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         if popover.isShown {
             closePopover(reason: .statusItem)
         } else {
-            rememberExternalFrontmostApplication()
-            // .accessory apps never become the active app on their own. Activating when the
-            // user explicitly opens the menu lets the popover receive keyboard focus; later
-            // paste requests return focus to the remembered external recipient.
-            NSApp.activate(ignoringOtherApps: true)
-            PasteStack.shared.refreshLaunchAtLoginStatus()
-            isClosingPopover = false
-            let minimumQueueListHeight = PasteStackMenu.listHeight(for: PasteStack.shared.queue)
-            popover.contentViewController = makePopoverContentController(
-                minimumQueueListHeight: minimumQueueListHeight
-            )
-            uiLogger.debug("popover will open queueCount=\(PasteStack.shared.queue.count, privacy: .public) minimumQueueListHeight=\(minimumQueueListHeight, privacy: .public)")
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            installPopoverEventMonitors()
+            showPopover(relativeTo: button, popover: popover)
         }
+    }
+
+    private func showPopover(relativeTo button: NSStatusBarButton? = nil, popover: NSPopover? = nil) {
+        guard let button = button ?? statusItem?.button,
+              let popover = popover ?? self.popover,
+              !popover.isShown else { return }
+
+        rememberExternalFrontmostApplication()
+        // .accessory apps never become the active app on their own. Activating when the
+        // user explicitly opens the menu lets the popover receive keyboard focus; later
+        // paste requests return focus to the remembered external recipient.
+        NSApp.activate(ignoringOtherApps: true)
+        PasteStack.shared.refreshLaunchAtLoginStatus()
+        _ = refreshAccess()
+        isClosingPopover = false
+        let minimumQueueListHeight = PasteStackMenu.listHeight(for: PasteStack.shared.queue)
+        popover.contentViewController = makePopoverContentController(
+            minimumQueueListHeight: minimumQueueListHeight
+        )
+        uiLogger.debug("popover will open queueCount=\(PasteStack.shared.queue.count, privacy: .public) minimumQueueListHeight=\(minimumQueueListHeight, privacy: .public)")
+        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        installPopoverEventMonitors()
     }
 
     func popoverDidClose(_ notification: Notification) {
@@ -283,6 +313,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 stack: PasteStack.shared,
                 hotkeyManager: HotkeyManager.shared,
                 languageStore: LanguagePreferenceStore.shared,
+                accessController: accessController!,
                 minimumQueueListHeight: minimumQueueListHeight,
                 onPaste: { [weak self] in
                     self?.requestPaste(source: .button)
@@ -320,6 +351,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         completion: ((PasteAttemptResult) -> Void)? = nil
     ) {
         uiLogger.debug("paste requested source=\(source.rawValue, privacy: .public)")
+        guard refreshAccess() else {
+            showPopover()
+            return
+        }
         guard !isRestoringFocusForPaste else {
             reportPasteResult(.requestInProgress, for: kind, completion: completion)
             return
@@ -361,6 +396,90 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             kind: kind,
             bulkPasteID: bulkPasteID,
             completion: completion
+        )
+    }
+
+    private func requestToggleCollecting() {
+        guard refreshAccess() else {
+            showPopover()
+            return
+        }
+        PasteStack.shared.toggleCollecting()
+    }
+
+    @discardableResult
+    private func refreshAccess() -> Bool {
+        guard let accessController else { return true }
+        accessController.refresh()
+        if !accessController.grantsAccess, PasteStack.shared.isCollecting {
+            PasteStack.shared.toggleCollecting()
+        }
+        return accessController.grantsAccess
+    }
+
+    private func handleAccessState(_ state: LicenseAccessState) {
+        trialExpirationTimer?.invalidate()
+        trialExpirationTimer = nil
+        licenseValidationTimer?.invalidate()
+        licenseValidationTimer = nil
+
+        switch state {
+        case .trial(_, let expiresAt):
+            let timer = Timer(fire: expiresAt, interval: 0, repeats: false) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    _ = self?.refreshAccess()
+                }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            trialExpirationTimer = timer
+        case .expired:
+            if PasteStack.shared.isCollecting {
+                PasteStack.shared.toggleCollecting()
+            }
+        case .licensed:
+            scheduleLicenseValidation()
+        case .storageUnavailable:
+            break
+        }
+    }
+
+    private func scheduleLicenseValidation() {
+        licenseValidationTimer?.invalidate()
+        licenseValidationTimer = nil
+        guard let accessController,
+              let nextValidationAt = accessController.nextValidationAt else { return }
+
+        let timer = Timer(fire: nextValidationAt, interval: 0, repeats: false) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, let accessController = self.accessController else { return }
+                await accessController.validateIfNeeded()
+                self.scheduleLicenseValidation()
+            }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        licenseValidationTimer = timer
+    }
+
+    private func makeAccessController() -> LicenseAccessController {
+#if DEBUG
+        let keychainSuffix = ".debug"
+#else
+        let keychainSuffix = ""
+#endif
+        let configuration = LicenseProductConfiguration.current
+        let trialController = TrialAccessController(
+            store: KeychainTrialStateStore(service: "com.slenbder.pastequeue.trial\(keychainSuffix)")
+        )
+        return LicenseAccessController(
+            trialController: trialController,
+            credentialStore: KeychainLicenseCredentialStore(
+                service: "com.slenbder.pastequeue.license\(keychainSuffix)"
+            ),
+            licenseService: configuration.map { LemonSqueezyLicenseClient(configuration: $0) },
+            checkoutURL: configuration?.checkoutURL,
+            trialWarningStore: UserDefaultsTrialWarningStore(
+                key: "trial-warning-thresholds-v1\(keychainSuffix)"
+            )
         )
     }
 
@@ -464,11 +583,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self,
-                  activationObserver != nil,
-                  let activated = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-                  activated.processIdentifier == recipient.processIdentifier else { return }
-            completion(true)
+            Task { @MainActor [weak self] in
+                guard let self,
+                      activationObserver != nil,
+                      let activated = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+                      activated.processIdentifier == recipient.processIdentifier else { return }
+                completion(true)
+            }
         }
 
         let timeout = DispatchWorkItem { [weak self] in

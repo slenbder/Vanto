@@ -14,6 +14,7 @@ struct PopoverRootView: View {
     @ObservedObject var stack: PasteStack
     @ObservedObject var hotkeyManager: HotkeyManager
     @ObservedObject var languageStore: LanguagePreferenceStore
+    @ObservedObject var accessController: LicenseAccessController
     let minimumQueueListHeight: CGFloat
     let onPaste: () -> Void
     let onPasteAll: (String, [UUID], @escaping (PasteAttemptResult) -> Void) -> Void
@@ -22,6 +23,17 @@ struct PopoverRootView: View {
     @State private var screen: PopoverScreen = .queue
 
     var body: some View {
+        Group {
+            if accessController.grantsAccess {
+                accessibleContent
+            } else {
+                LicenseGateView(accessController: accessController)
+            }
+        }
+        .environment(\.locale, resolvedLocale)
+    }
+
+    private var accessibleContent: some View {
         VStack(alignment: .leading, spacing: 8) {
             PopoverStatusRow(
                 stack: stack,
@@ -29,6 +41,15 @@ struct PopoverRootView: View {
                 displayedQueueCount: displayedQueueCount
             )
             Divider()
+
+            if let warningDays = accessController.trialWarningDays {
+                TrialWarningView(
+                    daysRemaining: warningDays,
+                    checkoutURL: accessController.checkoutURL,
+                    onDismiss: accessController.dismissTrialWarning
+                )
+                Divider()
+            }
 
             switch screen {
             case .queue:
@@ -40,12 +61,19 @@ struct PopoverRootView: View {
                     onCancelPasteAll: onCancelPasteAll
                 )
             case .settings:
-                SettingsMenu(stack: stack, hotkeyManager: hotkeyManager, languageStore: languageStore)
+                SettingsMenu(
+                    stack: stack,
+                    hotkeyManager: hotkeyManager,
+                    languageStore: languageStore,
+                    accessController: accessController
+                )
             }
         }
         .padding()
         .frame(width: popoverWidth)
-        .environment(\.locale, resolvedLocale)
+        .onAppear {
+            accessController.prepareTrialWarning()
+        }
     }
 
     /// Grow only when the localized status needs more room than the ordinary

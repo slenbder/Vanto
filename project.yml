@@ -3,12 +3,34 @@ options:
   bundleIdPrefix: com.slenbder
   deploymentTarget:
     macOS: "13.0"
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 targets:
   PasteQueue:
     type: application
     platform: macOS
     sources:
       - path: PasteQueue
+    dependencies:
+      - package: Sparkle
+    info:
+      path: PasteQueue/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.utilities
+        LemonSqueezyStoreID: $(LEMON_SQUEEZY_STORE_ID)
+        LemonSqueezyProductID: $(LEMON_SQUEEZY_PRODUCT_ID)
+        LemonSqueezyVariantID: $(LEMON_SQUEEZY_VARIANT_ID)
+        LemonSqueezyCheckoutURL: $(LEMON_SQUEEZY_CHECKOUT_URL)
+        SUAllowsAutomaticUpdates: true
+        SUAutomaticallyUpdate: true
+        SUEnableAutomaticChecks: true
+        SUFeedURL: https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml
+        SUPublicEDKey: /W0oJKwTBhrso84bzRUsrUsT8IU1bR8+1aixWVbGOv8=
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.slenbder.pastequeue
@@ -16,19 +38,40 @@ targets:
         CODE_SIGN_STYLE: Automatic
         MACOSX_DEPLOYMENT_TARGET: "13.0"
         SWIFT_VERSION: "5.0"
-        GENERATE_INFOPLIST_FILE: true
         MARKETING_VERSION: "0.1"
         CURRENT_PROJECT_VERSION: "1"
-        INFOPLIST_KEY_LSUIElement: true
         COMBINE_HIDPI_IMAGES: true
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: true
         ASSETCATALOG_COMPILER_APPICON_NAME: PasteQueueIcon
       configs:
         Debug:
           ENABLE_HARDENED_RUNTIME: false
+          # Lemon Squeezy test-mode product.
+          LEMON_SQUEEZY_STORE_ID: "480340"
+          LEMON_SQUEEZY_PRODUCT_ID: "1379329"
+          LEMON_SQUEEZY_VARIANT_ID: "2154757"
+          LEMON_SQUEEZY_CHECKOUT_URL: https://slenbder.lemonsqueezy.com/checkout/buy/b2f5795c-0447-4e32-85ce-a04ecf70ec25
         Release:
           ARCHS: arm64
           ENABLE_HARDENED_RUNTIME: true
+          # Live-mode product. Archive fails if any value is emptied.
+          LEMON_SQUEEZY_STORE_ID: "480340"
+          LEMON_SQUEEZY_PRODUCT_ID: "1379630"
+          LEMON_SQUEEZY_VARIANT_ID: "2155206"
+          LEMON_SQUEEZY_CHECKOUT_URL: https://slenbder.lemonsqueezy.com/checkout/buy/48fb4226-67ea-45df-835a-921ec958d23b
+    preBuildScripts:
+      - name: Require Lemon Squeezy configuration for archives
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "$ACTION" = "install" ]; then
+            for name in LEMON_SQUEEZY_STORE_ID LEMON_SQUEEZY_PRODUCT_ID LEMON_SQUEEZY_VARIANT_ID LEMON_SQUEEZY_CHECKOUT_URL; do
+              eval "value=\${$name}"
+              if [ -z "$value" ]; then
+                echo "error: $name is empty. Set the live Lemon Squeezy value in project.yml before archiving."
+                exit 1
+              fi
+            done
+          fi
   PasteQueueTests:
     type: bundle.unit-test
     platform: macOS
