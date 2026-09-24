@@ -18,8 +18,18 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>LemonSqueezyCheckoutURL</key>
+	<string>$(LEMON_SQUEEZY_CHECKOUT_URL)</string>
+	<key>LemonSqueezyProductID</key>
+	<string>$(LEMON_SQUEEZY_PRODUCT_ID)</string>
+	<key>LemonSqueezyStoreID</key>
+	<string>$(LEMON_SQUEEZY_STORE_ID)</string>
+	<key>LemonSqueezyVariantID</key>
+	<string>$(LEMON_SQUEEZY_VARIANT_ID)</string>
 	<key>SUAllowsAutomaticUpdates</key>
 	<true/>
 	<key>SUAutomaticallyUpdate</key>

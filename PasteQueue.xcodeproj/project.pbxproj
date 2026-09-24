@@ -177,6 +177,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FF2A8AB57AAB932859C8DAA9 /* Build configuration list for PBXNativeTarget "PasteQueue" */;
 			buildPhases = (
+				994D43F8BBF01F8F0437A5F3 /* Require Lemon Squeezy configuration for archives */,
 				4A7269AB5FCF932C8DAEDBD4 /* Sources */,
 				F87F7C86AA1C5FD64375F078 /* Resources */,
 				8D03E9A9272649B72277DA1F /* Frameworks */,
@@ -272,6 +273,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		994D43F8BBF01F8F0437A5F3 /* Require Lemon Squeezy configuration for archives */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Require Lemon Squeezy configuration for archives";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$ACTION\" = \"install\" ]; then\n  for name in LEMON_SQUEEZY_STORE_ID LEMON_SQUEEZY_PRODUCT_ID LEMON_SQUEEZY_VARIANT_ID LEMON_SQUEEZY_CHECKOUT_URL; do\n    eval \"value=\\${$name}\"\n    if [ -z \"$value\" ]; then\n      echo \"error: $name is empty. Set the live Lemon Squeezy value in project.yml before archiving.\"\n      exit 1\n    fi\n  done\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2DEE1494B50A6323F4F7E994 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -344,6 +367,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LEMON_SQUEEZY_CHECKOUT_URL = "https://slenbder.lemonsqueezy.com/checkout/buy/48fb4226-67ea-45df-835a-921ec958d23b";
+				LEMON_SQUEEZY_PRODUCT_ID = 1379630;
+				LEMON_SQUEEZY_STORE_ID = 480340;
+				LEMON_SQUEEZY_VARIANT_ID = 2155206;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.pastequeue;
@@ -423,6 +450,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LEMON_SQUEEZY_CHECKOUT_URL = "https://slenbder.lemonsqueezy.com/checkout/buy/b2f5795c-0447-4e32-85ce-a04ecf70ec25";
+				LEMON_SQUEEZY_PRODUCT_ID = 1379329;
+				LEMON_SQUEEZY_STORE_ID = 480340;
+				LEMON_SQUEEZY_VARIANT_ID = 2154757;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.pastequeue;

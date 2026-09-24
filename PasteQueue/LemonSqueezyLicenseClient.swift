@@ -6,19 +6,10 @@ struct LicenseProductConfiguration: Equatable {
     let variantID: Int
     let checkoutURL: URL
 
+    /// Values come from per-configuration build settings in project.yml: Debug points at
+    /// the test-mode product, Release at the live one.
     static var current: LicenseProductConfiguration? {
-#if DEBUG
-        return LicenseProductConfiguration(
-            storeID: 480340,
-            productID: 1379329,
-            variantID: 2154757,
-            checkoutURL: URL(
-                string: "https://slenbder.lemonsqueezy.com/checkout/buy/b2f5795c-0447-4e32-85ce-a04ecf70ec25"
-            )!
-        )
-#else
-        return load()
-#endif
+        load()
     }
 
     static func load(from bundle: Bundle = .main) -> LicenseProductConfiguration? {
@@ -119,6 +110,9 @@ final class LemonSqueezyLicenseClient: LicenseServicing {
             throw LemonSqueezyLicenseError.productMismatch
         }
         guard response.licenseKey.status == "active" else {
+            if let instanceID = response.instance?.id {
+                try? await deactivateWithoutValidation(licenseKey: licenseKey, instanceID: instanceID)
+            }
             throw LemonSqueezyLicenseError.inactiveLicense
         }
         guard let instanceID = response.instance?.id else {

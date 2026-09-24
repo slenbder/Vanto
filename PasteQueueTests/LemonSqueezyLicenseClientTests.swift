@@ -72,6 +72,36 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
         XCTAssertEqual(requestedPaths, ["/v1/licenses/activate", "/v1/licenses/deactivate"])
     }
 
+    func testActivationOfInactiveLicenseReleasesCreatedInstance() async throws {
+        var requestedPaths: [String] = []
+        let session = MockURLSession { request in
+            requestedPaths.append(request.url?.path ?? "")
+            if request.url?.path.hasSuffix("/activate") == true {
+                return Self.response(
+                    for: request,
+                    json: Self.activationJSON(
+                        storeID: 480340,
+                        productID: 1379329,
+                        variantID: 2154757,
+                        status: "expired"
+                    )
+                )
+            }
+            return Self.response(
+                for: request,
+                json: Self.deactivationJSON(storeID: 480340, productID: 1379329, variantID: 2154757)
+            )
+        }
+
+        do {
+            _ = try await makeClient(session: session).activate(licenseKey: "TEST-KEY", instanceName: "Test")
+            XCTFail("Expected inactive license")
+        } catch let error as LemonSqueezyLicenseError {
+            XCTAssertEqual(error, .inactiveLicense)
+        }
+        XCTAssertEqual(requestedPaths, ["/v1/licenses/activate", "/v1/licenses/deactivate"])
+    }
+
     func testActivationLimitErrorIsPreservedForUserFacingMapping() async throws {
         let session = MockURLSession { request in
             Self.response(
@@ -169,12 +199,17 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
         )
     }
 
-    private static func activationJSON(storeID: Int, productID: Int, variantID: Int) -> String {
+    private static func activationJSON(
+        storeID: Int,
+        productID: Int,
+        variantID: Int,
+        status: String = "active"
+    ) -> String {
         """
         {
           "activated": true,
           "error": null,
-          "license_key": {"status":"active","activation_limit":3,"activation_usage":1},
+          "license_key": {"status":"\(status)","activation_limit":3,"activation_usage":1},
           "instance": {"id":"instance-1"},
           "meta": {"store_id":\(storeID),"product_id":\(productID),"variant_id":\(variantID)}
         }

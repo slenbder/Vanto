@@ -177,6 +177,7 @@ final class LicenseAccessController: ObservableObject {
     private let instanceName: () -> String
     private var credential: LicenseCredential?
     private var needsLocalCredentialCleanup = false
+    private var needsCredentialReload = false
     private var retryValidationAt: Date?
     private var isValidating = false
 
@@ -200,15 +201,7 @@ final class LicenseAccessController: ObservableObject {
         self.instanceName = instanceName
         state = Self.state(from: trialController.state)
 
-        do {
-            credential = try credentialStore.load()
-            if credential != nil {
-                state = .licensed
-            }
-        } catch {
-            logStorageFailure(error)
-            state = .storageUnavailable
-        }
+        loadStoredCredential()
     }
 
     var grantsAccess: Bool {
@@ -224,6 +217,12 @@ final class LicenseAccessController: ObservableObject {
     }
 
     func refresh() {
+        if needsCredentialReload {
+            loadStoredCredential()
+            // Until the stored license can be read, access stays open instead of falling
+            // back to a possibly expired trial and locking out a paying user.
+            if needsCredentialReload { return }
+        }
         guard credential == nil else {
             state = .licensed
             return
@@ -273,6 +272,7 @@ final class LicenseAccessController: ObservableObject {
             }
 
             credential = newCredential
+            needsCredentialReload = false
             retryValidationAt = nil
             trialWarningDays = nil
             state = .licensed
@@ -417,6 +417,20 @@ final class LicenseAccessController: ObservableObject {
 
     func dismissTrialWarning() {
         trialWarningDays = nil
+    }
+
+    private func loadStoredCredential() {
+        do {
+            credential = try credentialStore.load()
+            needsCredentialReload = false
+            if credential != nil {
+                state = .licensed
+            }
+        } catch {
+            logStorageFailure(error)
+            needsCredentialReload = true
+            state = .storageUnavailable
+        }
     }
 
     private func invalidateStoredCredential() {

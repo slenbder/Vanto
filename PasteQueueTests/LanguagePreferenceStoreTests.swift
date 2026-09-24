@@ -61,4 +61,32 @@ final class LanguagePreferenceStoreTests: XCTestCase {
             "Уже занято действием «Вставить следующий»."
         )
     }
+
+    func testTrialDaysLeftUsesPluralForms() {
+        let english = AppLocalization.bundle(for: "en")
+        let englishLocale = Locale(identifier: "en")
+        XCTAssertEqual(
+            String(localized: "Trial: \(1) days left", bundle: english, locale: englishLocale),
+            "Trial: 1 day left"
+        )
+        XCTAssertEqual(
+            String(localized: "Trial: \(3) days left", bundle: english, locale: englishLocale),
+            "Trial: 3 days left"
+        )
+
+        let russian = AppLocalization.bundle(for: "ru")
+        let russianLocale = Locale(identifier: "ru")
+        XCTAssertEqual(
+            String(localized: "Trial: \(1) days left", bundle: russian, locale: russianLocale),
+            "Пробный период: остался 1 день"
+        )
+        XCTAssertEqual(
+            String(localized: "Trial: \(3) days left", bundle: russian, locale: russianLocale),
+            "Пробный период: осталось 3 дня"
+        )
+        XCTAssertEqual(
+            String(localized: "Trial: \(7) days left", bundle: russian, locale: russianLocale),
+            "Пробный период: осталось 7 дней"
+        )
+    }
 }

@@ -37,6 +37,33 @@ final class LicenseAccessControllerTests: XCTestCase {
         XCTAssertTrue(controller.grantsAccess)
     }
 
+    func testCredentialReadFailureKeepsAccessAndRetriesOnRefresh() {
+        let credential = LicenseCredential(
+            licenseKey: "KEY",
+            instanceID: "instance-1",
+            activatedAt: start,
+            lastValidatedAt: start
+        )
+        let store = MockLicenseCredentialStore(
+            credential: credential,
+            loadError: MockLicenseCredentialStore.TestError.unavailable
+        )
+        let controller = makeController(
+            now: start.addingTimeInterval(30 * 24 * 60 * 60),
+            trialStartedAt: start,
+            credentialStore: store
+        )
+        XCTAssertEqual(controller.state, .storageUnavailable)
+
+        controller.refresh()
+        XCTAssertEqual(controller.state, .storageUnavailable)
+        XCTAssertTrue(controller.grantsAccess)
+
+        store.loadError = nil
+        controller.refresh()
+        XCTAssertEqual(controller.state, .licensed)
+    }
+
     func testActivationPersistsCredentialAndUnlocksImmediately() async {
         let store = MockLicenseCredentialStore()
         let service = MockLicenseService(
