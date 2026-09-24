@@ -16,6 +16,12 @@ both actions, an in-app language override (7 locales), and Launch at Login.
 The queue screen also opens a short confirmation view for combining all queued
 text into one paste with a chosen separator.
 
+The app is a paid product: a local 14-day full-access trial starts at first
+launch, then a Lemon Squeezy license key (3 devices, perpetual) unlocks it.
+After the trial ends without a license, the popover shows an activation gate
+and both hotkeys open it instead of acting. Sparkle 2 installs updates
+silently in the background.
+
 ## Build & test
 
 The project file (`PasteQueue.xcodeproj`) is generated from `project.yml` via XcodeGen — edit `project.yml`, not the `.xcodeproj` directly.
@@ -39,35 +45,52 @@ Do not claim tests passed unless they were run successfully on the current HEAD.
 Use README.md for the final manual release checklist.
 
 The first release is planned for direct website download on Apple Silicon.
-`project.yml` declares version 0.1/build 1; its Release configuration now
-targets arm64 only and enables Hardened Runtime. Automatic signing still
-resolves to Apple Development on this host, so it is not a distributable build. Check
-`docs/RELEASE_HANDOFF.md` for the current release gate before changing signing
-or publishing an artifact.
+`project.yml` declares version 0.1/build 1; its Release configuration targets
+arm64 only and enables Hardened Runtime. Automatic signing still resolves to
+Apple Development on this host (no Developer ID Application identity yet), so
+no build is distributable. Check `docs/RELEASE_HANDOFF.md` for the current
+release gate before changing signing or publishing an artifact.
+
+`PasteQueue/Info.plist` is written by XcodeGen from `project.yml`'s
+`info.properties`; change keys there, never in the plist or `.xcodeproj`.
+Lemon Squeezy IDs and the checkout URL are per-configuration build settings
+(`LEMON_SQUEEZY_STORE_ID`, `_PRODUCT_ID`, `_VARIANT_ID`, `_CHECKOUT_URL`):
+Debug points at the test-mode product, Release at the live one. A pre-build
+script fails `archive` if any of them is empty.
+
+CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`:
+regenerates the project and fails on any diff in `PasteQueue.xcodeproj` or
+`Info.plist`, runs `PasteQueueTests`, and compiles Release unsigned. It
+publishes nothing.
 
 **App Sandbox must be OFF.** A sandboxed app cannot post synthetic keyboard events or register global key monitors — this is a hard requirement, not optional.
 
 ## Architecture
 
-Fifteen Swift source files:
+Twenty Swift source files:
 
 | File | Role |
 |------|------|
-| `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, and paste routing |
+| `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, paste routing, access gating of hotkeys, and trial/validation timers |
 | `PasteStack.swift` | Singleton model: FIFO queue, clipboard polling, synthetic paste, Launch at Login |
 | `HotkeyManager.swift` | Registers global + local `NSEvent` monitors for ⌃⌘C / ⌃⌘V, resolves live vs. overridden bindings, owns recording-pause state |
 | `HotkeySpec.swift` | `ShortcutAction` enum, `HotkeySpec` (keyCode + modifiers), and `ShortcutRecording`'s pure classification/validation logic for capturing a new combo |
 | `ShortcutStoring.swift` | `UserDefaults`-backed persistence for per-action shortcut overrides |
 | `LanguagePreferenceStore.swift` | `SupportedLanguage` (the 7 shipped locales) + persisted in-app language override, independent of system locale |
-| `PopoverRootView.swift` | True root of the popover content: owns which of the two screens is showing, the shared status row, outer padding/width, and the `.environment(\.locale:)` override |
+| `PopoverRootView.swift` | True root of the popover content: shows `LicenseGateView` when access is denied, otherwise owns which of the two screens is showing, the shared status row, the trial warning banner, outer padding/width, and the `.environment(\.locale:)` override |
 | `PopoverStatusRow.swift` | Shared header across both screens — recording indicator, queue count, and the gear/close button that switches screens |
 | `PasteStackMenu.swift` | Queue screen: item list with hand-rolled drag-to-reorder, actions, scrolling geometry, and entry to combined paste |
 | `PasteAllTextView.swift` | Combined-text confirmation, separator picker, preview, validation feedback, and cancellation on departure |
 | `TextJoinPreferences.swift` | Separator values and `UserDefaults` persistence for the last successful choice |
-| `SettingsMenu.swift` | Settings screen: shortcut recorder rows, language picker, Launch at Login, website/version row |
+| `SettingsMenu.swift` | Settings screen: shortcut recorder rows, language picker, Launch at Login, license section, website/version row |
 | `ShortcutRecorderField.swift` | One rebindable-shortcut row — owns the recording-mode local `NSEvent` monitor, delegates classification to `HotkeySpec.swift`, persists through `HotkeyManager` |
 | `ClipboardItem.swift` | `ClipboardItem` enum (`.text`, `.image`, `.file`) + `QueuedClipboardItem` wrapper |
 | `PasteboardProviding.swift` | Complete pasteboard seam for change count, text, image/file reads, and content replacement |
+| `TrialAccessController.swift` | Local 14-day trial clock persisted in Keychain (`KeychainTrialStateStore`); no network dependency |
+| `LicenseAccessController.swift` | `@MainActor` access state (`trial` / `licensed` / `expired` / `storageUnavailable`): activation, periodic validation, deactivation, trial warnings; Keychain credential store |
+| `LemonSqueezyLicenseClient.swift` | `LicenseProductConfiguration` (read from Info.plist) + public License API client for activate/validate/deactivate with store/product/variant checks |
+| `LicenseActivationView.swift` | `LicenseGateView` (expired trial), `LicenseSettingsSection`, `TrialWarningView`, and the shared activation form |
+| `AppUpdateController.swift` | Starts Sparkle's `SPUStandardUpdaterController` only when `SUFeedURL` (https) and a valid `SUPublicEDKey` are embedded |
 
 ### Data flow
 
@@ -92,6 +115,57 @@ queue only after `commandPosted`; that result does not prove insertion into the
 target app. The separator choice is stored only after that result. Back,
 leaving the confirmation view, and popover closure cancel a pending wait for
 recipient activation. Keep this cancellation scoped to combined paste.
+
+### Licensing and trial
+
+`AppDelegate.makeAccessController()` wires `TrialAccessController`,
+`KeychainLicenseCredentialStore`, the Lemon Squeezy client, and
+`UserDefaultsTrialWarningStore`. Debug uses separate Keychain services and
+defaults key (`.debug` suffix), so development never consumes the user's trial:
+Keychain services `com.slenbder.pastequeue.trial[.debug]` /
+`com.slenbder.pastequeue.license[.debug]`, defaults key
+`trial-warning-thresholds-v1[.debug]`.
+
+- **Trial.** Exactly 14 × 24 h from first launch. `latestObservedAt` only
+  moves forward, so turning the clock back does not extend the trial.
+  `refresh()` persists at most hourly or at expiry.
+- **Access check.** Every hotkey action, Paste/Combine request, and popover
+  opening calls `refreshAccess()`. Without access it stops collection and
+  shows the popover (the gate) instead of acting. A timer fires at
+  `expiresAt` so the trial ends while the app sits idle.
+- **Storage failures grant access.** `.storageUnavailable` intentionally
+  grants access. A failed credential read is retried on every `refresh()`, and
+  until it succeeds the state stays `.storageUnavailable` instead of falling
+  back to a possibly expired trial. Do not "fix" this into a lockout — a
+  Keychain hiccup must never lock out a paying user.
+- **Activation.** Trims the key, calls the API, and saves the credential
+  (key + instance ID) to Keychain. If that save fails, it releases the new
+  instance. The client itself releases the instance on a store/product/variant
+  mismatch or a non-`active` license status.
+- **Validation.** Runs every 7 days while running (timer, no relaunch needed).
+  Transport, 5xx, and unparseable failures keep paid access and retry after
+  6 h. Only an explicit invalid answer (`valid: false`, product mismatch, or
+  HTTP 400/404/422) deletes the credential and falls back to trial state.
+- **Deactivation.** Releases the instance on the server, then deletes the local
+  credential. A server 400/404/422 still cleans up locally. If the Keychain
+  delete fails after a server release, the retry does not call the server
+  again.
+- **Warnings.** One-time trial warnings appear at the 7/3/1-day thresholds,
+  in-popover only.
+
+No secret API key is embedded: the License API is public. Never log the
+license key or instance ID.
+
+### Updates (Sparkle)
+
+Sparkle 2.10.0 comes via SwiftPM (`exactVersion` in `project.yml`). Checks,
+download, and install are automatic (`SUEnableAutomaticChecks`,
+`SUAutomaticallyUpdate`), with no UI or toggles in Settings — a deliberate v1
+decision. The feed is `appcast.xml` at the root of public `main`, read via
+`raw.githubusercontent.com`. The empty channel means "no updates". Pushing a
+new `<item>` to `main` releases an update to every installed copy, so add it
+only after the signed, notarized artifact is uploaded and verified. The
+private EdDSA key lives only in the local Keychain.
 
 ### Critical ordering in `checkPasteboard()`
 
@@ -221,6 +295,11 @@ visual queue count breaks before its final word and its two lines are
 left-aligned; the VoiceOver announcement remains a single sentence. Keep the
 same visual text and width calculation in sync when changing this layout.
 
+When adding user-facing strings, add translations for all 7 locales in
+`Localizable.xcstrings`, with plural variations for counts. Xcode's automatic
+extraction sometimes marks live keys as `stale` and adds empty `%@` variants.
+Do not commit that noise, and never run "Remove stale" without checking first.
+
 ### Drag-to-reorder in PasteStackMenu
 
 Reordering is a hand-rolled `DragGesture`, not `List(onMove:)`. Keep its named
@@ -252,6 +331,19 @@ host's selected keyboard layout. The zero-arg production init remains private
 so tests cannot accidentally create a second instance with real monitors.
 `TextJoinPreferenceTests` uses a separate `UserDefaults` suite and removes it
 after each test.
+
+Licensing tests never touch the real Keychain or network:
+- `TrialAccessControllerTests` injects an in-memory `TrialStateStoring` and a
+  fixed clock.
+- `LicenseAccessControllerTests` injects mock credential, trial, and warning
+  stores plus a mock `LicenseServicing`.
+- `LemonSqueezyLicenseClientTests` uses a mock `URLSessionDataLoading`.
+- `AppUpdateControllerTests` checks Info.plist parsing and the bundled Sparkle
+  keys.
+
+`testDebugConfigurationUsesVerifiedTestProduct` reads the Debug build's
+Info.plist through the test host. Keep it in sync with the Debug
+`LEMON_SQUEEZY_*` values.
 
 ## Extending content types
 

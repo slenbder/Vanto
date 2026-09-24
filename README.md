@@ -29,6 +29,34 @@ for Apple Silicon Macs. The package format has not been finalized. If you
 receive a `PasteQueue.app`, move it to `/Applications` before enabling Launch
 at Login. See `SETUP.md` to build the app from source.
 
+## Trial and license
+
+- **14-day free trial.** Every feature is available for 14 days (exactly
+  14 × 24 hours) from the first launch. No account or internet connection is
+  needed. Settings shows the days left, and a one-time reminder appears in the
+  menu 7, 3, and 1 day before the end.
+- **After the trial.** Once the trial ends, the menu shows a license screen
+  and the hotkeys open it instead of collecting or pasting. Your queue is kept.
+- **License.** One purchase is a perpetual license for up to **3 Macs**, with
+  all future updates included. Enter the key from the purchase email in the
+  license screen, or earlier via Settings → **Activate License**. Access
+  unlocks immediately, with no relaunch.
+- **Moving to another Mac.** Settings → **Deactivate This Mac** frees one of
+  the three device slots. It needs an internet connection.
+- **Offline use.** A licensed copy keeps working offline. PasteQueue re-checks
+  the license about once a week and simply retries later if the check fails.
+  Only an explicit "invalid license" answer from the license server (for
+  example, after a refund) removes the activation.
+- **What leaves the Mac.** The license key and a device name are sent to the
+  license service (Lemon Squeezy) only when you activate or deactivate, and
+  during the weekly check. Copied content never leaves your Mac.
+
+## Updates
+
+PasteQueue updates itself automatically in the background (Sparkle). There is
+no update button or setting, and you never need to pay for an update. Each
+update is signed, and PasteQueue installs only updates that pass that check.
+
 ## Uninstalling
 
 PasteQueue has no installer and no uninstaller — like most macOS utilities
@@ -44,9 +72,17 @@ clean system:
   queued does not perform a separate exit cleanup, so copies can remain until
   the next launch. Safe to delete manually while PasteQueue is not running.
 - **`~/Library/Preferences/com.slenbder.pastequeue.plist`** — your Launch at
-  Login choice, shortcut overrides, language choice, and last-used text
-  separator. Safe to delete; `defaults delete com.slenbder.pastequeue` also
+  Login choice, shortcut overrides, language choice, last-used text
+  separator, which trial reminders were shown, and Sparkle's update-check
+  timestamps. Safe to delete; `defaults delete com.slenbder.pastequeue` also
   works from Terminal.
+- **Keychain items** `com.slenbder.pastequeue.trial` and
+  `com.slenbder.pastequeue.license` — the trial start date and, if activated,
+  your license key and device activation. Deactivate the Mac in Settings
+  *before* deleting the app if you want to free its device slot. Keeping
+  these items means a reinstall remembers both the trial and the license.
+- **`~/Library/Caches/com.slenbder.pastequeue/`** — Sparkle's temporary update
+  downloads. Safe to delete.
 - **Launch at Login entry** — macOS does *not* clean this up when you delete
   the app. If you had "Launch at Login" enabled, go to **System Settings →
   General → Login Items & Extensions** after deleting the app and remove
@@ -57,6 +93,7 @@ To remove everything in one pass:
 ```
 rm -rf ~/Library/Application\ Support/PasteQueue
 rm -f ~/Library/Preferences/com.slenbder.pastequeue.plist
+rm -rf ~/Library/Caches/com.slenbder.pastequeue
 ```
 (then check Login Items as above, and empty the Trash).
 
@@ -71,7 +108,7 @@ outcome.
 
 ## First run
 
-1. Launch PasteQueue — a 📋 icon appears in the menu bar (no Dock icon, this
+1. Launch PasteQueue — its icon appears in the menu bar (no Dock icon, this
    is a menu-bar-only utility).
 2. macOS will prompt for Accessibility permission the first time it tries to
    register the global hotkeys. Approve it in
@@ -162,6 +199,18 @@ the final artifact.
   doesn't leave hotkeys stuck paused afterward. Switch the language picker
   through a few locales and confirm both screens' text updates immediately,
   with no truncated labels — check at least ru, es, de, and one of ja/zh-Hans.
+- **Trial and license** — on a clean Mac (no `com.slenbder.pastequeue.*`
+  Keychain items), confirm the trial starts with 14 days and survives a
+  relaunch. Check the 7/3/1-day reminders appear once each, in English
+  singular form for "1 day left". Let the trial end with the menu open and
+  closed: collection stops, the hotkeys open the license screen, and the queue
+  is kept. Buy with the live checkout, confirm the key email arrives, and
+  activate. Check a wrong key, no network, and a 4th Mac each show their own
+  message. Then deactivate this Mac and confirm the slot is freed. Confirm a
+  refund revokes access at the next weekly check.
+- **Updates** — install the previous signed build, publish a test feed, and
+  confirm a silent update to the candidate keeps the trial/license state, the
+  shortcuts, and the language.
 - **Accessibility and VoiceOver** — test a fresh permission grant, status and
   queue announcements, all core buttons, and deletion focus. Re-test after any
   UI change.
@@ -172,8 +221,9 @@ the final artifact.
 - **Final artifact** — run the full automated test target, smoke-test on the
   supported macOS versions, and verify installation, first launch, permissions,
   signing, notarization, and Gatekeeper behavior on the exact artifact that will
-  be distributed. Replace the Settings screen's current website placeholder
-  with the real product/support destination before shipping.
+  be distributed. Confirm its Info.plist carries the live `LemonSqueezy*`
+  values. Replace the Settings screen's current website placeholder with the
+  real product/support destination before shipping.
 
 ## Known limitations (v1)
 
@@ -207,8 +257,9 @@ the final artifact.
 - No persistence — the queue lives in memory and resets when you quit. That's
   intentional for this use case; add it later if you ever want the queue to
   survive a relaunch.
-- Release builds now target Apple Silicon and enable Hardened Runtime.
-  Developer ID signing, notarization, packaging, and paid delivery still need
-  completion and verification on the final downloadable artifact.
+- Release builds target Apple Silicon, enable Hardened Runtime, and carry the
+  live Lemon Squeezy product. Developer ID signing, notarization, packaging,
+  the first appcast entry, and the live purchase flow still need completion
+  and verification on the final downloadable artifact.
 
 See `SETUP.md` for building from source.
