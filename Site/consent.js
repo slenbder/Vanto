@@ -89,13 +89,13 @@
   const dough = banner.querySelector('.consent-dough-group');
   const bites = [...banner.querySelectorAll('.consent-bite')];
   const title = banner.querySelector('.consent-title');
-  const choiceButtons = [...banner.querySelectorAll('[data-consent]')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let biteCount = 0;
   let regrowTimer = 0;
   let idleTimer = 0;
   let leaveTimer = 0;
   let leaving = false;
+  let returnFocusTo = null;
   let nudgeTimer = 0;
   let nudgesLeft = 0;
   let lastBiteAt = 0;
@@ -189,11 +189,11 @@
   };
 
   const showBanner = () => {
+    returnFocusTo = null;
     window.clearTimeout(leaveTimer);
     resetCookie();
     leaving = false;
     banner.classList.remove('is-leaving');
-    choiceButtons.forEach(button => { button.disabled = false; });
     setTitle(TITLE_IDLE);
     banner.hidden = false;
     startNudges();
@@ -211,12 +211,20 @@
       if (!banner.classList.contains('is-leaving')) return;
       banner.hidden = true;
       banner.classList.remove('is-leaving');
+      // Hand keyboard focus back to where it came from (e.g. the footer's
+      // Cookies link) instead of letting it fall to <body> with the banner.
+      if (banner.contains(document.activeElement) && returnFocusTo?.isConnected) returnFocusTo.focus();
+      returnFocusTo = null;
       onHidden?.();
     };
     banner.addEventListener('animationend', finish);
   };
 
   cookie.addEventListener('click', bite);
+
+  banner.addEventListener('focusin', event => {
+    if (event.relatedTarget && !banner.contains(event.relatedTarget)) returnFocusTo = event.relatedTarget;
+  });
 
   banner.addEventListener('click', event => {
     const button = event.target.closest('[data-consent]');
@@ -231,7 +239,7 @@
     window.clearTimeout(nudgeTimer);
     window.clearTimeout(regrowTimer);
     window.clearTimeout(idleTimer);
-    choiceButtons.forEach(item => { item.disabled = true; });
+    // Buttons stay enabled so the focused one keeps focus; `leaving` blocks repeats.
     cookie.disabled = true;
     setTitle(TITLE_CHOICE[choice]);
     if (choice === 'granted') {
@@ -256,7 +264,9 @@
 
   document.addEventListener('click', event => {
     if (!event.target.closest?.('[data-consent-open]')) return;
+    const previous = document.activeElement;
     showBanner();
+    if (previous && previous !== document.body && !banner.contains(previous)) returnFocusTo = previous;
     banner.querySelector('.consent-button')?.focus();
   });
 

@@ -28,6 +28,7 @@
 }
 
 :root[data-theme="dark"] {
+  /* Mirrored in the no-JS prefers-color-scheme block below — change both. */
   color-scheme: dark;
   --paper: #141517;
   --paper-raised: #1c1d20;
@@ -48,6 +49,7 @@
 /* Without JS the head bootstrap never sets data-theme; follow the system instead. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
+    /* Mirror of :root[data-theme="dark"] above — change both. */
     color-scheme: dark;
     --paper: #141517;
     --paper-raised: #1c1d20;
@@ -117,7 +119,7 @@ a { color: inherit; text-decoration: none; }
 [data-theme="dark"] .theme-moon { transform: translateY(0); opacity: 1; }
 
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 54px; padding: 0 24px; border-radius: var(--radius-md); font-size: 15px; font-weight: 700; transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease; }
-.button:hover { transform: translateY(-2px); }
+@media (hover: hover) { .button:hover { transform: translateY(-2px); } }
 .button-small { min-height: 42px; padding: 0 17px; border-radius: var(--radius-md); font-size: 14px; }
 .button-ink { border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer; }
 .button-ink:hover { box-shadow: 0 6px 16px rgba(28, 26, 23, .12); }
@@ -190,7 +192,7 @@ h2 { margin-bottom: 0; font-size: clamp(42px, 4.5vw, 64px); line-height: 1.08; l
 .source-sentence, .target-sentence { margin: auto 0; font-size: clamp(25px, 2.35vw, 36px); line-height: 1.42; letter-spacing: -.02em; font-weight: 650; }
 .source-word { position: relative; display: inline; padding: 0; border: 0; background: transparent; color: var(--accent); font-weight: inherit; cursor: default; }
 .source-word::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 8px; background: currentColor; opacity: .45; transform: rotate(-1deg); }
-.source-word.copied { color: var(--muted); opacity: .32; }
+.source-word.copied { color: var(--muted); }
 .source-word.copied::after { left: -2px; right: -2px; bottom: 50%; background: var(--muted); opacity: 1; }
 .panel-hint { margin: 0; color: var(--muted); font-size: 13px; }
 .target-blank { display: inline-flex; min-width: 3.3em; justify-content: center; border-bottom: 2px solid var(--line); color: var(--muted); transition: color 180ms ease, border-color 180ms ease; }
@@ -226,7 +228,8 @@ h2 { margin-bottom: 0; font-size: clamp(42px, 4.5vw, 64px); line-height: 1.08; l
 .mobile-target-preview { display: none; }
 .game-controls { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, auto); justify-content: center; align-items: stretch; gap: 2px; margin-top: 8px; padding: 5px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper-raised); justify-self: center; }
 .control-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-width: 108px; min-height: 44px; padding: 0 16px; border: 0; border-radius: var(--radius-md); background: transparent; cursor: pointer; transition: transform 150ms ease, opacity 150ms ease, background 150ms ease; }
-.control-button:hover:not(:disabled) { transform: translateY(-2px); }
+/* Touch screens keep :hover after a tap; lift only where a pointer can hover. */
+@media (hover: hover) { .control-button:hover:not(:disabled) { transform: translateY(-2px); } }
 .control-button:disabled { cursor: not-allowed; opacity: .35; }
 .control-button b { font-size: 14px; }
 .control-button small { font-size: 11px; font-variant-numeric: tabular-nums; }
