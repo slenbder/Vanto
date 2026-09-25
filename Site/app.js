@@ -64,6 +64,14 @@
   let pasted = [];
   let draggedIndex = null;
   let pasteInFlight = false;
+  let roundEvents = new Set();
+
+  // Demo funnel: each step is reported once per round; Reset starts a new round.
+  const trackOnce = (name, data) => {
+    if (roundEvents.has(name)) return;
+    roundEvents.add(name);
+    window.vantoAnalytics?.track(name, data);
+  };
 
   const queueLabel = word => word === 'i' ? 'I' : word;
 
@@ -81,6 +89,8 @@
     progressSteps.forEach((item, index) => {
       item.classList.toggle('active', index === activeStep);
       item.classList.toggle('done', index < activeStep);
+      if (index === activeStep) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
     });
   };
 
@@ -135,12 +145,22 @@
     queueCount.textContent = `${queue.length} ${queue.length === 1 ? 'item' : 'items'}`;
   };
 
-  const moveItem = (from, to) => {
+  const moveItem = (from, to, method, focusDirection = 0) => {
     if (to < 0 || to >= queue.length || from === to) return;
     const [item] = queue.splice(from, 1);
     queue.splice(to, 0, item);
+    trackOnce('Demo Reorder', { method });
     renderQueue();
-    queueStatus.textContent = 'Order changed. Meaning pending.';
+    queueStatus.textContent = `Moved ${queueLabel(item)} to position ${to + 1}. Meaning pending.`;
+
+    // renderQueue rebuilds every row, so hand keyboard focus back to the moved
+    // item's arrow — the opposite one once it reaches the end of the queue.
+    if (focusDirection) {
+      const [up, down] = queueList.querySelectorAll(`.queue-chip[data-index="${to}"] button`);
+      const preferred = focusDirection < 0 ? up : down;
+      const fallback = preferred === up ? down : up;
+      (preferred.disabled ? fallback : preferred).focus();
+    }
   };
 
   const attachTouchDrag = (chip, grip, index) => {
@@ -157,7 +177,7 @@
       if (grip.hasPointerCapture(event.pointerId)) grip.releasePointerCapture(event.pointerId);
       startY = null;
       currentY = null;
-      if (targetIndex !== index) moveItem(index, targetIndex);
+      if (targetIndex !== index) moveItem(index, targetIndex, 'touch');
     };
 
     grip.addEventListener('pointerdown', event => {
@@ -213,10 +233,11 @@
       chip.addEventListener('dragover', event => event.preventDefault());
       chip.addEventListener('drop', event => {
         event.preventDefault();
-        if (draggedIndex !== null) moveItem(draggedIndex, index);
+        if (draggedIndex !== null) moveItem(draggedIndex, index, 'drag');
       });
       chip.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', () => moveItem(index, index + Number(button.dataset.direction)));
+        const direction = Number(button.dataset.direction);
+        button.addEventListener('click', () => moveItem(index, index + direction, 'arrows', direction));
       });
       attachTouchDrag(chip, chip.querySelector('.chip-grip'), index);
       queueList.appendChild(chip);
@@ -232,6 +253,7 @@
     const destination = queueList.offsetParent ? queueList : document.querySelector('[data-progress="reorder"]');
     const to = destination.getBoundingClientRect();
     source.classList.add('copied');
+    trackOnce('Demo Start', { scenario: scenario.id });
     queue.push(word);
     copied += 1;
     flyWord(queueLabel(word), from, { left: to.left + to.width / 2 - 30, top: to.top + to.height / 2 });
@@ -276,6 +298,7 @@
           void targetSentence.offsetWidth;
           targetSentence.classList.add('success');
           setStep('success');
+          trackOnce('Demo Complete', { result: intendedOrder ? 'intended' : 'other' });
         }
       }, 250);
     };
@@ -304,6 +327,8 @@
   });
 
   const resetGame = () => {
+    if (roundEvents.size) window.vantoAnalytics?.track('Demo Reset');
+    roundEvents = new Set();
     queue = [];
     copied = 0;
     pasted = [];
