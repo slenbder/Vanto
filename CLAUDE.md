@@ -330,8 +330,10 @@ with a fixed key-to-character test layout. `HotkeySpecTests` injects the same
 kind of mapping into its classification checks. Neither uses `.shared` or the
 host's selected keyboard layout. The zero-arg production init remains private
 so tests cannot accidentally create a second instance with real monitors.
-`TextJoinPreferenceTests` uses a separate `UserDefaults` suite and removes it
-after each test.
+`TextJoinPreferenceTests` uses a fresh in-memory `UserDefaults` subclass per
+test instead of a named suite: cfprefsd writes an empty
+`~/Library/Preferences/<suite>.plist` for any suite, even after
+`removePersistentDomain`, and does it too late for a test to delete.
 
 Licensing tests never touch the real Keychain or network:
 - `TrialAccessControllerTests` injects an in-memory `TrialStateStoring` and a
