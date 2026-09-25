@@ -3,7 +3,7 @@ import Foundation
 import Security
 import os
 
-private let trialLogger = Logger(subsystem: "com.slenbder.pastequeue", category: "Trial")
+private let trialLogger = Logger(subsystem: "com.slenbder.vanto", category: "Trial")
 
 struct TrialRecord: Codable, Equatable {
     let startedAt: Date
@@ -46,7 +46,7 @@ final class KeychainTrialStateStore: TrialStateStoring {
     private let decoder = JSONDecoder()
 
     init(
-        service: String = "com.slenbder.pastequeue.trial",
+        service: String = "com.slenbder.vanto.trial",
         account: String = "trial-state-v1"
     ) {
         self.service = service

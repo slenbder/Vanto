@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import AppKit
 
 final class MockPasteboard: PasteboardProviding {

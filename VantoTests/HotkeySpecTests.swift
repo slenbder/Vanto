@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import AppKit
 import Carbon
 import XCTest

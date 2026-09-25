@@ -1,0 +1,622 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		011C8B58810FD35688DA961E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DFB72A95239A6C1CC2ED8385 /* Assets.xcassets */; };
+		080245140D01E843FBA7BF66 /* TextJoinPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8DBB64966C5F995A3431AE /* TextJoinPreferences.swift */; };
+		0E0E68060D404E2F8783AE6A /* HotkeySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B9D66479410CE2C7BB3205 /* HotkeySpec.swift */; };
+		0F72484B2D46A086D793A300 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E95BE7FFAB13AF944966C8E /* HotkeyManager.swift */; };
+		1B85B12BBAF50070D4C86CDF /* PasteStackMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 036AE776DB2AF4CF86084CAB /* PasteStackMenu.swift */; };
+		1BE3220B31EF9305D2338852 /* ShortcutStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECA27A689F28616938C85D1 /* ShortcutStoring.swift */; };
+		2071ADAC32C03715A90035FF /* ClipboardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13965CF1B5D083B100D64BEB /* ClipboardItem.swift */; };
+		2122DF2571A0B851DEB9A05B /* TrialAccessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D784844AFB6F09DE259B92 /* TrialAccessControllerTests.swift */; };
+		45ED4AB07EAD6E16B9053EDB /* LemonSqueezyLicenseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3E816F99B792055508723F /* LemonSqueezyLicenseClient.swift */; };
+		47EE8074CE84DDB9B386AE6D /* PasteStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA52172F1A04D7227652544F /* PasteStackTests.swift */; };
+		48ECB119BA08781DE8541A9A /* AppUpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A38BCC8497DEF5291E4E2CA /* AppUpdateController.swift */; };
+		5B1FF0E7EC249EC0FA390A95 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 78805E744AA9512DC84C292F /* Sparkle */; };
+		5C3190004219D74D840C39A4 /* TrialAccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6526FC1AC7369D632C5D783 /* TrialAccessController.swift */; };
+		5C3E27FEB389D6C040532FA3 /* VantoIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 5B1D8FF2BE7EC1B7B997C605 /* VantoIcon.icon */; };
+		6211F4A870BFE863923FA1A5 /* LanguagePreferenceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EFAC87D86E63AD17D09E4D /* LanguagePreferenceStoreTests.swift */; };
+		69A92164ADF50CE7392099A3 /* MockPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BC276A3788B7A3757DA1B3 /* MockPasteboard.swift */; };
+		720FA4E152604D3763495545 /* PopoverRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6607BCB0321C3673CC5CA68 /* PopoverRootView.swift */; };
+		7562A111B88A46212ADF836C /* PasteStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E13584A22D501A5F9EDDB5 /* PasteStack.swift */; };
+		7E6DA61C7A44D7CCAD6496C1 /* HotkeyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE1199561D15B69E788D7523 /* HotkeyManagerTests.swift */; };
+		8225C2ECB3B8D16E4477C92A /* LicenseActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7847B73FD2711F249D9BEF9E /* LicenseActivationView.swift */; };
+		8E962C2E06819B7441E83F56 /* ShortcutRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF915F270A5B274A3BCE0017 /* ShortcutRecorderField.swift */; };
+		9653F886E8A5F661B02741C5 /* LemonSqueezyLicenseClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050A30213D12E2E35854B0C1 /* LemonSqueezyLicenseClientTests.swift */; };
+		9EDD41C072B329E941A34308 /* PasteAllTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0806FBB71DFC9757774F3B4 /* PasteAllTextView.swift */; };
+		A121BAE73B261B91A9D68B23 /* LanguagePreferenceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417504CCD4CD863AF0030B19 /* LanguagePreferenceStore.swift */; };
+		A9642C9AC92C6A2B7EECF0B8 /* HotkeySpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B1CCEE1279F6D9BEB58AE2 /* HotkeySpecTests.swift */; };
+		AD4CB9EF5C56E175A7F9B8EA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 7504219524DEB3A10D50FC02 /* Localizable.xcstrings */; };
+		BE446146BFD19A55E7A173FF /* AppUpdateControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3764C70C7E2223BE8BFA268 /* AppUpdateControllerTests.swift */; };
+		C922F209F9CB772FF8ACC4AA /* LicenseAccessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCF75DA753B6A7724C2BBAFC /* LicenseAccessController.swift */; };
+		D748A56DE461015003907571 /* SettingsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B555995DA6EAFFB5C8D43EBE /* SettingsMenu.swift */; };
+		DFC9F1A9002185280027FDA9 /* LicenseAccessControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841EF5CEA62AA649E84AED44 /* LicenseAccessControllerTests.swift */; };
+		E33EE993497D1445102479F6 /* PopoverStatusRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B407F687510EC9EAC23456 /* PopoverStatusRow.swift */; };
+		E3D575B6B6331C14F8D3B951 /* TextJoinPreferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0ACE821F2D2858FA6117988 /* TextJoinPreferenceTests.swift */; };
+		E54642A143CC1F4474FABF99 /* VantoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A060B768EFE4B7638E071BFD /* VantoApp.swift */; };
+		F6B44AFFC2BB562526EE54CC /* PasteboardProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169D9783C98DB81B95DA3524 /* PasteboardProviding.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2ED1B8C65011D21918B24C14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 618DF139CBB4E5A87D69B713 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A59E5361BE42073BC1A546B;
+			remoteInfo = Vanto;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		036AE776DB2AF4CF86084CAB /* PasteStackMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackMenu.swift; sourceTree = "<group>"; };
+		050A30213D12E2E35854B0C1 /* LemonSqueezyLicenseClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemonSqueezyLicenseClientTests.swift; sourceTree = "<group>"; };
+		13965CF1B5D083B100D64BEB /* ClipboardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardItem.swift; sourceTree = "<group>"; };
+		169D9783C98DB81B95DA3524 /* PasteboardProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardProviding.swift; sourceTree = "<group>"; };
+		1F3E816F99B792055508723F /* LemonSqueezyLicenseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LemonSqueezyLicenseClient.swift; sourceTree = "<group>"; };
+		25B9D66479410CE2C7BB3205 /* HotkeySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpec.swift; sourceTree = "<group>"; };
+		2A38BCC8497DEF5291E4E2CA /* AppUpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateController.swift; sourceTree = "<group>"; };
+		2D8DBB64966C5F995A3431AE /* TextJoinPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextJoinPreferences.swift; sourceTree = "<group>"; };
+		2E95BE7FFAB13AF944966C8E /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		34E13584A22D501A5F9EDDB5 /* PasteStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStack.swift; sourceTree = "<group>"; };
+		417504CCD4CD863AF0030B19 /* LanguagePreferenceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStore.swift; sourceTree = "<group>"; };
+		48D784844AFB6F09DE259B92 /* TrialAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessControllerTests.swift; sourceTree = "<group>"; };
+		55405EA1D7D07CCA6B71DD89 /* VantoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VantoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B1D8FF2BE7EC1B7B997C605 /* VantoIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = VantoIcon.icon; sourceTree = "<group>"; };
+		6ECA27A689F28616938C85D1 /* ShortcutStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutStoring.swift; sourceTree = "<group>"; };
+		7504219524DEB3A10D50FC02 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		7847B73FD2711F249D9BEF9E /* LicenseActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseActivationView.swift; sourceTree = "<group>"; };
+		79BC276A3788B7A3757DA1B3 /* MockPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPasteboard.swift; sourceTree = "<group>"; };
+		841EF5CEA62AA649E84AED44 /* LicenseAccessControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessControllerTests.swift; sourceTree = "<group>"; };
+		8739EA329EDBE12D6A4F499A /* Vanto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vanto.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		98EFAC87D86E63AD17D09E4D /* LanguagePreferenceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagePreferenceStoreTests.swift; sourceTree = "<group>"; };
+		A060B768EFE4B7638E071BFD /* VantoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VantoApp.swift; sourceTree = "<group>"; };
+		A0806FBB71DFC9757774F3B4 /* PasteAllTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteAllTextView.swift; sourceTree = "<group>"; };
+		A3764C70C7E2223BE8BFA268 /* AppUpdateControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateControllerTests.swift; sourceTree = "<group>"; };
+		A6607BCB0321C3673CC5CA68 /* PopoverRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverRootView.swift; sourceTree = "<group>"; };
+		AA52172F1A04D7227652544F /* PasteStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteStackTests.swift; sourceTree = "<group>"; };
+		AF915F270A5B274A3BCE0017 /* ShortcutRecorderField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderField.swift; sourceTree = "<group>"; };
+		B0ACE821F2D2858FA6117988 /* TextJoinPreferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextJoinPreferenceTests.swift; sourceTree = "<group>"; };
+		B555995DA6EAFFB5C8D43EBE /* SettingsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMenu.swift; sourceTree = "<group>"; };
+		C0B407F687510EC9EAC23456 /* PopoverStatusRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverStatusRow.swift; sourceTree = "<group>"; };
+		DCF75DA753B6A7724C2BBAFC /* LicenseAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseAccessController.swift; sourceTree = "<group>"; };
+		DE1199561D15B69E788D7523 /* HotkeyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManagerTests.swift; sourceTree = "<group>"; };
+		DFB72A95239A6C1CC2ED8385 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F3B1CCEE1279F6D9BEB58AE2 /* HotkeySpecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeySpecTests.swift; sourceTree = "<group>"; };
+		F6526FC1AC7369D632C5D783 /* TrialAccessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessController.swift; sourceTree = "<group>"; };
+		FF52B6B254709246081F66A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4A0533011F30BF4FC053C338 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B1FF0E7EC249EC0FA390A95 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		20A8D2026958970B4A17DA41 /* VantoTests */ = {
+			isa = PBXGroup;
+			children = (
+				A3764C70C7E2223BE8BFA268 /* AppUpdateControllerTests.swift */,
+				DE1199561D15B69E788D7523 /* HotkeyManagerTests.swift */,
+				F3B1CCEE1279F6D9BEB58AE2 /* HotkeySpecTests.swift */,
+				98EFAC87D86E63AD17D09E4D /* LanguagePreferenceStoreTests.swift */,
+				050A30213D12E2E35854B0C1 /* LemonSqueezyLicenseClientTests.swift */,
+				841EF5CEA62AA649E84AED44 /* LicenseAccessControllerTests.swift */,
+				79BC276A3788B7A3757DA1B3 /* MockPasteboard.swift */,
+				AA52172F1A04D7227652544F /* PasteStackTests.swift */,
+				B0ACE821F2D2858FA6117988 /* TextJoinPreferenceTests.swift */,
+				48D784844AFB6F09DE259B92 /* TrialAccessControllerTests.swift */,
+			);
+			path = VantoTests;
+			sourceTree = "<group>";
+		};
+		4B5F3B5B5176D0290F478478 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8739EA329EDBE12D6A4F499A /* Vanto.app */,
+				55405EA1D7D07CCA6B71DD89 /* VantoTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D1E0B806338FEAC9792D32E /* Vanto */ = {
+			isa = PBXGroup;
+			children = (
+				2A38BCC8497DEF5291E4E2CA /* AppUpdateController.swift */,
+				DFB72A95239A6C1CC2ED8385 /* Assets.xcassets */,
+				13965CF1B5D083B100D64BEB /* ClipboardItem.swift */,
+				2E95BE7FFAB13AF944966C8E /* HotkeyManager.swift */,
+				25B9D66479410CE2C7BB3205 /* HotkeySpec.swift */,
+				FF52B6B254709246081F66A0 /* Info.plist */,
+				417504CCD4CD863AF0030B19 /* LanguagePreferenceStore.swift */,
+				1F3E816F99B792055508723F /* LemonSqueezyLicenseClient.swift */,
+				DCF75DA753B6A7724C2BBAFC /* LicenseAccessController.swift */,
+				7847B73FD2711F249D9BEF9E /* LicenseActivationView.swift */,
+				7504219524DEB3A10D50FC02 /* Localizable.xcstrings */,
+				A0806FBB71DFC9757774F3B4 /* PasteAllTextView.swift */,
+				169D9783C98DB81B95DA3524 /* PasteboardProviding.swift */,
+				34E13584A22D501A5F9EDDB5 /* PasteStack.swift */,
+				036AE776DB2AF4CF86084CAB /* PasteStackMenu.swift */,
+				A6607BCB0321C3673CC5CA68 /* PopoverRootView.swift */,
+				C0B407F687510EC9EAC23456 /* PopoverStatusRow.swift */,
+				B555995DA6EAFFB5C8D43EBE /* SettingsMenu.swift */,
+				AF915F270A5B274A3BCE0017 /* ShortcutRecorderField.swift */,
+				6ECA27A689F28616938C85D1 /* ShortcutStoring.swift */,
+				2D8DBB64966C5F995A3431AE /* TextJoinPreferences.swift */,
+				F6526FC1AC7369D632C5D783 /* TrialAccessController.swift */,
+				A060B768EFE4B7638E071BFD /* VantoApp.swift */,
+				5B1D8FF2BE7EC1B7B997C605 /* VantoIcon.icon */,
+			);
+			path = Vanto;
+			sourceTree = "<group>";
+		};
+		68846B4CB252FC9F8583802A = {
+			isa = PBXGroup;
+			children = (
+				5D1E0B806338FEAC9792D32E /* Vanto */,
+				20A8D2026958970B4A17DA41 /* VantoTests */,
+				4B5F3B5B5176D0290F478478 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		633E9DA2A1084664F083F7B2 /* VantoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8F600FBB311B6A1F4E786CA /* Build configuration list for PBXNativeTarget "VantoTests" */;
+			buildPhases = (
+				EFB1228B38B8F9E2357EABC3 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1660862F995AD672CEEEDE08 /* PBXTargetDependency */,
+			);
+			name = VantoTests;
+			packageProductDependencies = (
+			);
+			productName = VantoTests;
+			productReference = 55405EA1D7D07CCA6B71DD89 /* VantoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6A59E5361BE42073BC1A546B /* Vanto */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF0372B22EEC2DA17251A0CC /* Build configuration list for PBXNativeTarget "Vanto" */;
+			buildPhases = (
+				FD4B1BEFFF58CA8FCB76ABA6 /* Require Lemon Squeezy configuration for archives */,
+				112743530214B639DD9C7EC6 /* Sources */,
+				2A4251AC725DF2E6FDFCB041 /* Resources */,
+				4A0533011F30BF4FC053C338 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Vanto;
+			packageProductDependencies = (
+				78805E744AA9512DC84C292F /* Sparkle */,
+			);
+			productName = Vanto;
+			productReference = 8739EA329EDBE12D6A4F499A /* Vanto.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		618DF139CBB4E5A87D69B713 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					633E9DA2A1084664F083F7B2 = {
+						DevelopmentTeam = 6D5U6N6YZA;
+						ProvisioningStyle = Automatic;
+					};
+					6A59E5361BE42073BC1A546B = {
+						DevelopmentTeam = 6D5U6N6YZA;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F871B9477927DD9CC05B8356 /* Build configuration list for PBXProject "Vanto" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				de,
+				en,
+				es,
+				ja,
+				"pt-BR",
+				ru,
+				"zh-Hans",
+			);
+			mainGroup = 68846B4CB252FC9F8583802A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DF664C9EC7BA692283C7DA41 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4B5F3B5B5176D0290F478478 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6A59E5361BE42073BC1A546B /* Vanto */,
+				633E9DA2A1084664F083F7B2 /* VantoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2A4251AC725DF2E6FDFCB041 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				011C8B58810FD35688DA961E /* Assets.xcassets in Resources */,
+				AD4CB9EF5C56E175A7F9B8EA /* Localizable.xcstrings in Resources */,
+				5C3E27FEB389D6C040532FA3 /* VantoIcon.icon in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FD4B1BEFFF58CA8FCB76ABA6 /* Require Lemon Squeezy configuration for archives */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Require Lemon Squeezy configuration for archives";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$ACTION\" = \"install\" ]; then\n  for name in LEMON_SQUEEZY_STORE_ID LEMON_SQUEEZY_PRODUCT_ID LEMON_SQUEEZY_VARIANT_ID LEMON_SQUEEZY_CHECKOUT_URL; do\n    eval \"value=\\${$name}\"\n    if [ -z \"$value\" ]; then\n      echo \"error: $name is empty. Set the live Lemon Squeezy value in project.yml before archiving.\"\n      exit 1\n    fi\n  done\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		112743530214B639DD9C7EC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48ECB119BA08781DE8541A9A /* AppUpdateController.swift in Sources */,
+				2071ADAC32C03715A90035FF /* ClipboardItem.swift in Sources */,
+				0F72484B2D46A086D793A300 /* HotkeyManager.swift in Sources */,
+				0E0E68060D404E2F8783AE6A /* HotkeySpec.swift in Sources */,
+				A121BAE73B261B91A9D68B23 /* LanguagePreferenceStore.swift in Sources */,
+				45ED4AB07EAD6E16B9053EDB /* LemonSqueezyLicenseClient.swift in Sources */,
+				C922F209F9CB772FF8ACC4AA /* LicenseAccessController.swift in Sources */,
+				8225C2ECB3B8D16E4477C92A /* LicenseActivationView.swift in Sources */,
+				9EDD41C072B329E941A34308 /* PasteAllTextView.swift in Sources */,
+				7562A111B88A46212ADF836C /* PasteStack.swift in Sources */,
+				1B85B12BBAF50070D4C86CDF /* PasteStackMenu.swift in Sources */,
+				F6B44AFFC2BB562526EE54CC /* PasteboardProviding.swift in Sources */,
+				720FA4E152604D3763495545 /* PopoverRootView.swift in Sources */,
+				E33EE993497D1445102479F6 /* PopoverStatusRow.swift in Sources */,
+				D748A56DE461015003907571 /* SettingsMenu.swift in Sources */,
+				8E962C2E06819B7441E83F56 /* ShortcutRecorderField.swift in Sources */,
+				1BE3220B31EF9305D2338852 /* ShortcutStoring.swift in Sources */,
+				080245140D01E843FBA7BF66 /* TextJoinPreferences.swift in Sources */,
+				5C3190004219D74D840C39A4 /* TrialAccessController.swift in Sources */,
+				E54642A143CC1F4474FABF99 /* VantoApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EFB1228B38B8F9E2357EABC3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE446146BFD19A55E7A173FF /* AppUpdateControllerTests.swift in Sources */,
+				7E6DA61C7A44D7CCAD6496C1 /* HotkeyManagerTests.swift in Sources */,
+				A9642C9AC92C6A2B7EECF0B8 /* HotkeySpecTests.swift in Sources */,
+				6211F4A870BFE863923FA1A5 /* LanguagePreferenceStoreTests.swift in Sources */,
+				9653F886E8A5F661B02741C5 /* LemonSqueezyLicenseClientTests.swift in Sources */,
+				DFC9F1A9002185280027FDA9 /* LicenseAccessControllerTests.swift in Sources */,
+				69A92164ADF50CE7392099A3 /* MockPasteboard.swift in Sources */,
+				47EE8074CE84DDB9B386AE6D /* PasteStackTests.swift in Sources */,
+				E3D575B6B6331C14F8D3B951 /* TextJoinPreferenceTests.swift in Sources */,
+				2122DF2571A0B851DEB9A05B /* TrialAccessControllerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1660862F995AD672CEEEDE08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6A59E5361BE42073BC1A546B /* Vanto */;
+			targetProxy = 2ED1B8C65011D21918B24C14 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		68E8D6F59A6EC44BAAE0D0FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9942D03346D9C9A9A79A9131 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = VantoIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6D5U6N6YZA;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Vanto/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LEMON_SQUEEZY_CHECKOUT_URL = "https://slenbder.lemonsqueezy.com/checkout/buy/48fb4226-67ea-45df-835a-921ec958d23b";
+				LEMON_SQUEEZY_PRODUCT_ID = 1379630;
+				LEMON_SQUEEZY_STORE_ID = 480340;
+				LEMON_SQUEEZY_VARIANT_ID = 2155206;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.vanto;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9CB9A5FA7854E041112EAD84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 6D5U6N6YZA;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.VantoTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vanto.app/Contents/MacOS/Vanto";
+			};
+			name = Debug;
+		};
+		A3D27EAB178664622C83DD43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CC27AA50B4DBA940D4C1DFAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = VantoIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6D5U6N6YZA;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Vanto/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LEMON_SQUEEZY_CHECKOUT_URL = "https://slenbder.lemonsqueezy.com/checkout/buy/b2f5795c-0447-4e32-85ce-a04ecf70ec25";
+				LEMON_SQUEEZY_PRODUCT_ID = 1379329;
+				LEMON_SQUEEZY_STORE_ID = 480340;
+				LEMON_SQUEEZY_VARIANT_ID = 2154757;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.vanto;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F589E600ACAB4CFA990C02ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 6D5U6N6YZA;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slenbder.VantoTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vanto.app/Contents/MacOS/Vanto";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BF0372B22EEC2DA17251A0CC /* Build configuration list for PBXNativeTarget "Vanto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC27AA50B4DBA940D4C1DFAD /* Debug */,
+				9942D03346D9C9A9A79A9131 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D8F600FBB311B6A1F4E786CA /* Build configuration list for PBXNativeTarget "VantoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CB9A5FA7854E041112EAD84 /* Debug */,
+				F589E600ACAB4CFA990C02ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F871B9477927DD9CC05B8356 /* Build configuration list for PBXProject "Vanto" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A3D27EAB178664622C83DD43 /* Debug */,
+				68E8D6F59A6EC44BAAE0D0FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DF664C9EC7BA692283C7DA41 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		78805E744AA9512DC84C292F /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF664C9EC7BA692283C7DA41 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 618DF139CBB4E5A87D69B713 /* Project object */;
+}

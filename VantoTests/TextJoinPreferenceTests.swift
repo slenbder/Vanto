@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import XCTest
 
 final class TextJoinPreferenceTests: XCTestCase {
@@ -12,11 +12,7 @@ final class TextJoinPreferenceTests: XCTestCase {
     }
 
     func testPreferenceDefaultsAndPersistsCustomSeparator() {
-        let suiteName = "PasteQueueTests-\(UUID().uuidString)"
-        guard let defaults = UserDefaults(suiteName: suiteName) else {
-            return XCTFail("could not create isolated defaults")
-        }
-        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let defaults = InMemoryUserDefaults()
         let store = UserDefaultsTextJoinPreferenceStore(defaults: defaults)
 
         XCTAssertEqual(store.load(), TextJoinPreference(choice: .newline, customSeparator: ""))
@@ -25,5 +21,26 @@ final class TextJoinPreferenceTests: XCTestCase {
         store.save(preference)
 
         XCTAssertEqual(UserDefaultsTextJoinPreferenceStore(defaults: defaults).load(), preference)
+    }
+}
+
+/// `UserDefaults` kept entirely in memory. A real suite, even after
+/// `removePersistentDomain`, gets an empty `<suite>.plist` written to
+/// ~/Library/Preferences by cfprefsd some seconds later, so every run would
+/// leave a file behind. Typed getters such as `string(forKey:)` route through
+/// `object(forKey:)`, so overriding the primitives is enough.
+private final class InMemoryUserDefaults: UserDefaults {
+    private var storage: [String: Any] = [:]
+
+    override func object(forKey defaultName: String) -> Any? {
+        storage[defaultName]
+    }
+
+    override func set(_ value: Any?, forKey defaultName: String) {
+        storage[defaultName] = value
+    }
+
+    override func removeObject(forKey defaultName: String) {
+        storage[defaultName] = nil
     }
 }

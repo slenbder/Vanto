@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-/// The 7 locales PasteQueue ships translations for — chosen to cover the largest
+/// The 7 locales Vanto ships translations for — chosen to cover the largest
 /// practical share of the internet's population across Asia, wealthier Europe, and
 /// Latin America with a deliberately small string surface.
 enum SupportedLanguage: String, CaseIterable, Identifiable {

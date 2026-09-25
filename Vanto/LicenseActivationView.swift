@@ -37,7 +37,7 @@ struct LicenseGateView: View {
             Text("Your trial has ended")
                 .font(.headline)
 
-            Text("Enter your license key to keep using PasteQueue. Your queue is preserved.")
+            Text("Enter your license key to keep using Vanto. Your queue is preserved.")
                 .font(.callout)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -126,7 +126,7 @@ struct LicenseSettingsSection: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("PasteQueue will stop working on this Mac when the trial has ended. This frees one of your three device slots.")
+            Text("Vanto will stop working on this Mac when the trial has ended. This frees one of your three device slots.")
         }
     }
 

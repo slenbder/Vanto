@@ -3,7 +3,7 @@ import AppKit
 import Combine
 import os
 
-private let uiLogger = Logger(subsystem: "com.slenbder.pastequeue", category: "UI")
+private let uiLogger = Logger(subsystem: "com.slenbder.vanto", category: "UI")
 
 enum AppRuntime {
     static var isRunningTests: Bool {
@@ -15,7 +15,7 @@ enum AppRuntime {
 }
 
 @main
-struct PasteQueueApp: App {
+struct VantoApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
@@ -93,7 +93,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // PasteQueueTests run inside this executable via TEST_HOST. Return before touching
+        // VantoTests run inside this executable via TEST_HOST. Return before touching
         // either singleton so the host cannot monitor keys, prompt for Accessibility, poll
         // the system pasteboard, sweep production file storage, or query login-item state.
         guard !AppRuntime.isRunningTests else { return }
@@ -232,11 +232,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             }
 
             if isCollecting {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, recording, \(count) items in queue", bundle: localizedBundle, locale: locale))
+                button.setAccessibilityLabel(String(localized: "Vanto, recording, \(count) items in queue", bundle: localizedBundle, locale: locale))
             } else if count > 0 {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, \(count) items queued, not recording", bundle: localizedBundle, locale: locale))
+                button.setAccessibilityLabel(String(localized: "Vanto, \(count) items queued, not recording", bundle: localizedBundle, locale: locale))
             } else {
-                button.setAccessibilityLabel(String(localized: "PasteQueue, idle", bundle: localizedBundle, locale: locale))
+                button.setAccessibilityLabel(String(localized: "Vanto, idle", bundle: localizedBundle, locale: locale))
             }
         }
 
@@ -468,12 +468,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 #endif
         let configuration = LicenseProductConfiguration.current
         let trialController = TrialAccessController(
-            store: KeychainTrialStateStore(service: "com.slenbder.pastequeue.trial\(keychainSuffix)")
+            store: KeychainTrialStateStore(service: "com.slenbder.vanto.trial\(keychainSuffix)")
         )
         return LicenseAccessController(
             trialController: trialController,
             credentialStore: KeychainLicenseCredentialStore(
-                service: "com.slenbder.pastequeue.license\(keychainSuffix)"
+                service: "com.slenbder.vanto.license\(keychainSuffix)"
             ),
             licenseService: configuration.map { LemonSqueezyLicenseClient(configuration: $0) },
             checkoutURL: configuration?.checkoutURL,
