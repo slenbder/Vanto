@@ -3,12 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f0f1f3" />
+    <meta name="theme-color" content="#f0f1f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141517" media="(prefers-color-scheme: dark)" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        let saved = null;
+        try { saved = localStorage.getItem('vanto-theme'); } catch {}
+        root.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        root.classList.add('js');
+      })();
+    </script>
     <meta name="description" content="The terms for using Vanto and its license." />
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Terms of Use · Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=21" />
+    <link rel="stylesheet" href="/styles.css?v=29" />
     <link rel="canonical" href="https://vanto.slenbder.com/terms" />
   </head>
   <body>
@@ -89,8 +99,8 @@
       </div>
     </footer>
 
-    <script src="/theme.js?v=2"></script>
+    <script src="/theme.js?v=3"></script>
     <script src="/analytics.js?v=1"></script>
-    <script src="/consent.js?v=1"></script>
+    <script src="/consent.js?v=8"></script>
   </body>
 </html>

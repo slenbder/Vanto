@@ -89,6 +89,8 @@
     progressSteps.forEach((item, index) => {
       item.classList.toggle('active', index === activeStep);
       item.classList.toggle('done', index < activeStep);
+      if (index === activeStep) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
     });
   };
 
@@ -143,13 +145,22 @@
     queueCount.textContent = `${queue.length} ${queue.length === 1 ? 'item' : 'items'}`;
   };
 
-  const moveItem = (from, to, method) => {
+  const moveItem = (from, to, method, focusDirection = 0) => {
     if (to < 0 || to >= queue.length || from === to) return;
     const [item] = queue.splice(from, 1);
     queue.splice(to, 0, item);
     trackOnce('Demo Reorder', { method });
     renderQueue();
-    queueStatus.textContent = 'Order changed. Meaning pending.';
+    queueStatus.textContent = `Moved ${queueLabel(item)} to position ${to + 1}. Meaning pending.`;
+
+    // renderQueue rebuilds every row, so hand keyboard focus back to the moved
+    // item's arrow — the opposite one once it reaches the end of the queue.
+    if (focusDirection) {
+      const [up, down] = queueList.querySelectorAll(`.queue-chip[data-index="${to}"] button`);
+      const preferred = focusDirection < 0 ? up : down;
+      const fallback = preferred === up ? down : up;
+      (preferred.disabled ? fallback : preferred).focus();
+    }
   };
 
   const attachTouchDrag = (chip, grip, index) => {
@@ -225,7 +236,8 @@
         if (draggedIndex !== null) moveItem(draggedIndex, index, 'drag');
       });
       chip.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', () => moveItem(index, index + Number(button.dataset.direction), 'arrows'));
+        const direction = Number(button.dataset.direction);
+        button.addEventListener('click', () => moveItem(index, index + direction, 'arrows', direction));
       });
       attachTouchDrag(chip, chip.querySelector('.chip-grip'), index);
       queueList.appendChild(chip);

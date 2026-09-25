@@ -3,7 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f0f1f3" />
+    <meta name="theme-color" content="#f0f1f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141517" media="(prefers-color-scheme: dark)" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        let saved = null;
+        try { saved = localStorage.getItem('vanto-theme'); } catch {}
+        root.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        root.classList.add('js');
+      })();
+    </script>
     <meta
       name="description"
       content="Vanto lives in the Mac menu bar and queues text, images, and files for pasting one by one."
@@ -15,7 +25,7 @@
     />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto — Copy everything. Paste in order.</title>
-    <link rel="stylesheet" href="./styles.css?v=21" />
+    <link rel="stylesheet" href="./styles.css?v=29" />
     <link rel="canonical" href="https://vanto.slenbder.com/" />
   </head>
   <body>
@@ -32,7 +42,7 @@
       <nav aria-label="Primary">
         <a href="#play" data-track="Nav Click" data-track-target="play">Try it</a>
         <a href="#why" data-track="Nav Click" data-track-target="why">Why it works</a>
-        <a href="#faq" data-track="Nav Click" data-track-target="faq">FAQ</a>
+        <a class="nav-faq" href="#faq" data-track="Nav Click" data-track-target="faq">FAQ</a>
       </nav>
       <div class="header-actions">
         <a class="header-buy" href="#license" data-track="Buy Click" data-track-location="header">Buy a license</a>
@@ -93,8 +103,8 @@
         </div>
 
         <div class="word-game" data-step="copy">
-          <div class="game-progress" aria-label="Demo progress">
-            <span class="active" data-progress="copy"><b>1</b>Copy</span>
+          <div class="game-progress" role="group" aria-label="Demo progress">
+            <span class="active" data-progress="copy" aria-current="step"><b>1</b>Copy</span>
             <i aria-hidden="true"></i>
             <span data-progress="reorder"><b>2</b>Arrange</span>
             <i aria-hidden="true"></i>
@@ -103,7 +113,7 @@
 
           <article class="game-panel source-panel">
             <div class="panel-label"><span>01</span>Copy from here</div>
-            <p class="source-sentence"></p>
+            <p class="source-sentence"><span class="source-word" data-word="panic">Panic</span>. <span class="source-word" data-word="plan">Plan</span>. <span class="source-word" data-word="nothing">Nothing</span>. That’s how it goes.</p>
             <p class="panel-hint">Each press copies the next highlighted word.</p>
           </article>
 
@@ -113,25 +123,25 @@
                 <div><img class="mini-mark" src="./menuBarIcon.svg" alt="" aria-hidden="true" width="18" height="18" /><strong>Vanto</strong></div>
                 <span class="queue-count">0 items</span>
               </div>
-              <div class="queue-list" aria-live="polite">
+              <div class="queue-list">
                 <div class="empty-queue"><span>⌘</span><p>Your copied words will wait here.</p></div>
               </div>
               <p class="queue-tip">Drag words, or use the arrow controls.</p>
             </div>
-            <div class="mobile-target-preview" aria-label="Paste destination preview">
+            <div class="mobile-target-preview" role="group" aria-label="Paste destination preview">
               <span>Where it lands · top item first</span>
-              <p class="preview-target-sentence"></p>
+              <p class="preview-target-sentence">3…&nbsp;<span class="preview-target-blank">______</span>.&nbsp;2…&nbsp;<span class="preview-target-blank">______</span>.&nbsp;1…&nbsp;<span class="preview-target-blank">______</span>.&nbsp;Go!</p>
             </div>
             <span class="queue-status" aria-live="polite">Start with Copy.</span>
           </div>
 
           <article class="game-panel target-panel">
             <div class="panel-label"><span>02</span>Paste over here</div>
-            <p class="target-sentence"></p>
-            <p class="panel-hint result-hint"></p>
+            <p class="target-sentence">3…&nbsp;<span class="target-blank">______</span>.&nbsp;2…&nbsp;<span class="target-blank">______</span>.&nbsp;1…&nbsp;<span class="target-blank">______</span>.&nbsp;Go!</p>
+            <p class="panel-hint result-hint">Three words. Six suspiciously familiar workflows.</p>
           </article>
 
-          <div class="game-controls" aria-label="Demo controls">
+          <div class="game-controls" role="group" aria-label="Demo controls">
             <button class="control-button copy-control" type="button"><b>Copy</b><small>0 / 3</small></button>
             <button class="control-button paste-control" type="button" disabled><b>Paste</b><small>0 / 3</small></button>
             <button class="control-button clear-control" type="button" disabled><b>Clear</b></button>
@@ -229,10 +239,10 @@
       </div>
     </footer>
 
-    <script src="./theme.js?v=2"></script>
+    <script src="./theme.js?v=3"></script>
     <script src="./analytics.js?v=1"></script>
-    <script src="./consent.js?v=1"></script>
-    <script src="./app.js?v=16"></script>
+    <script src="./consent.js?v=8"></script>
+    <script src="./app.js?v=17"></script>
     <script src="./hero-shot.js?v=15"></script>
     <script src="./reveal.js?v=16"></script>
   </body>
