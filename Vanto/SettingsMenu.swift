@@ -44,8 +44,7 @@ struct SettingsMenu: View {
             // edge instead of sitting on its own line below.
             HStack {
                 Button {
-                    // Placeholder destination — the real marketing/contact site, swap freely.
-                    if let url = URL(string: "https://pastequeue-first-look.slenbder.chatgpt.site") {
+                    if let url = URL(string: "https://vanto.slenbder.com") {
                         NSWorkspace.shared.open(url)
                     }
                 } label: {
