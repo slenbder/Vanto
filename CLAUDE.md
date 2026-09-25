@@ -351,3 +351,22 @@ Info.plist through the test host. Keep it in sync with the Debug
 ## Extending content types
 
 To add a new pasteboard type, add a case to `ClipboardItem`, then add a detection branch in `PasteStack.checkPasteboard()` (keeping file detection first), a paste branch in `pasteNext()`, and a display branch in `QueueRowView.body`.
+
+## Website
+
+`Site/` is the static marketing site at `https://vanto.slenbder.com`, deployed
+by Cloudflare Pages from `main` (output directory `Site`, no build step).
+`functions/u/[[path]].js` at the repo root is a Pages Function that proxies
+Umami (`/u/script.js`, `/u/api/send`) through the site's own domain and
+forwards the visitor IP and country via Umami's `x-umami-client-*` headers.
+Preview locally with the `site` configuration in `.claude/launch.json`
+(`wrangler pages dev Site`, which also picks up `functions/`).
+
+Analytics live in `Site/analytics.js`: elements with `data-track="Event"` and
+`data-track-<key>` attributes send events, plus section reach, scroll depth,
+FAQ opens, and the demo funnel reported from `app.js`. Umami is cookieless
+and reports only on the production host (`data-domains`); set
+`localStorage['vanto-analytics-debug'] = '1'` to log events locally.
+`Site/consent.js` loads Microsoft Clarity only after the visitor chooses
+Allow. Never load a cookie-setting tool outside that consent gate, and keep
+`Site/privacy.html` in sync with whatever the site actually collects.

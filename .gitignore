@@ -20,3 +20,6 @@ dist/
 # CocoaPods / SPM (uncomment if adopted later)
 # Pods/
 # .swiftpm/xcode/package.xcworkspace/xcshareddata/
+
+# Cloudflare wrangler local dev state
+.wrangler/

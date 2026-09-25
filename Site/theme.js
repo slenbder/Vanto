@@ -18,7 +18,11 @@
   };
 
   applyTheme(readSaved() || (systemTheme.matches ? 'dark' : 'light'));
-  themeButton?.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true));
+  themeButton?.addEventListener('click', () => {
+    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(theme, true);
+    window.vantoAnalytics?.track('Theme Toggle', { theme });
+  });
   systemTheme.addEventListener('change', event => {
     if (!readSaved()) applyTheme(event.matches ? 'dark' : 'light');
   });
