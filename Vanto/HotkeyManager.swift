@@ -97,9 +97,9 @@ internal enum KeyboardLayoutTranslator {
 ///
 /// Needs BOTH a global and a local monitor. Per NSEvent's own documentation:
 /// "your handler will not be called for events that are sent to your own application"
-/// (addGlobalMonitorForEvents). PasteQueue becomes the active app the moment the user
+/// (addGlobalMonitorForEvents). Vanto becomes the active app the moment the user
 /// clicks the status item to open the popover — so a shortcut pressed while that popover is
-/// open targets PasteQueue itself, not "another" app, and the global-only monitor never
+/// open targets Vanto itself, not "another" app, and the global-only monitor never
 /// sees it. The local monitor covers exactly that case; the global one covers everything else.
 /// Both are passive here (local returns the event unmodified) — nothing else is listening
 /// for these exact combos by default, but a user-recorded override CAN collide with another
@@ -169,7 +169,7 @@ final class HotkeyManager: ObservableObject {
 
     /// Installs the real global+local NSEvent monitors and wires the production paste
     /// route. Only ever called from AppDelegate.applicationDidFinishLaunching, which itself
-    /// returns before this for the test host — never exercised by PasteQueueTests.
+    /// returns before this for the test host — never exercised by VantoTests.
     func start(
         toggleCollectingHandler: @escaping ActionHandler = { PasteStack.shared.toggleCollecting() },
         pasteRequestHandler: @escaping ActionHandler = { PasteStack.shared.pasteNext() }

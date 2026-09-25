@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import XCTest
 
 final class TextJoinPreferenceTests: XCTestCase {
@@ -12,7 +12,7 @@ final class TextJoinPreferenceTests: XCTestCase {
     }
 
     func testPreferenceDefaultsAndPersistsCustomSeparator() {
-        let suiteName = "PasteQueueTests-\(UUID().uuidString)"
+        let suiteName = "VantoTests-\(UUID().uuidString)"
         guard let defaults = UserDefaults(suiteName: suiteName) else {
             return XCTFail("could not create isolated defaults")
         }

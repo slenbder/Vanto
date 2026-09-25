@@ -1,7 +1,7 @@
 import Foundation
 import os
 
-private let logger = Logger(subsystem: "com.slenbder.pastequeue", category: "ShortcutStoring")
+private let logger = Logger(subsystem: "com.slenbder.vanto", category: "ShortcutStoring")
 
 /// Persists per-action shortcut overrides. `nil` means "no override — use the live,
 /// layout-tracked default" (see ShortcutAction.defaultCharacter).

@@ -1,4 +1,4 @@
-name: PasteQueue
+name: Vanto
 options:
   bundleIdPrefix: com.slenbder
   deploymentTarget:
@@ -8,15 +8,15 @@ packages:
     url: https://github.com/sparkle-project/Sparkle
     exactVersion: 2.10.0
 targets:
-  PasteQueue:
+  Vanto:
     type: application
     platform: macOS
     sources:
-      - path: PasteQueue
+      - path: Vanto
     dependencies:
       - package: Sparkle
     info:
-      path: PasteQueue/Info.plist
+      path: Vanto/Info.plist
       properties:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -29,11 +29,11 @@ targets:
         SUAllowsAutomaticUpdates: true
         SUAutomaticallyUpdate: true
         SUEnableAutomaticChecks: true
-        SUFeedURL: https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml
+        SUFeedURL: https://raw.githubusercontent.com/slenbder/Vanto/main/appcast.xml
         SUPublicEDKey: /W0oJKwTBhrso84bzRUsrUsT8IU1bR8+1aixWVbGOv8=
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.slenbder.pastequeue
+        PRODUCT_BUNDLE_IDENTIFIER: com.slenbder.vanto
         DEVELOPMENT_TEAM: 6D5U6N6YZA
         CODE_SIGN_STYLE: Automatic
         MACOSX_DEPLOYMENT_TARGET: "13.0"
@@ -42,7 +42,7 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
         COMBINE_HIDPI_IMAGES: true
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: true
-        ASSETCATALOG_COMPILER_APPICON_NAME: PasteQueueIcon
+        ASSETCATALOG_COMPILER_APPICON_NAME: VantoIcon
       configs:
         Debug:
           ENABLE_HARDENED_RUNTIME: false
@@ -72,13 +72,13 @@ targets:
               fi
             done
           fi
-  PasteQueueTests:
+  VantoTests:
     type: bundle.unit-test
     platform: macOS
     sources:
-      - path: PasteQueueTests
+      - path: VantoTests
     dependencies:
-      - target: PasteQueue
+      - target: Vanto
     settings:
       base:
         DEVELOPMENT_TEAM: 6D5U6N6YZA
@@ -87,16 +87,16 @@ targets:
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: true
         BUNDLE_LOADER: "$(TEST_HOST)"
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/PasteQueue.app/Contents/MacOS/PasteQueue"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Vanto.app/Contents/MacOS/Vanto"
 schemes:
-  PasteQueue:
+  Vanto:
     build:
       targets:
-        PasteQueue: all
-        PasteQueueTests: [test]
+        Vanto: all
+        VantoTests: [test]
     test:
       targets:
-        - PasteQueueTests
+        - VantoTests
       config: Debug
     run:
       config: Debug

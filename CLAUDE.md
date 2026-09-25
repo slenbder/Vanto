@@ -5,7 +5,7 @@ repository.
 
 ## What this is
 
-PasteQueue is a macOS menu-bar-only utility. ⌃⌘C toggles collection; while
+Vanto is a macOS menu-bar-only utility. ⌃⌘C toggles collection; while
 collection is active, ordinary ⌘C copies text, images, or files into a FIFO
 queue. ⌃⌘V or the Paste button sends the next item. Minimum target: macOS
 13.0; Apple Silicon only.
@@ -24,19 +24,19 @@ silently in the background.
 
 ## Build & test
 
-The project file (`PasteQueue.xcodeproj`) is generated from `project.yml` via XcodeGen — edit `project.yml`, not the `.xcodeproj` directly.
+The project file (`Vanto.xcodeproj`) is generated from `project.yml` via XcodeGen — edit `project.yml`, not the `.xcodeproj` directly.
 
 ```bash
 # Regenerate .xcodeproj after editing project.yml
 xcodegen generate
 
 # Build
-xcodebuild -scheme PasteQueue -configuration Debug build
+xcodebuild -scheme Vanto -configuration Debug build
 
 # Run the isolated unit-test target
-xcodebuild test -scheme PasteQueue -destination 'platform=macOS' \
-  -only-testing:PasteQueueTests \
-  -derivedDataPath /private/tmp/PasteQueueDerivedData \
+xcodebuild test -scheme Vanto -destination 'platform=macOS' \
+  -only-testing:VantoTests \
+  -derivedDataPath /private/tmp/VantoDerivedData \
   CODE_SIGNING_ALLOWED=NO
 ```
 
@@ -46,12 +46,13 @@ Use README.md for the final manual release checklist.
 
 The first release is planned for direct website download on Apple Silicon.
 `project.yml` declares version 0.1/build 1; its Release configuration targets
-arm64 only and enables Hardened Runtime. Automatic signing still resolves to
-Apple Development on this host (no Developer ID Application identity yet), so
-no build is distributable. Check `docs/RELEASE_HANDOFF.md` for the current
-release gate before changing signing or publishing an artifact.
+arm64 only and enables Hardened Runtime. The project uses automatic signing,
+but this host currently has no valid code-signing identity, including no
+Developer ID Application identity, so no build is distributable. Check
+`docs/RELEASE_HANDOFF.md` for the current release gate before changing signing
+or publishing an artifact.
 
-`PasteQueue/Info.plist` is written by XcodeGen from `project.yml`'s
+`Vanto/Info.plist` is written by XcodeGen from `project.yml`'s
 `info.properties`; change keys there, never in the plist or `.xcodeproj`.
 Lemon Squeezy IDs and the checkout URL are per-configuration build settings
 (`LEMON_SQUEEZY_STORE_ID`, `_PRODUCT_ID`, `_VARIANT_ID`, `_CHECKOUT_URL`):
@@ -59,8 +60,8 @@ Debug points at the test-mode product, Release at the live one. A pre-build
 script fails `archive` if any of them is empty.
 
 CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`:
-regenerates the project and fails on any diff in `PasteQueue.xcodeproj` or
-`Info.plist`, runs `PasteQueueTests`, and compiles Release unsigned. It
+regenerates the project and fails on any diff in `Vanto.xcodeproj` or
+`Info.plist`, runs `VantoTests`, and compiles Release unsigned. It
 publishes nothing.
 
 **App Sandbox must be OFF.** A sandboxed app cannot post synthetic keyboard events or register global key monitors — this is a hard requirement, not optional.
@@ -71,7 +72,7 @@ Twenty Swift source files:
 
 | File | Role |
 |------|------|
-| `PasteQueueApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, paste routing, access gating of hotkeys, and trial/validation timers |
+| `VantoApp.swift` | `@main` entry point + `AppDelegate` owning status UI, popover lifecycle, recipient focus restoration, paste routing, access gating of hotkeys, and trial/validation timers |
 | `PasteStack.swift` | Singleton model: FIFO queue, clipboard polling, synthetic paste, Launch at Login |
 | `HotkeyManager.swift` | Registers global + local `NSEvent` monitors for ⌃⌘C / ⌃⌘V, resolves live vs. overridden bindings, owns recording-pause state |
 | `HotkeySpec.swift` | `ShortcutAction` enum, `HotkeySpec` (keyCode + modifiers), and `ShortcutRecording`'s pure classification/validation logic for capturing a new combo |
@@ -122,8 +123,8 @@ recipient activation. Keep this cancellation scoped to combined paste.
 `KeychainLicenseCredentialStore`, the Lemon Squeezy client, and
 `UserDefaultsTrialWarningStore`. Debug uses separate Keychain services and
 defaults key (`.debug` suffix), so development never consumes the user's trial:
-Keychain services `com.slenbder.pastequeue.trial[.debug]` /
-`com.slenbder.pastequeue.license[.debug]`, defaults key
+Keychain services `com.slenbder.vanto.trial[.debug]` /
+`com.slenbder.vanto.license[.debug]`, defaults key
 `trial-warning-thresholds-v1[.debug]`.
 
 - **Trial.** Exactly 14 × 24 h from first launch. `latestObservedAt` only
@@ -188,7 +189,7 @@ after paste; do not claim a separate ordinary-Quit cleanup.
 
 The popover uses `.applicationDefined` with explicit closing for the status
 item, outside click, and a drained queue. Escape is handled by a local key
-monitor while PasteQueue is receiving keyboard events; its behavior after
+monitor while Vanto is receiving keyboard events; its behavior after
 focus returns to the external application has not been separately confirmed. A
 fresh hosting controller wrapping `PopoverRootView` is created at each opening
 — `screen` always starts back at `.queue` on reopen, matching every other
@@ -219,7 +220,7 @@ changing either icon so collecting-state toggles do not shift the silhouette.
 `HotkeyManager` uses `TISCopyCurrentASCIICapableKeyboardLayoutInputSource` + `UCKeyTranslate` to map the physical keyCode to a character under the ASCII-capable hardware layout. This keeps ⌃⌘C/⌃⌘V tracking the physical key under Dvorak/AZERTY while being unaffected by non-Latin input sources (Cyrillic, Japanese, etc.).
 
 Both a global and a local `NSEvent` monitor are registered — the global monitor
-misses events when PasteQueue itself is active, and the local monitor covers
+misses events when Vanto itself is active, and the local monitor covers
 that case. Caps Lock and non-shortcut device flags do not prevent matching;
 Shift and Option do. Key-repeat events are ignored.
 

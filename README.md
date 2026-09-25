@@ -1,11 +1,11 @@
-# PasteQueue
+# Vanto
 
 A minimal menu-bar utility for collecting text, images, and files, then pasting
 them back in queue order. Text items can also be combined into one paste.
 
 ## ⌨️ Hotkeys — read this before you buy
 
-PasteQueue uses two global hotkeys. These are the defaults; you can change
+Vanto uses two global hotkeys. These are the defaults; you can change
 either shortcut in Settings:
 
 - **⌃⌘C** (Control + Command + C) — start/stop collecting
@@ -14,7 +14,7 @@ either shortcut in Settings:
 Check these against any hotkey tools you already have running (Raycast,
 Ice, Rectangle, BetterTouchTool, etc.). The shortcuts are observed globally
 without blocking other apps, so a combination already used elsewhere can
-trigger both PasteQueue and that app's action. Rebind it in Settings if there
+trigger both Vanto and that app's action. Rebind it in Settings if there
 is a conflict.
 
 ## Requirements
@@ -24,9 +24,9 @@ is a conflict.
 
 ## Installing
 
-The first release is planned as a direct download from the PasteQueue website
+The first release is planned as a direct download from the Vanto website
 for Apple Silicon Macs. The package format has not been finalized. If you
-receive a `PasteQueue.app`, move it to `/Applications` before enabling Launch
+receive a `Vanto.app`, move it to `/Applications` before enabling Launch
 at Login. See `SETUP.md` to build the app from source.
 
 ## Trial and license
@@ -43,57 +43,58 @@ at Login. See `SETUP.md` to build the app from source.
   unlocks immediately, with no relaunch.
 - **Moving to another Mac.** Settings → **Deactivate This Mac** frees one of
   the three device slots. It needs an internet connection.
-- **Offline use.** A licensed copy keeps working offline. PasteQueue re-checks
+- **Offline use.** A licensed copy keeps working offline. Vanto re-checks
   the license about once a week and simply retries later if the check fails.
   Only an explicit "invalid license" answer from the license server (for
   example, after a refund) removes the activation.
-- **What leaves the Mac.** The license key and a device name are sent to the
-  license service (Lemon Squeezy) only when you activate or deactivate, and
-  during the weekly check. Copied content never leaves your Mac.
+- **What leaves the Mac.** Activation sends the license key and the Mac's
+  displayed device name to Lemon Squeezy. Weekly validation and deactivation
+  send the license key and Lemon Squeezy instance ID. Copied content never
+  leaves your Mac.
 
 ## Updates
 
-PasteQueue updates itself automatically in the background (Sparkle). There is
+Vanto updates itself automatically in the background (Sparkle). There is
 no update button or setting, and you never need to pay for an update. Each
-update is signed, and PasteQueue installs only updates that pass that check.
+update is signed, and Vanto installs only updates that pass that check.
 
 ## Uninstalling
 
-PasteQueue has no installer and no uninstaller — like most macOS utilities
+Vanto has no installer and no uninstaller — like most macOS utilities
 distributed outside the App Store, removing it is just dragging
-`PasteQueue.app` to the Trash. That leaves a few small things behind on disk,
+`Vanto.app` to the Trash. That leaves a few small things behind on disk,
 none of which are dangerous, but worth knowing about if you want a fully
 clean system:
 
-- **`~/Library/Application Support/PasteQueue/ClipboardFiles/`** — temporary
-  copies of files you've queued. PasteQueue removes owned copies when you use
+- **`~/Library/Application Support/Vanto/ClipboardFiles/`** — temporary
+  copies of files you've queued. Vanto removes owned copies when you use
   Clear or delete an item, about two seconds after that item is pasted, and on
   the next launch if an orphan remains. An ordinary Quit with files still
   queued does not perform a separate exit cleanup, so copies can remain until
-  the next launch. Safe to delete manually while PasteQueue is not running.
-- **`~/Library/Preferences/com.slenbder.pastequeue.plist`** — your Launch at
+  the next launch. Safe to delete manually while Vanto is not running.
+- **`~/Library/Preferences/com.slenbder.vanto.plist`** — your Launch at
   Login choice, shortcut overrides, language choice, last-used text
   separator, which trial reminders were shown, and Sparkle's update-check
-  timestamps. Safe to delete; `defaults delete com.slenbder.pastequeue` also
+  timestamps. Safe to delete; `defaults delete com.slenbder.vanto` also
   works from Terminal.
-- **Keychain items** `com.slenbder.pastequeue.trial` and
-  `com.slenbder.pastequeue.license` — the trial start date and, if activated,
+- **Keychain items** `com.slenbder.vanto.trial` and
+  `com.slenbder.vanto.license` — the trial start date and, if activated,
   your license key and device activation. Deactivate the Mac in Settings
   *before* deleting the app if you want to free its device slot. Keeping
   these items means a reinstall remembers both the trial and the license.
-- **`~/Library/Caches/com.slenbder.pastequeue/`** — Sparkle's temporary update
+- **`~/Library/Caches/com.slenbder.vanto/`** — Sparkle's temporary update
   downloads. Safe to delete.
 - **Launch at Login entry** — macOS does *not* clean this up when you delete
   the app. If you had "Launch at Login" enabled, go to **System Settings →
   General → Login Items & Extensions** after deleting the app and remove
-  PasteQueue from that list — it'll otherwise sit there pointing at a Trashed
+  Vanto from that list — it'll otherwise sit there pointing at a Trashed
   app indefinitely.
 
 To remove everything in one pass:
 ```
-rm -rf ~/Library/Application\ Support/PasteQueue
-rm -f ~/Library/Preferences/com.slenbder.pastequeue.plist
-rm -rf ~/Library/Caches/com.slenbder.pastequeue
+rm -rf ~/Library/Application\ Support/Vanto
+rm -f ~/Library/Preferences/com.slenbder.vanto.plist
+rm -rf ~/Library/Caches/com.slenbder.vanto
 ```
 (then check Login Items as above, and empty the Trash).
 
@@ -108,7 +109,7 @@ outcome.
 
 ## First run
 
-1. Launch PasteQueue — its icon appears in the menu bar (no Dock icon, this
+1. Launch Vanto — its icon appears in the menu bar (no Dock icon, this
    is a menu-bar-only utility).
 2. macOS will prompt for Accessibility permission the first time it tries to
    register the global hotkeys. Approve it in
@@ -142,7 +143,7 @@ outcome.
    the full text is pasted in the current queue order. Every queued item must
    be text. The last successfully used separator is remembered. **Back** or
    closing the menu cancels an in-flight request; a failed request keeps the
-   queue and brings the error back into view. Once PasteQueue posts the paste
+   queue and brings the error back into view. Once Vanto posts the paste
    command successfully, it drains the queue. As with ordinary Paste, it
    cannot confirm that the destination app actually inserted the text.
 
@@ -199,7 +200,7 @@ the final artifact.
   doesn't leave hotkeys stuck paused afterward. Switch the language picker
   through a few locales and confirm both screens' text updates immediately,
   with no truncated labels — check at least ru, es, de, and one of ja/zh-Hans.
-- **Trial and license** — on a clean Mac (no `com.slenbder.pastequeue.*`
+- **Trial and license** — on a clean Mac (no `com.slenbder.vanto.*`
   Keychain items), confirm the trial starts with 14 days and survives a
   relaunch. Check the 7/3/1-day reminders appear once each, in English
   singular form for "1 day left". Let the trial end with the menu open and
@@ -228,7 +229,7 @@ the final artifact.
 ## Known limitations (v1)
 
 - **Shortcut conflicts.** A custom shortcut can also trigger another app's
-  action because PasteQueue's keyboard monitor does not block that app.
+  action because Vanto's keyboard monitor does not block that app.
 - **VoiceOver support is basic.** You can tell what state the app is in and
   perform the core actions, but:
   - Reordering the queue by dragging has no VoiceOver equivalent yet.
@@ -238,7 +239,7 @@ the final artifact.
 - **Secure input fields.** macOS or the focused application may suppress the
   global shortcut, the synthesized ⌘V, or both while secure input is active.
   Behavior can differ between password fields, system prompts, terminals, and
-  third-party apps, so do not rely on PasteQueue for secure-entry workflows.
+  third-party apps, so do not rely on Vanto for secure-entry workflows.
 - **Intel Macs are unsupported and untested** (Apple Silicon only).
 
 ## Where to go from here
@@ -247,7 +248,7 @@ the final artifact.
   / `.file`). Images are detected via `NSPasteboard.readObjects(forClasses:
   [NSImage.self], ...)`, which covers PNG/JPEG/TIFF/GIF/HEIC without listing
   UTIs by hand; files (single or Finder/Photos multi-select) are copied into
-  PasteQueue's own storage at capture time so they can still be pasted even
+  Vanto's own storage at capture time so they can still be pasted even
   if the source app's sandbox only grants a read handle for the instant of
   the copy. Rich/styled text (e.g. from Pages or Word) is captured as its
   plain-text fallback — formatting is dropped, since `ClipboardItem` has no

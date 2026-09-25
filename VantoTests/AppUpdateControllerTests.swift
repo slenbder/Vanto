@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import XCTest
 
 final class AppUpdateControllerTests: XCTestCase {
@@ -42,7 +42,7 @@ final class AppUpdateControllerTests: XCTestCase {
         XCTAssertEqual(Data(base64Encoded: bundledPublicKey)?.count, 32)
         XCTAssertEqual(
             feedURL,
-            "https://raw.githubusercontent.com/slenbder/PasteQueue/main/appcast.xml"
+            "https://raw.githubusercontent.com/slenbder/Vanto/main/appcast.xml"
         )
         XCTAssertNotNil(SparkleUpdateConfiguration.load(from: info))
     }

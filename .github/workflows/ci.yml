@@ -31,23 +31,23 @@ jobs:
         run: xcodegen generate
 
       - name: Verify generated project is committed
-        run: git diff --exit-code -- PasteQueue.xcodeproj PasteQueue/Info.plist
+        run: git diff --exit-code -- Vanto.xcodeproj Vanto/Info.plist
 
       - name: Run unit tests
         run: >-
           xcodebuild test
-          -scheme PasteQueue
+          -scheme Vanto
           -destination 'platform=macOS,arch=arm64'
-          -only-testing:PasteQueueTests
-          -derivedDataPath /tmp/PasteQueueDerivedData
+          -only-testing:VantoTests
+          -derivedDataPath /tmp/VantoDerivedData
           CODE_SIGNING_ALLOWED=NO
 
       - name: Compile Release configuration
         run: >-
           xcodebuild
-          -scheme PasteQueue
+          -scheme Vanto
           -configuration Release
           -destination 'platform=macOS,arch=arm64'
-          -derivedDataPath /tmp/PasteQueueReleaseDerivedData
+          -derivedDataPath /tmp/VantoReleaseDerivedData
           CODE_SIGNING_ALLOWED=NO
           build

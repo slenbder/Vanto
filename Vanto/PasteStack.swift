@@ -3,7 +3,7 @@ import Combine
 import ServiceManagement
 import os
 
-private let logger = Logger(subsystem: "com.slenbder.pastequeue", category: "PasteStack")
+private let logger = Logger(subsystem: "com.slenbder.vanto", category: "PasteStack")
 
 enum LaunchAtLoginStatus {
     case enabled
@@ -115,7 +115,7 @@ final class PasteStack: ObservableObject {
     // file we hand out at paste time is one we actually own.
     private static var productionClipboardFilesDirectory: URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return appSupport.appendingPathComponent("PasteQueue/ClipboardFiles", isDirectory: true)
+        return appSupport.appendingPathComponent("Vanto/ClipboardFiles", isDirectory: true)
     }
 
     convenience init() {
@@ -312,7 +312,7 @@ final class PasteStack: ObservableObject {
         try? FileManager.default.removeItem(at: storageEntry)
     }
 
-    /// Resolves only the two layouts PasteQueue owns. Exact normalized parent equality and
+    /// Resolves only the two layouts Vanto owns. Exact normalized parent equality and
     /// the queue item's UUID prevent a crafted path (including `..`) from escaping this
     /// instance's storage or deleting a sibling item.
     private func ownedStorageEntry(for item: QueuedClipboardItem) -> URL? {

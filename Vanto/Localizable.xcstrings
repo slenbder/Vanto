@@ -323,48 +323,48 @@
         }
       }
     },
-    "PasteQueue will stop working on this Mac when the trial has ended. This frees one of your three device slots." : {
+    "Vanto will stop working on this Mac when the trial has ended. This frees one of your three device slots." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue funktioniert auf diesem Mac nach Ablauf des Testzeitraums nicht mehr. Dadurch wird einer Ihrer drei Geräteplätze frei."
+            "value" : "Vanto funktioniert auf diesem Mac nach Ablauf des Testzeitraums nicht mehr. Dadurch wird einer Ihrer drei Geräteplätze frei."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue will stop working on this Mac when the trial has ended. This frees one of your three device slots."
+            "value" : "Vanto will stop working on this Mac when the trial has ended. This frees one of your three device slots."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue dejará de funcionar en este Mac cuando termine la prueba. Esto libera uno de tus tres dispositivos."
+            "value" : "Vanto dejará de funcionar en este Mac cuando termine la prueba. Esto libera uno de tus tres dispositivos."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トライアル終了後、このMacではPasteQueueを使用できなくなります。3台分のデバイス枠のうち1台分が空きます。"
+            "value" : "トライアル終了後、このMacではVantoを使用できなくなります。3台分のデバイス枠のうち1台分が空きます。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O PasteQueue deixará de funcionar neste Mac quando o período de teste terminar. Isso libera uma das suas três vagas de dispositivo."
+            "value" : "O Vanto deixará de funcionar neste Mac quando o período de teste terminar. Isso libera uma das suas três vagas de dispositivo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "После окончания пробного периода PasteQueue перестанет работать на этом Mac. Освободится один из трёх слотов устройств."
+            "value" : "После окончания пробного периода Vanto перестанет работать на этом Mac. Освободится один из трёх слотов устройств."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "试用期结束后，PasteQueue 将无法在这台 Mac 上使用。这会释放三个设备名额中的一个。"
+            "value" : "试用期结束后，Vanto 将无法在这台 Mac 上使用。这会释放三个设备名额中的一个。"
           }
         }
       }
@@ -737,48 +737,48 @@
         }
       }
     },
-    "Enter your license key to keep using PasteQueue. Your queue is preserved." : {
+    "Enter your license key to keep using Vanto. Your queue is preserved." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geben Sie Ihren Lizenzschlüssel ein, um PasteQueue weiter zu verwenden. Ihre Warteschlange bleibt erhalten."
+            "value" : "Geben Sie Ihren Lizenzschlüssel ein, um Vanto weiter zu verwenden. Ihre Warteschlange bleibt erhalten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enter your license key to keep using PasteQueue. Your queue is preserved."
+            "value" : "Enter your license key to keep using Vanto. Your queue is preserved."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Introduce tu clave de licencia para seguir usando PasteQueue. Tu cola se conservará."
+            "value" : "Introduce tu clave de licencia para seguir usando Vanto. Tu cola se conservará."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueueを引き続き使用するには、ライセンスキーを入力してください。キューの内容は保持されています。"
+            "value" : "Vantoを引き続き使用するには、ライセンスキーを入力してください。キューの内容は保持されています。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Insira sua chave de licença para continuar usando o PasteQueue. Sua fila será preservada."
+            "value" : "Insira sua chave de licença para continuar usando o Vanto. Sua fila será preservada."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Введите лицензионный ключ, чтобы продолжить пользоваться PasteQueue. Очередь сохранена."
+            "value" : "Введите лицензионный ключ, чтобы продолжить пользоваться Vanto. Очередь сохранена."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请输入许可证密钥以继续使用 PasteQueue。你的队列已保留。"
+            "value" : "请输入许可证密钥以继续使用 Vanto。你的队列已保留。"
           }
         }
       }
@@ -1603,48 +1603,48 @@
         }
       }
     },
-    "Allow PasteQueue in Accessibility settings, then try again." : {
+    "Allow Vanto in Accessibility settings, then try again." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue in den Bedienungshilfen erlauben und erneut versuchen."
+            "value" : "Vanto in den Bedienungshilfen erlauben und erneut versuchen."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allow PasteQueue in Accessibility settings, then try again."
+            "value" : "Allow Vanto in Accessibility settings, then try again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permite PasteQueue en los ajustes de Accesibilidad e inténtalo de nuevo."
+            "value" : "Permite Vanto en los ajustes de Accesibilidad e inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アクセシビリティ設定でPasteQueueを許可してから再試行してください。"
+            "value" : "アクセシビリティ設定でVantoを許可してから再試行してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Permita o PasteQueue nos ajustes de Acessibilidade e tente novamente."
+            "value" : "Permita o Vanto nos ajustes de Acessibilidade e tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Разрешите PasteQueue доступ в настройках Универсального доступа и повторите попытку."
+            "value" : "Разрешите Vanto доступ в настройках Универсального доступа и повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请在辅助功能设置中允许 PasteQueue，然后重试。"
+            "value" : "请在辅助功能设置中允许 Vanto，然后重试。"
           }
         }
       }
@@ -2672,7 +2672,7 @@
         }
       }
     },
-    "PasteQueue, %lld items queued, not recording" : {
+    "Vanto, %lld items queued, not recording" : {
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
@@ -2681,13 +2681,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld Element in der Warteschlange, keine Aufzeichnung"
+                  "value" : "Vanto, %lld Element in der Warteschlange, keine Aufzeichnung"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld Elemente in der Warteschlange, keine Aufzeichnung"
+                  "value" : "Vanto, %lld Elemente in der Warteschlange, keine Aufzeichnung"
                 }
               }
             }
@@ -2699,13 +2699,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld item queued, not recording"
+                  "value" : "Vanto, %lld item queued, not recording"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld items queued, not recording"
+                  "value" : "Vanto, %lld items queued, not recording"
                 }
               }
             }
@@ -2717,13 +2717,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld elemento en cola, sin grabar"
+                  "value" : "Vanto, %lld elemento en cola, sin grabar"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld elementos en cola, sin grabar"
+                  "value" : "Vanto, %lld elementos en cola, sin grabar"
                 }
               }
             }
@@ -2735,7 +2735,7 @@
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue、%lld 件をキュー済み、記録は停止中"
+                  "value" : "Vanto、%lld 件をキュー済み、記録は停止中"
                 }
               }
             }
@@ -2747,13 +2747,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld item na fila, sem gravação"
+                  "value" : "Vanto, %lld item na fila, sem gravação"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld itens na fila, sem gravação"
+                  "value" : "Vanto, %lld itens na fila, sem gravação"
                 }
               }
             }
@@ -2765,19 +2765,19 @@
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld элемента в очереди, запись не идёт"
+                  "value" : "Vanto, %lld элемента в очереди, запись не идёт"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld элементов в очереди, запись не идёт"
+                  "value" : "Vanto, %lld элементов в очереди, запись не идёт"
                 }
               },
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, %lld элемент в очереди, запись не идёт"
+                  "value" : "Vanto, %lld элемент в очереди, запись не идёт"
                 }
               }
             }
@@ -2789,7 +2789,7 @@
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue，已排队 %lld 项，未在录制"
+                  "value" : "Vanto，已排队 %lld 项，未在录制"
                 }
               }
             }
@@ -2797,54 +2797,54 @@
         }
       }
     },
-    "PasteQueue, idle" : {
+    "Vanto, idle" : {
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue, inaktiv"
+            "value" : "Vanto, inaktiv"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue, idle"
+            "value" : "Vanto, idle"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue, inactivo"
+            "value" : "Vanto, inactivo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue、待機中"
+            "value" : "Vanto、待機中"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue, ocioso"
+            "value" : "Vanto, ocioso"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue, ожидание"
+            "value" : "Vanto, ожидание"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PasteQueue，空闲"
+            "value" : "Vanto，空闲"
           }
         }
       }
     },
-    "PasteQueue, recording, %lld items in queue" : {
+    "Vanto, recording, %lld items in queue" : {
       "extractionState" : "stale",
       "localizations" : {
         "de" : {
@@ -2853,13 +2853,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, Aufzeichnung, %lld Element in der Warteschlange"
+                  "value" : "Vanto, Aufzeichnung, %lld Element in der Warteschlange"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, Aufzeichnung, %lld Elemente in der Warteschlange"
+                  "value" : "Vanto, Aufzeichnung, %lld Elemente in der Warteschlange"
                 }
               }
             }
@@ -2871,13 +2871,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, recording, %lld item in queue"
+                  "value" : "Vanto, recording, %lld item in queue"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, recording, %lld items in queue"
+                  "value" : "Vanto, recording, %lld items in queue"
                 }
               }
             }
@@ -2889,13 +2889,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, grabando, %lld elemento en la cola"
+                  "value" : "Vanto, grabando, %lld elemento en la cola"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, grabando, %lld elementos en la cola"
+                  "value" : "Vanto, grabando, %lld elementos en la cola"
                 }
               }
             }
@@ -2907,7 +2907,7 @@
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue、記録中、キューに %lld 件"
+                  "value" : "Vanto、記録中、キューに %lld 件"
                 }
               }
             }
@@ -2919,13 +2919,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, gravando, %lld item na fila"
+                  "value" : "Vanto, gravando, %lld item na fila"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, gravando, %lld itens na fila"
+                  "value" : "Vanto, gravando, %lld itens na fila"
                 }
               }
             }
@@ -2937,19 +2937,19 @@
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, запись, %lld элемента в очереди"
+                  "value" : "Vanto, запись, %lld элемента в очереди"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, запись, %lld элементов в очереди"
+                  "value" : "Vanto, запись, %lld элементов в очереди"
                 }
               },
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue, запись, %lld элемент в очереди"
+                  "value" : "Vanto, запись, %lld элемент в очереди"
                 }
               }
             }
@@ -2961,7 +2961,7 @@
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "PasteQueue，录制中，队列中有 %lld 项"
+                  "value" : "Vanto，录制中，队列中有 %lld 项"
                 }
               }
             }

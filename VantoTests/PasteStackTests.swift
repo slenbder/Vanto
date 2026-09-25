@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import AppKit
 import Carbon
 import XCTest
@@ -8,7 +8,7 @@ final class PasteStackTests: XCTestCase {
 
     override func setUpWithError() throws {
         testRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PasteQueueTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("VantoTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: testRoot, withIntermediateDirectories: true)
     }
 

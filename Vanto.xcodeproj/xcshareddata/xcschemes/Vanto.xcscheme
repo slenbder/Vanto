@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B25753C458A64BBCD2ACE66D"
-               BuildableName = "PasteQueue.app"
-               BlueprintName = "PasteQueue"
-               ReferencedContainer = "container:PasteQueue.xcodeproj">
+               BlueprintIdentifier = "6A59E5361BE42073BC1A546B"
+               BuildableName = "Vanto.app"
+               BlueprintName = "Vanto"
+               ReferencedContainer = "container:Vanto.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,10 +29,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DCFC997781240EE005A11F38"
-               BuildableName = "PasteQueueTests.xctest"
-               BlueprintName = "PasteQueueTests"
-               ReferencedContainer = "container:PasteQueue.xcodeproj">
+               BlueprintIdentifier = "633E9DA2A1084664F083F7B2"
+               BuildableName = "VantoTests.xctest"
+               BlueprintName = "VantoTests"
+               ReferencedContainer = "container:Vanto.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,10 +46,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B25753C458A64BBCD2ACE66D"
-            BuildableName = "PasteQueue.app"
-            BlueprintName = "PasteQueue"
-            ReferencedContainer = "container:PasteQueue.xcodeproj">
+            BlueprintIdentifier = "6A59E5361BE42073BC1A546B"
+            BuildableName = "Vanto.app"
+            BlueprintName = "Vanto"
+            ReferencedContainer = "container:Vanto.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -58,10 +58,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DCFC997781240EE005A11F38"
-               BuildableName = "PasteQueueTests.xctest"
-               BlueprintName = "PasteQueueTests"
-               ReferencedContainer = "container:PasteQueue.xcodeproj">
+               BlueprintIdentifier = "633E9DA2A1084664F083F7B2"
+               BuildableName = "VantoTests.xctest"
+               BlueprintName = "VantoTests"
+               ReferencedContainer = "container:Vanto.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,10 +82,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B25753C458A64BBCD2ACE66D"
-            BuildableName = "PasteQueue.app"
-            BlueprintName = "PasteQueue"
-            ReferencedContainer = "container:PasteQueue.xcodeproj">
+            BlueprintIdentifier = "6A59E5361BE42073BC1A546B"
+            BuildableName = "Vanto.app"
+            BlueprintName = "Vanto"
+            ReferencedContainer = "container:Vanto.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -101,10 +101,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B25753C458A64BBCD2ACE66D"
-            BuildableName = "PasteQueue.app"
-            BlueprintName = "PasteQueue"
-            ReferencedContainer = "container:PasteQueue.xcodeproj">
+            BlueprintIdentifier = "6A59E5361BE42073BC1A546B"
+            BuildableName = "Vanto.app"
+            BlueprintName = "Vanto"
+            ReferencedContainer = "container:Vanto.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

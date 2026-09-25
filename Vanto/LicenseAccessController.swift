@@ -3,7 +3,7 @@ import Foundation
 import Security
 import os
 
-private let licenseLogger = Logger(subsystem: "com.slenbder.pastequeue", category: "License")
+private let licenseLogger = Logger(subsystem: "com.slenbder.vanto", category: "License")
 
 struct LicenseCredential: Codable, Equatable {
     let licenseKey: String
@@ -59,7 +59,7 @@ final class KeychainLicenseCredentialStore: LicenseCredentialStoring {
     private let decoder = JSONDecoder()
 
     init(
-        service: String = "com.slenbder.pastequeue.license",
+        service: String = "com.slenbder.vanto.license",
         account: String = "license-credential-v1"
     ) {
         self.service = service
@@ -189,7 +189,7 @@ final class LicenseAccessController: ObservableObject {
         trialWarningStore: TrialWarningStoring? = nil,
         now: @escaping () -> Date = Date.init,
         instanceName: @escaping () -> String = {
-            Host.current().localizedName.map { "PasteQueue on \($0)" } ?? "PasteQueue Mac"
+            Host.current().localizedName.map { "Vanto on \($0)" } ?? "Vanto Mac"
         }
     ) {
         self.trialController = trialController

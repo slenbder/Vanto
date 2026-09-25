@@ -98,7 +98,7 @@ enum ShortcutRecordingOutcome: Equatable {
 /// Pure classification/validation logic for shortcut recording — no AppKit event loop, no
 /// view code, fully unit-testable with synthetic keyCode/modifierFlags inputs.
 enum ShortcutRecording {
-    // Internal (not private): PasteQueueApp.swift's Escape-closes-popover monitor and
+    // Internal (not private): VantoApp.swift's Escape-closes-popover monitor and
     // ShortcutRecorderField's own recording monitor both need this same constant — see
     // their call sites for why. One definition instead of three independent `53` literals.
     static let escapeKeyCode: UInt16 = 53

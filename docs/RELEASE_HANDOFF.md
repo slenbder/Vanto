@@ -1,7 +1,8 @@
-# PasteQueue — контрольная точка перед первым релизом
+# Vanto — контрольная точка перед первым релизом
 
 Дата проверки: 25 сентября 2026. Ветка `feature/licensing-and-trial` влита в
-`main` (merge `c0d5dd8`) и отправлена в `origin/main`.
+`main` (merge `c0d5dd8`), документация обновлена отдельным merge `e2fd0c6`,
+текущий `main` отправлен в `origin/main`.
 Перед продолжением сверить `git status -sb`, `git branch -vv`, `git log -8
 --oneline --decorate`, `git remote -v` и настройки `project.yml`. Этот файл
 описывает состояние исходников и оставшиеся ворота выпуска; готовый артефакт
@@ -48,12 +49,12 @@
 ## Доказанная проверка
 
 25 сентября на коммите `2647a5d` (дерево совпадает с merge `c0d5dd8` в
-`main`) полный `PasteQueueTests` прошёл: **100 тестов, 0 ошибок**. Команда:
+`main`) полный `VantoTests` прошёл: **100 тестов, 0 ошибок**. Команда:
 
 ```sh
-xcodebuild test -scheme PasteQueue -destination 'platform=macOS,arch=arm64' \
-  -only-testing:PasteQueueTests \
-  -derivedDataPath /private/tmp/PasteQueueDerivedData \
+xcodebuild test -scheme Vanto -destination 'platform=macOS,arch=arm64' \
+  -only-testing:VantoTests \
+  -derivedDataPath /private/tmp/VantoDerivedData \
   CODE_SIGNING_ALLOWED=NO
 ```
 
@@ -78,11 +79,11 @@ app имеет ad-hoc подпись и **не является** дистриб
   `xcodegen generate` вычисленная Release-конфигурация:
   `ARCHS = arm64`, `ENABLE_HARDENED_RUNTIME = YES`,
   `ENABLE_APP_SANDBOX = NO`. Debug сохраняет Hardened Runtime выключенным.
-  Автоматическая подпись пока выбирает **Apple Development**.
-- Проверка Keychain на этом Mac нашла **1 Apple Development** и **0 Developer
-  ID Application** identities. Это снимок данного хоста, не вывод о статусе
-  учётной записи Apple. Developer ID подпись и нотарификация сейчас не
-  выполнены.
+  Проект использует автоматическую подпись.
+- **25 сентября 2026:** `security find-identity -v -p codesigning` нашёл на
+  этом Mac **0 valid identities**, включая 0 Developer ID Application. Это
+  снимок данного хоста, не вывод о статусе учётной записи Apple. Developer ID
+  подпись и нотарификация сейчас не выполнены.
 - `dist/` игнорируется Git и содержит исторический dev-артефакт; он не является
   кандидатом для покупателей. Новый подписанный и нотарифицированный контейнер
   ещё не собран и не проверен через Gatekeeper.
@@ -96,13 +97,14 @@ app имеет ad-hoc подпись и **не является** дистриб
   не пройдена. Доставка ключа, возвраты, политика приватности, канал
   поддержки и release notes ещё не готовы. Цена утверждена: $14.99.
 - Приватный Sparkle EdDSA-ключ хранится в локальном Keychain в записи
-  `com.slenbder.pastequeue`; защищённая резервная копия ещё не сделана.
+  `com.slenbder.vanto`; защищённая резервная копия ещё не сделана.
 - `.github/workflows/ci.yml` проверяет PR и push в `main` на Apple Silicon:
   пересоздаёт проект, требует отсутствия diff в Xcode project и Info.plist,
   запускает XCTest и компилирует Release без подписи. Этот workflow не
-  публикует артефакты. Первый удалённый прогон на push merge-коммита в `main`
-  (run `36050938552`) завершился **success**. Защита ветки `main`
-  (ruleset, обязательный CI) пока не настроена.
+  публикует артефакты. Первый удалённый прогон на push merge-коммита лицензии
+  (run `36050938552`) и прогон текущего документационного merge `e2fd0c6`
+  (run `36052254879`) завершились **success**. Защита ветки `main` (ruleset,
+  обязательный CI) пока не настроена.
 
 ## Ворота до публикации
 

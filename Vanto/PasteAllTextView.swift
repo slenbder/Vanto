@@ -164,7 +164,7 @@ struct PasteAllTextView: View {
         case .recipientUnavailable:
             Text("The target app is unavailable. Open the menu from the app you want to paste into.")
         case .accessibilityUnavailable:
-            Text("Allow PasteQueue in Accessibility settings, then try again.")
+            Text("Allow Vanto in Accessibility settings, then try again.")
         case .queueEmpty:
             Text("The queue is empty.")
         case .eventCreationFailed, .pasteboardWriteFailed, .requestInProgress:

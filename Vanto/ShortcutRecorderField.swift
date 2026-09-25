@@ -153,7 +153,7 @@ struct ShortcutRecorderField: View {
         }
         monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [self] event in
             // Escape is owned entirely by AppDelegate's monitor + cancelRecordingHandler
-            // above (see PasteQueueApp.swift) — NOT handled here, so there's a single
+            // above (see VantoApp.swift) — NOT handled here, so there's a single
             // deterministic decision-maker instead of two independently-registered local
             // monitors racing over the same keydown. This guard still matters regardless of
             // that ordering: without it, the swallow-everything branch below would eat

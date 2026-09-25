@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import XCTest
 
 final class LanguagePreferenceStoreTests: XCTestCase {
@@ -47,12 +47,12 @@ final class LanguagePreferenceStoreTests: XCTestCase {
         let bundle = AppLocalization.bundle(for: "ru")
 
         XCTAssertEqual(
-            String(localized: "PasteQueue, idle", bundle: bundle, locale: locale),
-            "PasteQueue, ожидание"
+            String(localized: "Vanto, idle", bundle: bundle, locale: locale),
+            "Vanto, ожидание"
         )
         XCTAssertEqual(
-            String(localized: "PasteQueue, recording, \(2) items in queue", bundle: bundle, locale: locale),
-            "PasteQueue, запись, 2 элемента в очереди"
+            String(localized: "Vanto, recording, \(2) items in queue", bundle: bundle, locale: locale),
+            "Vanto, запись, 2 элемента в очереди"
         )
         let actionName = ShortcutAction.pasteNext.displayName(locale: locale, bundle: bundle)
         XCTAssertEqual(actionName, "Вставить следующий")

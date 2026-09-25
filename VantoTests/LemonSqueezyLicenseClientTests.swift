@@ -1,4 +1,4 @@
-@testable import PasteQueue
+@testable import Vanto
 import XCTest
 
 final class LemonSqueezyLicenseClientTests: XCTestCase {
@@ -27,7 +27,7 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/x-www-form-urlencoded")
             let body = String(data: request.httpBody ?? Data(), encoding: .utf8)
-            XCTAssertEqual(body, "instance_name=PasteQueue%20Mac&license_key=TEST%20KEY")
+            XCTAssertEqual(body, "instance_name=Vanto%20Mac&license_key=TEST%20KEY")
             return Self.response(
                 for: request,
                 json: Self.activationJSON(storeID: 480340, productID: 1379329, variantID: 2154757)
@@ -36,7 +36,7 @@ final class LemonSqueezyLicenseClientTests: XCTestCase {
 
         let activation = try await makeClient(session: session).activate(
             licenseKey: "TEST KEY",
-            instanceName: "PasteQueue Mac"
+            instanceName: "Vanto Mac"
         )
 
         XCTAssertEqual(
