@@ -364,9 +364,11 @@ Preview locally with the `site` configuration in `.claude/launch.json`
 
 Analytics live in `Site/analytics.js`: elements with `data-track="Event"` and
 `data-track-<key>` attributes send events, plus section reach, scroll depth,
-FAQ opens, and the demo funnel reported from `app.js`. Umami is cookieless
+FAQ opens, the demo funnel reported from `app.js`, and the cookie banner's
+events from `consent.js` (`Consent Shown`, `Cookie Bite`, `Consent Details
+Click`, `Consent Choice` with trigger, bites and shakes). Umami is cookieless
 and reports only on the production host (`data-domains`); set
 `localStorage['vanto-analytics-debug'] = '1'` to log events locally.
 `Site/consent.js` loads Microsoft Clarity only after the visitor chooses
-Allow. Never load a cookie-setting tool outside that consent gate, and keep
+"Paste it" (the allow button). Never load a cookie-setting tool outside that consent gate, and keep
 `Site/privacy.html` in sync with whatever the site actually collects.

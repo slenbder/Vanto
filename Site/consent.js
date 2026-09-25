@@ -77,7 +77,7 @@
     </button>
     <div class="consent-copy">
       <p class="consent-title" aria-live="polite">${TITLE_IDLE}</p>
-      <p class="consent-text">Microsoft Clarity records scrolls and clicks. <a href="/privacy#analytics">Details</a></p>
+      <p class="consent-text">Microsoft Clarity records scrolls and clicks. <a href="/privacy#analytics" data-track="Consent Details Click">Details</a></p>
     </div>
     <div class="consent-actions">
       <button class="consent-button" type="button" data-consent="denied" aria-label="Skip — decline Clarity cookies">Skip</button>
@@ -99,6 +99,10 @@
   let nudgeTimer = 0;
   let nudgesLeft = 0;
   let lastBiteAt = 0;
+  // Per showing, for analytics: how the banner was opened and what happened
+  // before the choice. `round` counts cookies, so it grows after each regrow.
+  const session = { trigger: 'auto', bites: 0, shakes: 0, round: 1 };
+  const track = (name, data) => window.vantoAnalytics?.track(name, data);
 
   // Crumbs are positioned in the cookie's 48-unit viewBox, scaled to its box.
   const dropCrumbs = (count, [x, y], spread) => {
@@ -148,12 +152,15 @@
     cookie.classList.add('is-chomping');
     dropCrumbs(5, next.crumbs, 26);
     setTitle(TITLE_BITES[biteCount - 1]);
+    session.bites += 1;
+    track('Cookie Bite', { bite: biteCount, round: session.round });
     if (biteCount < BITES.length) return;
 
     // Last bite: the rest goes to crumbs, then a fresh one bakes itself.
     cookie.disabled = true;
     window.setTimeout(crumble, 160);
     regrowTimer = window.setTimeout(() => {
+      session.round += 1;
       resetCookie();
       setTitle(TITLE_REGROWN);
       idleTimer = window.setTimeout(() => setTitle(TITLE_IDLE), 1800);
@@ -170,6 +177,7 @@
     const busy = cookie.disabled || cookie.matches(':hover, :focus-visible') || Date.now() - lastBiteAt < 3000 || document.hidden;
     if (!busy && !reducedMotion.matches) {
       nudgesLeft -= 1;
+      session.shakes += 1;
       cookie.animate([
         { transform: 'translateY(0) rotate(0)' },
         { transform: 'translateY(-3px) rotate(-14deg)', offset: .14 },
@@ -188,7 +196,9 @@
     nudgeTimer = window.setTimeout(nudge, NUDGE_FIRST_DELAY);
   };
 
-  const showBanner = () => {
+  const showBanner = trigger => {
+    Object.assign(session, { trigger, bites: 0, shakes: 0, round: 1 });
+    track('Consent Shown', { trigger });
     returnFocusTo = null;
     window.clearTimeout(leaveTimer);
     resetCookie();
@@ -232,7 +242,7 @@
     const choice = button.dataset.consent;
     const wasGranted = readChoice() === 'granted';
     saveChoice(choice);
-    window.vantoAnalytics?.track('Consent Choice', { choice });
+    track('Consent Choice', { choice, trigger: session.trigger, bites: session.bites, shakes: session.shakes });
 
     // The choice is saved immediately; the cookie reacts, then the banner leaves.
     leaving = true;
@@ -265,7 +275,7 @@
   document.addEventListener('click', event => {
     if (!event.target.closest?.('[data-consent-open]')) return;
     const previous = document.activeElement;
-    showBanner();
+    showBanner('footer');
     if (previous && previous !== document.body && !banner.contains(previous)) returnFocusTo = previous;
     banner.querySelector('.consent-button')?.focus();
   });
@@ -274,6 +284,6 @@
   if (choice === 'granted') {
     loadClarity();
   } else if (choice !== 'denied') {
-    showBanner();
+    showBanner('auto');
   }
 })();
