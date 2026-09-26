@@ -31,13 +31,13 @@
     "play": "Try it",
     "why": "Why it works",
     "faq": "FAQ",
-    "buy": "Buy a license",
-    "download": "Download"
+    "notify": "Join waitlist"
   },
   "hero": {
     "title": "Copy everything.<br />Paste <em>in order.</em>",
     "lede": "Collect text, images, and files without bouncing between windows. Arrange the queue once, then paste through it.",
     "purchaseNote": "14-day trial at launch. One-time license.",
+    "waitlistLink": "Get 30% off at launch",
     "caption": "<b>No Dock clutter.</b> Just the queue, exactly when you need it.",
     "vp": {
       "label": "The Vanto window: recording, 3 items in queue — Hello, world!, Mountains.png and job_offer.docx — with Stop, Paste, Clear, Combine and Paste, and Quit.",
@@ -101,14 +101,14 @@
   },
   "final": {
     "queueItem": "next item",
-    "title": "Start with 14 days.",
-    "lede": "At launch, the download will include a full 14-day trial. If Vanto earns a place in your menu bar, buy a lifetime key and enter it in the same app.",
-    "download": "Download Vanto",
-    "downloadSoon": "The Vanto download is coming soon.",
+    "title": "30% off at launch.",
+    "lede": "Vanto is almost ready. Leave your email, and on launch day you’ll get one email with a code for 30% off a lifetime license, valid for 7 days. The 14-day trial is included either way.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Notify me",
+    "formNote": "A confirmation email now, one more at launch. Unsubscribe anytime. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Privacy</a>",
+    "changeEmail": "Use a different email",
     "note": "Apple silicon · macOS 13+ · Download coming soon",
-    "licenseQuestion": "Already tried Vanto?",
-    "licenseLink": "Buy a lifetime license",
-    "licenseSoon": "License checkout is coming soon.",
     "licenseNote": "One purchase · 3 devices · Free future updates"
   },
   "footer": {
@@ -125,6 +125,14 @@
     "button": "Back to Vanto"
   },
   "js": {
+    "waitlist": {
+      "sending": "Sending…",
+      "success": "Almost there: check your inbox and confirm your email.",
+      "already": "You’re already on the list. See you at launch.",
+      "rateLimit": "Too many attempts. Try again in a minute.",
+      "invalid": "Enter a valid email address.",
+      "error": "Couldn’t sign you up. Try again, or write to vanto@slenbder.com."
+    },
     "theme": {
       "toDark": "Switch to dark theme",
       "toLight": "Switch to light theme"

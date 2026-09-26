@@ -42,7 +42,7 @@
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=32" />
+    <link rel="stylesheet" href="/styles.css?v=34" />
     <link rel="canonical" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="en" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="de" href="https://vanto.slenbder.com/de/" />
@@ -70,8 +70,7 @@
         <a class="nav-faq" href="/#faq" data-track="Nav Click" data-track-target="faq">FAQ</a>
       </nav>
       <div class="header-actions">
-        <a class="header-buy" href="/#license" data-track="Buy Click" data-track-location="header">Buy a license</a>
-        <a class="button button-small button-ink" href="/#download" data-track="Download Click" data-track-location="header">Download</a>
+        <a class="button button-small button-ink" href="/#download" data-track="Waitlist Click" data-track-location="header">Join waitlist</a>
         <details class="lang-menu">
           <summary class="lang-toggle" title="Language"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.1 2.2 3.1 4.7 3.1 7.5s-1 5.3-3.1 7.5c-2.1-2.2-3.1-4.7-3.1-7.5s1-5.3 3.1-7.5Z"/></svg><span class="visually-hidden">Language: </span><span class="lang-code">EN</span></summary>
           <ul class="lang-list">
@@ -98,7 +97,7 @@
           <p class="hero-lede">
             Collect text, images, and files without bouncing between windows. Arrange the queue once, then paste through it.
           </p>
-          <p class="purchase-note">14-day trial at launch. One-time license.</p>
+          <p class="purchase-note">14-day trial at launch. One-time license. <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">Get 30% off at launch</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -251,16 +250,21 @@
 
       <section class="final-section" id="download">
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>next item</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
-        <h2 data-reveal>Start with 14 days.</h2>
-        <p>At launch, the download will include a full 14-day trial. If Vanto earns a place in your menu bar, buy a lifetime key and enter it in the same app.</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="The Vanto download is coming soon.">Download Vanto</button>
+        <h2 data-reveal>30% off at launch.</h2>
+        <p>Vanto is almost ready. Leave your email, and on launch day you’ll get one email with a code for 30% off a lifetime license, valid for 7 days. The 14-day trial is included either way.</p>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">Email address</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">Notify me</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+          <button class="waitlist-change" type="button" hidden>Use a different email</button>
+        </form>
+        <span class="final-note" id="waitlist-note">A confirmation email now, one more at launch. Unsubscribe anytime. <a class="contact-link" href="/privacy#waitlist">Privacy</a></span>
+        <span class="license-note" id="license">One purchase · 3 devices · Free future updates</span>
         <span class="final-note">Apple silicon · macOS 13+ · Download coming soon</span>
-        <div class="license-option" id="license">
-          <span>Already tried Vanto?</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="License checkout is coming soon.">Buy a lifetime license <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">One purchase · 3 devices · Free future updates</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -277,12 +281,13 @@
       <nav class="footer-langs" aria-label="Language"><a href="/" hreflang="en" lang="en" data-lang="en" aria-current="true">English</a><a href="/de/" hreflang="de" lang="de" data-lang="de" data-track="Language Switch" data-track-from="en" data-track-to="de">Deutsch</a><a href="/es/" hreflang="es" lang="es" data-lang="es" data-track="Language Switch" data-track-from="en" data-track-to="es">Español</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-lang="pt-br" data-track="Language Switch" data-track-from="en" data-track-to="pt-br">Português (Brasil)</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru" data-track="Language Switch" data-track-from="en" data-track-to="ru">Русский</a><a href="/ja/" hreflang="ja" lang="ja" data-lang="ja" data-track="Language Switch" data-track-from="en" data-track-to="ja">日本語</a><a href="/zh-hans/" hreflang="zh-Hans" lang="zh-Hans" data-lang="zh-hans" data-track="Language Switch" data-track-from="en" data-track-to="zh-hans">简体中文</a></nav>
     </footer>
 
-    <script type="application/json" id="i18n-strings">{"lang":"en","code":"en","root":"/","strings":{"theme":{"toDark":"Switch to dark theme","toLight":"Switch to light theme"},"consent":{"label":"Cookie preferences","treat":"Take a bite of the cookie","idle":"Queue: 1 cookie. Paste it?","bites":["Queue: ⅔ cookie. Paste it?","Queue: ⅓ cookie. Going fast.","Queue: crumbs. That settles it."],"regrown":"Fresh batch. Queue: 1 cookie.","granted":"Pasted. Crumbs only, promise.","denied":"Skipped. No hard feelings.","text":"Microsoft Clarity records scrolls and clicks.","details":"Details","skip":"Skip","skipLabel":"Skip — decline Clarity cookies","allow":"Paste it","allowLabel":"Paste it — allow Clarity cookies"},"game":{"blank":"______","itemType":"Text","empty":"Your copied words will wait here.","count":{"one":"{count} item","other":"{count} items"},"copyLabel":"Copy next word, {count} of 3 copied","pasteLabel":"Paste next word, {count} of 3 pasted","moveUp":"Move {word} up","moveDown":"Move {word} down","different":"Different order. Entirely different story.","status":{"start":"Start with Copy.","copyMore":{"one":"{count} more to copy.","other":"{count} more to copy."},"copied":"Right words. New order, new meaning.","moved":"Moved {word} to position {position}. Meaning pending.","pasteMore":{"one":"{count} left to paste.","other":"{count} left to paste."},"done":"Queue clear. Meaning changed.","clearedEarly":"Queue cleared. Copy when ready.","clearedLate":"Queue cleared. Reset to start over."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"panic\">Panic\u003c/span>. \u003cspan class=\"source-word\" data-word=\"plan\">Plan\u003c/span>. \u003cspan class=\"source-word\" data-word=\"nothing\">Nothing\u003c/span>. That’s how it goes.","targetParts":["3… ",". 2… ",". 1… ",". Go!"],"slotCase":["title","title","title"],"correctOrder":["nothing","panic","plan"],"labels":{},"hint":"Three words. Six suspiciously familiar workflows.","success":"Nothing. Panic. Plan. Surprisingly efficient."},{"id":"suspects","source":"The vase broke. \u003cspan class=\"source-word\" data-word=\"gravity\">Gravity\u003c/span> did it, \u003cspan class=\"source-word\" data-word=\"my cat\">my cat\u003c/span> helped, \u003cspan class=\"source-word\" data-word=\"i\">I\u003c/span> just watched.","targetParts":[""," did it, "," helped, and "," just watched."],"slotCase":["title","lower","lower"],"correctOrder":["i","gravity","my cat"],"labels":{"i":"I"},"hint":"Same suspects. Very different testimony.","success":"Case closed. The cat was framed."},{"id":"tagline","source":"One \u003cspan class=\"source-word\" data-word=\"plan\">plan\u003c/span>. One \u003cspan class=\"source-word\" data-word=\"chance\">chance\u003c/span>. No \u003cspan class=\"source-word\" data-word=\"backup\">backup\u003c/span>. That’s the tagline.","targetParts":["One ",". One ",". No ","."],"slotCase":["lower","lower","lower"],"correctOrder":["backup","chance","plan"],"labels":{},"hint":"Rearrange the trailer. Rewrite the movie.","success":"One backup. One chance. No plan. Much more honest."}]}}}</script>
+    <script type="application/json" id="i18n-strings">{"lang":"en","code":"en","root":"/","strings":{"waitlist":{"sending":"Sending…","success":"Almost there: check your inbox and confirm your email.","already":"You’re already on the list. See you at launch.","rateLimit":"Too many attempts. Try again in a minute.","invalid":"Enter a valid email address.","error":"Couldn’t sign you up. Try again, or write to vanto@slenbder.com."},"theme":{"toDark":"Switch to dark theme","toLight":"Switch to light theme"},"consent":{"label":"Cookie preferences","treat":"Take a bite of the cookie","idle":"Queue: 1 cookie. Paste it?","bites":["Queue: ⅔ cookie. Paste it?","Queue: ⅓ cookie. Going fast.","Queue: crumbs. That settles it."],"regrown":"Fresh batch. Queue: 1 cookie.","granted":"Pasted. Crumbs only, promise.","denied":"Skipped. No hard feelings.","text":"Microsoft Clarity records scrolls and clicks.","details":"Details","skip":"Skip","skipLabel":"Skip — decline Clarity cookies","allow":"Paste it","allowLabel":"Paste it — allow Clarity cookies"},"game":{"blank":"______","itemType":"Text","empty":"Your copied words will wait here.","count":{"one":"{count} item","other":"{count} items"},"copyLabel":"Copy next word, {count} of 3 copied","pasteLabel":"Paste next word, {count} of 3 pasted","moveUp":"Move {word} up","moveDown":"Move {word} down","different":"Different order. Entirely different story.","status":{"start":"Start with Copy.","copyMore":{"one":"{count} more to copy.","other":"{count} more to copy."},"copied":"Right words. New order, new meaning.","moved":"Moved {word} to position {position}. Meaning pending.","pasteMore":{"one":"{count} left to paste.","other":"{count} left to paste."},"done":"Queue clear. Meaning changed.","clearedEarly":"Queue cleared. Copy when ready.","clearedLate":"Queue cleared. Reset to start over."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"panic\">Panic\u003c/span>. \u003cspan class=\"source-word\" data-word=\"plan\">Plan\u003c/span>. \u003cspan class=\"source-word\" data-word=\"nothing\">Nothing\u003c/span>. That’s how it goes.","targetParts":["3… ",". 2… ",". 1… ",". Go!"],"slotCase":["title","title","title"],"correctOrder":["nothing","panic","plan"],"labels":{},"hint":"Three words. Six suspiciously familiar workflows.","success":"Nothing. Panic. Plan. Surprisingly efficient."},{"id":"suspects","source":"The vase broke. \u003cspan class=\"source-word\" data-word=\"gravity\">Gravity\u003c/span> did it, \u003cspan class=\"source-word\" data-word=\"my cat\">my cat\u003c/span> helped, \u003cspan class=\"source-word\" data-word=\"i\">I\u003c/span> just watched.","targetParts":[""," did it, "," helped, and "," just watched."],"slotCase":["title","lower","lower"],"correctOrder":["i","gravity","my cat"],"labels":{"i":"I"},"hint":"Same suspects. Very different testimony.","success":"Case closed. The cat was framed."},{"id":"tagline","source":"One \u003cspan class=\"source-word\" data-word=\"plan\">plan\u003c/span>. One \u003cspan class=\"source-word\" data-word=\"chance\">chance\u003c/span>. No \u003cspan class=\"source-word\" data-word=\"backup\">backup\u003c/span>. That’s the tagline.","targetParts":["One ",". One ",". No ","."],"slotCase":["lower","lower","lower"],"correctOrder":["backup","chance","plan"],"labels":{},"hint":"Rearrange the trailer. Rewrite the movie.","success":"One backup. One chance. No plan. Much more honest."}]}}}</script>
     <script src="/i18n.js?v=1"></script>
     <script src="/theme.js?v=4"></script>
     <script src="/analytics.js?v=3"></script>
     <script src="/consent.js?v=12"></script>
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=2"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>

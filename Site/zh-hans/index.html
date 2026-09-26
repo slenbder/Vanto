@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=32" />
+    <link rel="stylesheet" href="/styles.css?v=34" />
     <link rel="canonical" href="https://vanto.slenbder.com/zh-hans/" />
     <link rel="alternate" hreflang="en" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="de" href="https://vanto.slenbder.com/de/" />
@@ -47,8 +47,7 @@
         <a class="nav-faq" href="/zh-hans/#faq" data-track="Nav Click" data-track-target="faq">常见问题</a>
       </nav>
       <div class="header-actions">
-        <a class="header-buy" href="/zh-hans/#license" data-track="Buy Click" data-track-location="header">购买许可证</a>
-        <a class="button button-small button-ink" href="/zh-hans/#download" data-track="Download Click" data-track-location="header">下载</a>
+        <a class="button button-small button-ink" href="/zh-hans/#download" data-track="Waitlist Click" data-track-location="header">候补名单</a>
         <details class="lang-menu">
           <summary class="lang-toggle" title="语言"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.1 2.2 3.1 4.7 3.1 7.5s-1 5.3-3.1 7.5c-2.1-2.2-3.1-4.7-3.1-7.5s1-5.3 3.1-7.5Z"/></svg><span class="visually-hidden">语言: </span><span class="lang-code">ZH</span></summary>
           <ul class="lang-list">
@@ -75,7 +74,7 @@
           <p class="hero-lede">
             收集文本、图像和文件，无需在窗口之间来回切换。队列只需排一次，然后逐个粘贴。
           </p>
-          <p class="purchase-note">发布后可免费试用 14 天。许可证一次买断。</p>
+          <p class="purchase-note">发布后可免费试用 14 天。许可证一次买断。 <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">发布时立减 30%</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -228,16 +227,21 @@
 
       <section class="final-section" id="download">
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>下一项</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
-        <h2 data-reveal>先免费用 14 天。</h2>
-        <p>发布后，下载即包含 14 天全功能试用。如果 Vanto 值得在你的菜单栏占一席之地，就购买终身许可证密钥，在同一个应用中输入即可。</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="Vanto 即将开放下载。">下载 Vanto</button>
+        <h2 data-reveal>发布时立减 30%。</h2>
+        <p>Vanto 即将完成。留下你的邮箱，发布当天你会收到一封邮件，内含终身许可证 30% 折扣码，7 天内有效。14 天试用照常提供。</p>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">电子邮箱地址</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">通知我</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+          <button class="waitlist-change" type="button" hidden>换一个邮箱</button>
+        </form>
+        <span class="final-note" id="waitlist-note">现在会收到一封确认邮件，发布时再收到一封。可随时退订。<a class="contact-link" href="/zh-hans/privacy#waitlist">隐私</a></span>
+        <span class="license-note" id="license">一次购买 · 3 台设备 · 免费获得后续更新</span>
         <span class="final-note">Apple 芯片 · macOS 13+ · 即将开放下载</span>
-        <div class="license-option" id="license">
-          <span>已经试用过 Vanto？</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="许可证即将开售。">购买终身许可证 <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">一次购买 · 3 台设备 · 免费获得后续更新</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -254,12 +258,13 @@
       <nav class="footer-langs" aria-label="语言"><a href="/" hreflang="en" lang="en" data-lang="en" data-track="Language Switch" data-track-from="zh-hans" data-track-to="en">English</a><a href="/de/" hreflang="de" lang="de" data-lang="de" data-track="Language Switch" data-track-from="zh-hans" data-track-to="de">Deutsch</a><a href="/es/" hreflang="es" lang="es" data-lang="es" data-track="Language Switch" data-track-from="zh-hans" data-track-to="es">Español</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-lang="pt-br" data-track="Language Switch" data-track-from="zh-hans" data-track-to="pt-br">Português (Brasil)</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru" data-track="Language Switch" data-track-from="zh-hans" data-track-to="ru">Русский</a><a href="/ja/" hreflang="ja" lang="ja" data-lang="ja" data-track="Language Switch" data-track-from="zh-hans" data-track-to="ja">日本語</a><a href="/zh-hans/" hreflang="zh-Hans" lang="zh-Hans" data-lang="zh-hans" aria-current="true">简体中文</a></nav>
     </footer>
 
-    <script type="application/json" id="i18n-strings">{"lang":"zh-Hans","code":"zh-hans","root":"/zh-hans/","strings":{"theme":{"toDark":"切换到深色主题","toLight":"切换到浅色主题"},"consent":{"label":"Cookie 偏好设置","treat":"咬一口饼干","idle":"队列：1 块饼干。要粘贴吗？","bites":["队列：⅔ 块饼干。要粘贴吗？","队列：⅓ 块饼干。越吃越快。","队列：只剩饼干屑。就这么定了。"],"regrown":"新鲜出炉。队列：1 块饼干。","granted":"已粘贴。只留饼干屑，保证。","denied":"已跳过。没关系。","text":"Microsoft Clarity 会记录滚动和点击。","details":"详情","skip":"跳过","skipLabel":"跳过：拒绝 Clarity Cookie","allow":"粘贴","allowLabel":"粘贴：允许 Clarity Cookie"},"game":{"blank":"＿＿＿","itemType":"文本","empty":"你复制的词会在这里排队。","count":{"other":"{count} 项"},"copyLabel":"复制下一个词，已复制 {count}/3","pasteLabel":"粘贴下一个词，已粘贴 {count}/3","moveUp":"上移“{word}”","moveDown":"下移“{word}”","different":"顺序不同，故事也完全不同。","status":{"start":"先点“复制”。","copyMore":{"other":"还要复制 {count} 个。"},"copied":"词都齐了。换个顺序，就换个意思。","moved":"已将“{word}”移到第 {position} 位。意思待定。","pasteMore":{"other":"还要粘贴 {count} 个。"},"done":"队列已清空。意思变了。","clearedEarly":"队列已清空。准备好就复制吧。","clearedLate":"队列已清空。重置即可重新开始。"},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"恐慌\">恐慌\u003c/span>。\u003cspan class=\"source-word\" data-word=\"计划\">计划\u003c/span>。\u003cspan class=\"source-word\" data-word=\"摸鱼\">摸鱼\u003c/span>。向来如此。","targetParts":["3……","。2……","。1……","。开始！"],"slotCase":["lower","lower","lower"],"correctOrder":["摸鱼","恐慌","计划"],"labels":{},"hint":"三个词，六种莫名眼熟的工作流程。","success":"摸鱼。恐慌。计划。效率出奇地高。"},{"id":"suspects","source":"花瓶碎了。是\u003cspan class=\"source-word\" data-word=\"重力\">重力\u003c/span>干的，\u003cspan class=\"source-word\" data-word=\"猫\">猫\u003c/span>帮了忙，\u003cspan class=\"source-word\" data-word=\"我\">我\u003c/span>只是在旁边看着。","targetParts":["是","干的，","帮了忙，","只是在旁边看着。"],"slotCase":["lower","lower","lower"],"correctOrder":["我","重力","猫"],"labels":{},"hint":"嫌疑人还是那几个，证词却完全不同。","success":"结案。猫是被冤枉的。"},{"id":"tagline","source":"一个\u003cspan class=\"source-word\" data-word=\"计划\">计划\u003c/span>。一次\u003cspan class=\"source-word\" data-word=\"机会\">机会\u003c/span>。没有\u003cspan class=\"source-word\" data-word=\"退路\">退路\u003c/span>。这就是宣传语。","targetParts":["一个","。一次","。没有","。"],"slotCase":["lower","lower","lower"],"correctOrder":["退路","机会","计划"],"labels":{},"hint":"调换预告片的顺序，整部电影就改写了。","success":"一个退路。一次机会。没有计划。这下诚实多了。"}]}}}</script>
+    <script type="application/json" id="i18n-strings">{"lang":"zh-Hans","code":"zh-hans","root":"/zh-hans/","strings":{"waitlist":{"sending":"正在提交…","success":"快好了：请查收邮件并确认你的邮箱地址。","already":"你已在名单中，发布时见。","rateLimit":"尝试次数过多，请一分钟后再试。","invalid":"请输入有效的邮箱地址。","error":"登记失败。请重试，或发邮件至 vanto@slenbder.com。"},"theme":{"toDark":"切换到深色主题","toLight":"切换到浅色主题"},"consent":{"label":"Cookie 偏好设置","treat":"咬一口饼干","idle":"队列：1 块饼干。要粘贴吗？","bites":["队列：⅔ 块饼干。要粘贴吗？","队列：⅓ 块饼干。越吃越快。","队列：只剩饼干屑。就这么定了。"],"regrown":"新鲜出炉。队列：1 块饼干。","granted":"已粘贴。只留饼干屑，保证。","denied":"已跳过。没关系。","text":"Microsoft Clarity 会记录滚动和点击。","details":"详情","skip":"跳过","skipLabel":"跳过：拒绝 Clarity Cookie","allow":"粘贴","allowLabel":"粘贴：允许 Clarity Cookie"},"game":{"blank":"＿＿＿","itemType":"文本","empty":"你复制的词会在这里排队。","count":{"other":"{count} 项"},"copyLabel":"复制下一个词，已复制 {count}/3","pasteLabel":"粘贴下一个词，已粘贴 {count}/3","moveUp":"上移“{word}”","moveDown":"下移“{word}”","different":"顺序不同，故事也完全不同。","status":{"start":"先点“复制”。","copyMore":{"other":"还要复制 {count} 个。"},"copied":"词都齐了。换个顺序，就换个意思。","moved":"已将“{word}”移到第 {position} 位。意思待定。","pasteMore":{"other":"还要粘贴 {count} 个。"},"done":"队列已清空。意思变了。","clearedEarly":"队列已清空。准备好就复制吧。","clearedLate":"队列已清空。重置即可重新开始。"},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"恐慌\">恐慌\u003c/span>。\u003cspan class=\"source-word\" data-word=\"计划\">计划\u003c/span>。\u003cspan class=\"source-word\" data-word=\"摸鱼\">摸鱼\u003c/span>。向来如此。","targetParts":["3……","。2……","。1……","。开始！"],"slotCase":["lower","lower","lower"],"correctOrder":["摸鱼","恐慌","计划"],"labels":{},"hint":"三个词，六种莫名眼熟的工作流程。","success":"摸鱼。恐慌。计划。效率出奇地高。"},{"id":"suspects","source":"花瓶碎了。是\u003cspan class=\"source-word\" data-word=\"重力\">重力\u003c/span>干的，\u003cspan class=\"source-word\" data-word=\"猫\">猫\u003c/span>帮了忙，\u003cspan class=\"source-word\" data-word=\"我\">我\u003c/span>只是在旁边看着。","targetParts":["是","干的，","帮了忙，","只是在旁边看着。"],"slotCase":["lower","lower","lower"],"correctOrder":["我","重力","猫"],"labels":{},"hint":"嫌疑人还是那几个，证词却完全不同。","success":"结案。猫是被冤枉的。"},{"id":"tagline","source":"一个\u003cspan class=\"source-word\" data-word=\"计划\">计划\u003c/span>。一次\u003cspan class=\"source-word\" data-word=\"机会\">机会\u003c/span>。没有\u003cspan class=\"source-word\" data-word=\"退路\">退路\u003c/span>。这就是宣传语。","targetParts":["一个","。一次","。没有","。"],"slotCase":["lower","lower","lower"],"correctOrder":["退路","机会","计划"],"labels":{},"hint":"调换预告片的顺序，整部电影就改写了。","success":"一个退路。一次机会。没有计划。这下诚实多了。"}]}}}</script>
     <script src="/i18n.js?v=1"></script>
     <script src="/theme.js?v=4"></script>
     <script src="/analytics.js?v=3"></script>
     <script src="/consent.js?v=12"></script>
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=2"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>

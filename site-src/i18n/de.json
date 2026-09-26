@@ -31,13 +31,13 @@
     "play": "Ausprobieren",
     "why": "Warum es funktioniert",
     "faq": "FAQ",
-    "buy": "Lizenz kaufen",
-    "download": "Download"
+    "notify": "Warteliste"
   },
   "hero": {
     "title": "Alles kopieren.<br />Geordnet <em>einfügen.</em>",
     "lede": "Sammle Texte, Bilder und Dateien, ohne zwischen Fenstern hin- und herzuspringen. Ordne die Warteschlange einmal und füge dann alles nacheinander ein.",
     "purchaseNote": "14 Tage Testphase zum Start. Einmalige Lizenz.",
+    "waitlistLink": "30 % Rabatt zum Start",
     "caption": "<b>Kein Dock-Chaos.</b> Nur die Warteschlange, genau dann, wenn du sie brauchst.",
     "vp": {
       "label": "Das Vanto-Fenster: Aufzeichnung, 3 Elemente in der Warteschlange – Hallo, Welt!, Berge.png und Jobangebot.docx – mit Stopp, Einfügen, Leeren, Verbinden und einfügen sowie Beenden.",
@@ -101,14 +101,14 @@
   },
   "final": {
     "queueItem": "nächstes Element",
-    "title": "Starte mit 14 Tagen.",
-    "lede": "Zum Start enthält der Download eine vollständige 14-tägige Testphase. Wenn sich Vanto einen Platz in deiner Menüleiste verdient, kaufst du einen unbefristeten Schlüssel und gibst ihn in derselben App ein.",
-    "download": "Vanto laden",
-    "downloadSoon": "Der Download von Vanto folgt in Kürze.",
+    "title": "30 % Rabatt zum Start.",
+    "lede": "Vanto ist fast fertig. Hinterlass deine E-Mail-Adresse, und am Starttag bekommst du eine einzige Mail mit einem Code für 30 % Rabatt auf eine unbefristete Lizenz, 7 Tage gültig. Die 14-tägige Testphase gibt es so oder so.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.de",
+    "submit": "Benachrichtige mich",
+    "formNote": "Jetzt eine Mail zur Bestätigung, zum Start noch eine. Abmelden jederzeit möglich. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Datenschutz</a>",
+    "changeEmail": "Andere Adresse eingeben",
     "note": "Apple-Chip · macOS 13+ · Download folgt in Kürze",
-    "licenseQuestion": "Vanto schon ausprobiert?",
-    "licenseLink": "Unbefristete Lizenz kaufen",
-    "licenseSoon": "Der Lizenzkauf startet in Kürze.",
     "licenseNote": "Einmal kaufen · 3 Geräte · Kostenlose Updates"
   },
   "footer": {
@@ -125,6 +125,14 @@
     "button": "Zurück zu Vanto"
   },
   "js": {
+    "waitlist": {
+      "sending": "Wird gesendet…",
+      "success": "Fast geschafft: Schau in dein Postfach und bestätige deine Adresse.",
+      "already": "Du stehst schon auf der Liste. Bis zum Start!",
+      "rateLimit": "Zu viele Versuche. Versuche es in einer Minute erneut.",
+      "invalid": "Gib eine gültige E-Mail-Adresse ein.",
+      "error": "Das hat nicht geklappt. Versuche es erneut oder schreib an vanto@slenbder.com."
+    },
     "theme": {
       "toDark": "Zum dunklen Design wechseln",
       "toLight": "Zum hellen Design wechseln"

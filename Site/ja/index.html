@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=32" />
+    <link rel="stylesheet" href="/styles.css?v=34" />
     <link rel="canonical" href="https://vanto.slenbder.com/ja/" />
     <link rel="alternate" hreflang="en" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="de" href="https://vanto.slenbder.com/de/" />
@@ -47,8 +47,7 @@
         <a class="nav-faq" href="/ja/#faq" data-track="Nav Click" data-track-target="faq">FAQ</a>
       </nav>
       <div class="header-actions">
-        <a class="header-buy" href="/ja/#license" data-track="Buy Click" data-track-location="header">ライセンスを購入</a>
-        <a class="button button-small button-ink" href="/ja/#download" data-track="Download Click" data-track-location="header">ダウンロード</a>
+        <a class="button button-small button-ink" href="/ja/#download" data-track="Waitlist Click" data-track-location="header">ウェイトリスト</a>
         <details class="lang-menu">
           <summary class="lang-toggle" title="言語"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.1 2.2 3.1 4.7 3.1 7.5s-1 5.3-3.1 7.5c-2.1-2.2-3.1-4.7-3.1-7.5s1-5.3 3.1-7.5Z"/></svg><span class="visually-hidden">言語: </span><span class="lang-code">JA</span></summary>
           <ul class="lang-list">
@@ -75,7 +74,7 @@
           <p class="hero-lede">
             ウィンドウを行き来せずに、テキスト・画像・ファイルを集められます。キューを一度並べたら、あとは順にペーストするだけ。
           </p>
-          <p class="purchase-note">リリース時から14日間の無料トライアル。ライセンスは買い切りです。</p>
+          <p class="purchase-note">リリース時から14日間の無料トライアル。ライセンスは買い切りです。 <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">リリース時に30%オフ</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -228,16 +227,21 @@
 
       <section class="final-section" id="download">
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>次の項目</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
-        <h2 data-reveal>まずは14日間、試してみる。</h2>
-        <p>リリース時のダウンロードには、すべての機能を使える14日間のトライアルが付きます。Vantoをメニューバーに置いておきたくなったら、永続ライセンスキーを購入して、同じアプリに入力してください。</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="Vantoのダウンロードはまもなく開始します。">Vantoをダウンロード</button>
+        <h2 data-reveal>リリース時に30%オフ。</h2>
+        <p>Vantoはまもなく完成します。メールアドレスを登録すると、リリース当日に永続ライセンスが30%オフになるコード（7日間有効）を1通だけお送りします。14日間のトライアルはこれまでどおり付いています。</p>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">メールアドレス</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">通知を受け取る</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+          <button class="waitlist-change" type="button" hidden>別のアドレスを入力</button>
+        </form>
+        <span class="final-note" id="waitlist-note">登録後すぐに確認メールが届き、リリース時にもう1通お送りします。配信はいつでも停止できます。<a class="contact-link" href="/ja/privacy#waitlist">プライバシー</a></span>
+        <span class="license-note" id="license">買い切り · 最大3台 · 今後のアップデートも無料</span>
         <span class="final-note">Appleシリコン · macOS 13以降 · まもなくダウンロード開始</span>
-        <div class="license-option" id="license">
-          <span>もうVantoを試しましたか？</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="ライセンスの購入はまもなく開始します。">永続ライセンスを購入 <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">買い切り · 最大3台 · 今後のアップデートも無料</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -254,12 +258,13 @@
       <nav class="footer-langs" aria-label="言語"><a href="/" hreflang="en" lang="en" data-lang="en" data-track="Language Switch" data-track-from="ja" data-track-to="en">English</a><a href="/de/" hreflang="de" lang="de" data-lang="de" data-track="Language Switch" data-track-from="ja" data-track-to="de">Deutsch</a><a href="/es/" hreflang="es" lang="es" data-lang="es" data-track="Language Switch" data-track-from="ja" data-track-to="es">Español</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-lang="pt-br" data-track="Language Switch" data-track-from="ja" data-track-to="pt-br">Português (Brasil)</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru" data-track="Language Switch" data-track-from="ja" data-track-to="ru">Русский</a><a href="/ja/" hreflang="ja" lang="ja" data-lang="ja" aria-current="true">日本語</a><a href="/zh-hans/" hreflang="zh-Hans" lang="zh-Hans" data-lang="zh-hans" data-track="Language Switch" data-track-from="ja" data-track-to="zh-hans">简体中文</a></nav>
     </footer>
 
-    <script type="application/json" id="i18n-strings">{"lang":"ja","code":"ja","root":"/ja/","strings":{"theme":{"toDark":"ダークテーマに切り替える","toLight":"ライトテーマに切り替える"},"consent":{"label":"Cookieの設定","treat":"クッキーをかじる","idle":"キュー：クッキー1枚。ペーストする？","bites":["キュー：クッキー⅔枚。ペーストする？","キュー：クッキー⅓枚。減るのが早い。","キュー：かけらだけ。これで決まり。"],"regrown":"焼きたてを追加。キュー：クッキー1枚。","granted":"ペースト完了。かけらだけ、約束します。","denied":"スキップしました。お気になさらず。","text":"Microsoft Clarityがスクロールとクリックを記録します。","details":"詳細","skip":"スキップ","skipLabel":"スキップ — ClarityのCookieを拒否","allow":"ペースト","allowLabel":"ペースト — ClarityのCookieを許可"},"game":{"blank":"＿＿＿","itemType":"テキスト","empty":"コピーした言葉は、ここで順番を待ちます。","count":{"other":"{count} 件"},"copyLabel":"次の言葉をコピー（{count}/3 コピー済み）","pasteLabel":"次の言葉をペースト（{count}/3 ペースト済み）","moveUp":"「{word}」を上へ","moveDown":"「{word}」を下へ","different":"順番が違えば、まったく別の物語。","status":{"start":"まずは「コピー」から。","copyMore":{"other":"あと {count} 語コピーします。"},"copied":"言葉はそろいました。順番を変えれば、意味も変わります。","moved":"「{word}」を {position} 番目に移動しました。意味は保留中。","pasteMore":{"other":"あと {count} 語ペーストします。"},"done":"キューは空に。意味が変わりました。","clearedEarly":"キューをクリアしました。準備ができたらコピーを。","clearedLate":"キューをクリアしました。最初からやり直すにはリセットを。"},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"パニック\">パニック\u003c/span>。\u003cspan class=\"source-word\" data-word=\"計画\">計画\u003c/span>。\u003cspan class=\"source-word\" data-word=\"何もしない\">何もしない\u003c/span>。だいたいこうなる。","targetParts":["3…","。2…","。1…","。スタート！"],"slotCase":["lower","lower","lower"],"correctOrder":["何もしない","パニック","計画"],"labels":{},"hint":"言葉は3つ。身に覚えのある段取りは6通り。","success":"何もしない。パニック。計画。意外と効率的。"},{"id":"suspects","source":"花瓶が割れた。犯人は\u003cspan class=\"source-word\" data-word=\"重力\">重力\u003c/span>、手伝ったのは\u003cspan class=\"source-word\" data-word=\"猫\">猫\u003c/span>、\u003cspan class=\"source-word\" data-word=\"私\">私\u003c/span>は見ていただけ。","targetParts":["犯人は","、手伝ったのは","、","は見ていただけ。"],"slotCase":["lower","lower","lower"],"correctOrder":["私","重力","猫"],"labels":{},"hint":"容疑者は同じ。証言はまるで別物。","success":"事件解決。猫は濡れ衣でした。"},{"id":"tagline","source":"\u003cspan class=\"source-word\" data-word=\"計画\">計画\u003c/span>はひとつ。\u003cspan class=\"source-word\" data-word=\"チャンス\">チャンス\u003c/span>は一度。\u003cspan class=\"source-word\" data-word=\"バックアップ\">バックアップ\u003c/span>なし。これがキャッチコピー。","targetParts":["","はひとつ。","は一度。","なし。"],"slotCase":["lower","lower","lower"],"correctOrder":["バックアップ","チャンス","計画"],"labels":{},"hint":"予告編を並べ替えれば、映画が書き換わる。","success":"バックアップはひとつ。チャンスは一度。計画なし。ずっと正直になりました。"}]}}}</script>
+    <script type="application/json" id="i18n-strings">{"lang":"ja","code":"ja","root":"/ja/","strings":{"waitlist":{"sending":"送信中…","success":"あと少しです。受信トレイを確認して、メールアドレスを認証してください。","already":"すでに登録されています。リリースをお待ちください。","rateLimit":"試行回数が多すぎます。1分後にもう一度お試しください。","invalid":"有効なメールアドレスを入力してください。","error":"登録できませんでした。もう一度お試しいただくか、vanto@slenbder.com までご連絡ください。"},"theme":{"toDark":"ダークテーマに切り替える","toLight":"ライトテーマに切り替える"},"consent":{"label":"Cookieの設定","treat":"クッキーをかじる","idle":"キュー：クッキー1枚。ペーストする？","bites":["キュー：クッキー⅔枚。ペーストする？","キュー：クッキー⅓枚。減るのが早い。","キュー：かけらだけ。これで決まり。"],"regrown":"焼きたてを追加。キュー：クッキー1枚。","granted":"ペースト完了。かけらだけ、約束します。","denied":"スキップしました。お気になさらず。","text":"Microsoft Clarityがスクロールとクリックを記録します。","details":"詳細","skip":"スキップ","skipLabel":"スキップ — ClarityのCookieを拒否","allow":"ペースト","allowLabel":"ペースト — ClarityのCookieを許可"},"game":{"blank":"＿＿＿","itemType":"テキスト","empty":"コピーした言葉は、ここで順番を待ちます。","count":{"other":"{count} 件"},"copyLabel":"次の言葉をコピー（{count}/3 コピー済み）","pasteLabel":"次の言葉をペースト（{count}/3 ペースト済み）","moveUp":"「{word}」を上へ","moveDown":"「{word}」を下へ","different":"順番が違えば、まったく別の物語。","status":{"start":"まずは「コピー」から。","copyMore":{"other":"あと {count} 語コピーします。"},"copied":"言葉はそろいました。順番を変えれば、意味も変わります。","moved":"「{word}」を {position} 番目に移動しました。意味は保留中。","pasteMore":{"other":"あと {count} 語ペーストします。"},"done":"キューは空に。意味が変わりました。","clearedEarly":"キューをクリアしました。準備ができたらコピーを。","clearedLate":"キューをクリアしました。最初からやり直すにはリセットを。"},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"パニック\">パニック\u003c/span>。\u003cspan class=\"source-word\" data-word=\"計画\">計画\u003c/span>。\u003cspan class=\"source-word\" data-word=\"何もしない\">何もしない\u003c/span>。だいたいこうなる。","targetParts":["3…","。2…","。1…","。スタート！"],"slotCase":["lower","lower","lower"],"correctOrder":["何もしない","パニック","計画"],"labels":{},"hint":"言葉は3つ。身に覚えのある段取りは6通り。","success":"何もしない。パニック。計画。意外と効率的。"},{"id":"suspects","source":"花瓶が割れた。犯人は\u003cspan class=\"source-word\" data-word=\"重力\">重力\u003c/span>、手伝ったのは\u003cspan class=\"source-word\" data-word=\"猫\">猫\u003c/span>、\u003cspan class=\"source-word\" data-word=\"私\">私\u003c/span>は見ていただけ。","targetParts":["犯人は","、手伝ったのは","、","は見ていただけ。"],"slotCase":["lower","lower","lower"],"correctOrder":["私","重力","猫"],"labels":{},"hint":"容疑者は同じ。証言はまるで別物。","success":"事件解決。猫は濡れ衣でした。"},{"id":"tagline","source":"\u003cspan class=\"source-word\" data-word=\"計画\">計画\u003c/span>はひとつ。\u003cspan class=\"source-word\" data-word=\"チャンス\">チャンス\u003c/span>は一度。\u003cspan class=\"source-word\" data-word=\"バックアップ\">バックアップ\u003c/span>なし。これがキャッチコピー。","targetParts":["","はひとつ。","は一度。","なし。"],"slotCase":["lower","lower","lower"],"correctOrder":["バックアップ","チャンス","計画"],"labels":{},"hint":"予告編を並べ替えれば、映画が書き換わる。","success":"バックアップはひとつ。チャンスは一度。計画なし。ずっと正直になりました。"}]}}}</script>
     <script src="/i18n.js?v=1"></script>
     <script src="/theme.js?v=4"></script>
     <script src="/analytics.js?v=3"></script>
     <script src="/consent.js?v=12"></script>
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=2"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>

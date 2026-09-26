@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=32" />
+    <link rel="stylesheet" href="/styles.css?v=34" />
     <link rel="canonical" href="https://vanto.slenbder.com/es/" />
     <link rel="alternate" hreflang="en" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="de" href="https://vanto.slenbder.com/de/" />
@@ -47,8 +47,7 @@
         <a class="nav-faq" href="/es/#faq" data-track="Nav Click" data-track-target="faq">Preguntas</a>
       </nav>
       <div class="header-actions">
-        <a class="header-buy" href="/es/#license" data-track="Buy Click" data-track-location="header">Comprar licencia</a>
-        <a class="button button-small button-ink" href="/es/#download" data-track="Download Click" data-track-location="header">Descargar</a>
+        <a class="button button-small button-ink" href="/es/#download" data-track="Waitlist Click" data-track-location="header">Avísame</a>
         <details class="lang-menu">
           <summary class="lang-toggle" title="Idioma"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.1 2.2 3.1 4.7 3.1 7.5s-1 5.3-3.1 7.5c-2.1-2.2-3.1-4.7-3.1-7.5s1-5.3 3.1-7.5Z"/></svg><span class="visually-hidden">Idioma: </span><span class="lang-code">ES</span></summary>
           <ul class="lang-list">
@@ -75,7 +74,7 @@
           <p class="hero-lede">
             Reúne textos, imágenes y archivos sin saltar entre ventanas. Ordena la cola una vez y luego pega un elemento tras otro.
           </p>
-          <p class="purchase-note">Prueba de 14 días desde el lanzamiento. Licencia de pago único.</p>
+          <p class="purchase-note">Prueba de 14 días desde el lanzamiento. Licencia de pago único. <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">30 % de descuento en el lanzamiento</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -228,16 +227,21 @@
 
       <section class="final-section" id="download">
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>siguiente elemento</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
-        <h2 data-reveal>Empieza con 14 días.</h2>
-        <p>Desde el lanzamiento, la descarga incluirá una prueba completa de 14 días. Si Vanto se gana un sitio en tu barra de menús, compra una clave de por vida e introdúcela en la misma app.</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="La descarga de Vanto llegará pronto.">Descargar Vanto</button>
+        <h2 data-reveal>30 % de descuento en el lanzamiento.</h2>
+        <p>Vanto está casi listo. Deja tu email y el día del lanzamiento recibirás un único correo con un código del 30 % de descuento en una licencia de por vida, válido durante 7 días. La prueba de 14 días viene incluida igualmente.</p>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">Correo electrónico</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="tu@ejemplo.com" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">Avísame</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+          <button class="waitlist-change" type="button" hidden>Usar otro correo</button>
+        </form>
+        <span class="final-note" id="waitlist-note">Ahora te llegará un correo para confirmar y otro en el lanzamiento. Puedes darte de baja cuando quieras. <a class="contact-link" href="/es/privacy#waitlist">Privacidad</a></span>
+        <span class="license-note" id="license">Un solo pago · 3 dispositivos · Actualizaciones gratis</span>
         <span class="final-note">Chip de Apple · macOS 13+ · Descarga muy pronto</span>
-        <div class="license-option" id="license">
-          <span>¿Ya probaste Vanto?</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="La compra de licencias llegará pronto.">Comprar una licencia de por vida <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">Un solo pago · 3 dispositivos · Actualizaciones gratis</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -254,12 +258,13 @@
       <nav class="footer-langs" aria-label="Idioma"><a href="/" hreflang="en" lang="en" data-lang="en" data-track="Language Switch" data-track-from="es" data-track-to="en">English</a><a href="/de/" hreflang="de" lang="de" data-lang="de" data-track="Language Switch" data-track-from="es" data-track-to="de">Deutsch</a><a href="/es/" hreflang="es" lang="es" data-lang="es" aria-current="true">Español</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-lang="pt-br" data-track="Language Switch" data-track-from="es" data-track-to="pt-br">Português (Brasil)</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru" data-track="Language Switch" data-track-from="es" data-track-to="ru">Русский</a><a href="/ja/" hreflang="ja" lang="ja" data-lang="ja" data-track="Language Switch" data-track-from="es" data-track-to="ja">日本語</a><a href="/zh-hans/" hreflang="zh-Hans" lang="zh-Hans" data-lang="zh-hans" data-track="Language Switch" data-track-from="es" data-track-to="zh-hans">简体中文</a></nav>
     </footer>
 
-    <script type="application/json" id="i18n-strings">{"lang":"es","code":"es","root":"/es/","strings":{"theme":{"toDark":"Cambiar al tema oscuro","toLight":"Cambiar al tema claro"},"consent":{"label":"Preferencias de cookies","treat":"Dale un mordisco a la galleta","idle":"Cola: 1 galleta. ¿La pegamos?","bites":["Cola: ⅔ de galleta. ¿La pegamos?","Cola: ⅓ de galleta. Vuela.","Cola: migajas. Asunto resuelto."],"regrown":"Recién horneada. Cola: 1 galleta.","granted":"Pegada. Solo migajas, prometido.","denied":"Omitida. Sin rencores.","text":"Microsoft Clarity registra desplazamientos y clics.","details":"Detalles","skip":"Omitir","skipLabel":"Omitir: rechazar las cookies de Clarity","allow":"Pégala","allowLabel":"Pégala: aceptar las cookies de Clarity"},"game":{"blank":"______","itemType":"Texto","empty":"Tus palabras copiadas esperarán aquí.","count":{"one":"{count} elemento","other":"{count} elementos"},"copyLabel":"Copiar la siguiente palabra, {count} de 3 copiadas","pasteLabel":"Pegar la siguiente palabra, {count} de 3 pegadas","moveUp":"Subir «{word}»","moveDown":"Bajar «{word}»","different":"Otro orden. Una historia completamente distinta.","status":{"start":"Empieza con Copiar.","copyMore":{"one":"Falta {count} por copiar.","other":"Faltan {count} por copiar."},"copied":"Las palabras correctas. Nuevo orden, nuevo significado.","moved":"«{word}» pasa a la posición {position}. Significado pendiente.","pasteMore":{"one":"Falta {count} por pegar.","other":"Faltan {count} por pegar."},"done":"Cola vacía. Significado cambiado.","clearedEarly":"Cola borrada. Copia cuando quieras.","clearedLate":"Cola borrada. Reinicia para empezar de nuevo."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"pánico\">Pánico\u003c/span>. \u003cspan class=\"source-word\" data-word=\"plan\">Plan\u003c/span>. \u003cspan class=\"source-word\" data-word=\"nada\">Nada\u003c/span>. Así es la vida.","targetParts":["3… ",". 2… ",". 1… ",". ¡Ya!"],"slotCase":["title","title","title"],"correctOrder":["nada","pánico","plan"],"labels":{},"hint":"Tres palabras. Seis flujos de trabajo sospechosamente familiares.","success":"Nada. Pánico. Plan. Sorprendentemente eficaz."},{"id":"suspects","source":"El jarrón se rompió. \u003cspan class=\"source-word\" data-word=\"la gravedad\">La gravedad\u003c/span> lo hizo, \u003cspan class=\"source-word\" data-word=\"el gato\">el gato\u003c/span> ayudó y \u003cspan class=\"source-word\" data-word=\"mi hermano\">mi hermano\u003c/span> solo miró.","targetParts":[""," lo hizo, "," ayudó y "," solo miró."],"slotCase":["title","lower","lower"],"correctOrder":["mi hermano","la gravedad","el gato"],"labels":{},"hint":"Los mismos sospechosos. Un testimonio muy distinto.","success":"Caso cerrado. Al gato le cargaron el muerto."},{"id":"tagline","source":"Un \u003cspan class=\"source-word\" data-word=\"plan\">plan\u003c/span>. Un \u003cspan class=\"source-word\" data-word=\"intento\">intento\u003c/span>. Sin \u003cspan class=\"source-word\" data-word=\"respaldo\">respaldo\u003c/span>. Ese es el eslogan.","targetParts":["Un ",". Un ",". Sin ","."],"slotCase":["lower","lower","lower"],"correctOrder":["respaldo","intento","plan"],"labels":{},"hint":"Reordena el tráiler. Reescribe la película.","success":"Un respaldo. Un intento. Sin plan. Mucho más honesto."}]}}}</script>
+    <script type="application/json" id="i18n-strings">{"lang":"es","code":"es","root":"/es/","strings":{"waitlist":{"sending":"Enviando…","success":"Casi listo: revisa tu bandeja de entrada y confirma tu correo.","already":"Ya estás en la lista. Nos vemos en el lanzamiento.","rateLimit":"Demasiados intentos. Vuelve a intentarlo en un minuto.","invalid":"Introduce un correo electrónico válido.","error":"No se pudo completar el registro. Inténtalo de nuevo o escribe a vanto@slenbder.com."},"theme":{"toDark":"Cambiar al tema oscuro","toLight":"Cambiar al tema claro"},"consent":{"label":"Preferencias de cookies","treat":"Dale un mordisco a la galleta","idle":"Cola: 1 galleta. ¿La pegamos?","bites":["Cola: ⅔ de galleta. ¿La pegamos?","Cola: ⅓ de galleta. Vuela.","Cola: migajas. Asunto resuelto."],"regrown":"Recién horneada. Cola: 1 galleta.","granted":"Pegada. Solo migajas, prometido.","denied":"Omitida. Sin rencores.","text":"Microsoft Clarity registra desplazamientos y clics.","details":"Detalles","skip":"Omitir","skipLabel":"Omitir: rechazar las cookies de Clarity","allow":"Pégala","allowLabel":"Pégala: aceptar las cookies de Clarity"},"game":{"blank":"______","itemType":"Texto","empty":"Tus palabras copiadas esperarán aquí.","count":{"one":"{count} elemento","other":"{count} elementos"},"copyLabel":"Copiar la siguiente palabra, {count} de 3 copiadas","pasteLabel":"Pegar la siguiente palabra, {count} de 3 pegadas","moveUp":"Subir «{word}»","moveDown":"Bajar «{word}»","different":"Otro orden. Una historia completamente distinta.","status":{"start":"Empieza con Copiar.","copyMore":{"one":"Falta {count} por copiar.","other":"Faltan {count} por copiar."},"copied":"Las palabras correctas. Nuevo orden, nuevo significado.","moved":"«{word}» pasa a la posición {position}. Significado pendiente.","pasteMore":{"one":"Falta {count} por pegar.","other":"Faltan {count} por pegar."},"done":"Cola vacía. Significado cambiado.","clearedEarly":"Cola borrada. Copia cuando quieras.","clearedLate":"Cola borrada. Reinicia para empezar de nuevo."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"pánico\">Pánico\u003c/span>. \u003cspan class=\"source-word\" data-word=\"plan\">Plan\u003c/span>. \u003cspan class=\"source-word\" data-word=\"nada\">Nada\u003c/span>. Así es la vida.","targetParts":["3… ",". 2… ",". 1… ",". ¡Ya!"],"slotCase":["title","title","title"],"correctOrder":["nada","pánico","plan"],"labels":{},"hint":"Tres palabras. Seis flujos de trabajo sospechosamente familiares.","success":"Nada. Pánico. Plan. Sorprendentemente eficaz."},{"id":"suspects","source":"El jarrón se rompió. \u003cspan class=\"source-word\" data-word=\"la gravedad\">La gravedad\u003c/span> lo hizo, \u003cspan class=\"source-word\" data-word=\"el gato\">el gato\u003c/span> ayudó y \u003cspan class=\"source-word\" data-word=\"mi hermano\">mi hermano\u003c/span> solo miró.","targetParts":[""," lo hizo, "," ayudó y "," solo miró."],"slotCase":["title","lower","lower"],"correctOrder":["mi hermano","la gravedad","el gato"],"labels":{},"hint":"Los mismos sospechosos. Un testimonio muy distinto.","success":"Caso cerrado. Al gato le cargaron el muerto."},{"id":"tagline","source":"Un \u003cspan class=\"source-word\" data-word=\"plan\">plan\u003c/span>. Un \u003cspan class=\"source-word\" data-word=\"intento\">intento\u003c/span>. Sin \u003cspan class=\"source-word\" data-word=\"respaldo\">respaldo\u003c/span>. Ese es el eslogan.","targetParts":["Un ",". Un ",". Sin ","."],"slotCase":["lower","lower","lower"],"correctOrder":["respaldo","intento","plan"],"labels":{},"hint":"Reordena el tráiler. Reescribe la película.","success":"Un respaldo. Un intento. Sin plan. Mucho más honesto."}]}}}</script>
     <script src="/i18n.js?v=1"></script>
     <script src="/theme.js?v=4"></script>
     <script src="/analytics.js?v=3"></script>
     <script src="/consent.js?v=12"></script>
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=2"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>
