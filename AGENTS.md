@@ -12,6 +12,8 @@ Clipboard value types and test seams live in `ClipboardItem.swift` and `Pasteboa
 
 Unit tests live in `VantoTests/`; keep mocks beside the tests that use them — `MockPasteboard.swift` now also holds `MockShortcutStore`, `MockLanguagePreferenceStore`, `MockLaunchAtLoginService`, and the paste/cleanup-scheduler recorders used across the suite. Accessibility evidence belongs in `a11y-test-artifacts/`. `project.yml` is the source of truth for project settings and for `Vanto/Info.plist` (via `info.properties`); regenerate with XcodeGen instead of editing `Vanto.xcodeproj` or the plist by hand. CI fails if the generated files differ from what is committed. `appcast.xml` at the repository root is the production Sparkle feed.
 
+`Site/` is the marketing site (Cloudflare Pages, deployed from `main`) in the app's 7 languages. Its `.html` pages and `sitemap.xml` are generated from `site-src/` (templates, partials, and `site-src/i18n/<lang>.json`) by `node scripts/build-site.mjs`; edit the source, rebuild, and commit both. Static assets (`*.js`, `styles.css`, images) stay hand-edited in `Site/`. See `CLAUDE.md` → "Website".
+
 ## Build, Test, and Development Commands
 
 - `xcodegen generate` regenerates the Xcode project after changes to `project.yml`.
@@ -27,7 +29,7 @@ Never add an `<item>` to `appcast.xml` on `main` before the signed, notarized ar
 
 ## Coding Style & Naming Conventions
 
-Follow standard Swift conventions and Xcode formatting: four-space indentation, braces on the declaration line, `UpperCamelCase` for types, and `lowerCamelCase` for methods and properties. Prefer focused files named after their primary type. Keep model state changes in `PasteStack`; UI-specific behavior belongs in SwiftUI/AppKit views. When extending clipboard formats, update capture, paste, and row-display branches together, and preserve file detection before image detection.
+Follow standard Swift conventions and Xcode formatting: four-space indentation, braces on the declaration line, `UpperCamelCase` for types, and `lowerCamelCase` for methods and properties. Prefer focused files named after their primary type. German strings address the user with informal "du", never "Sie", in both the app and the site. Keep model state changes in `PasteStack`; UI-specific behavior belongs in SwiftUI/AppKit views. When extending clipboard formats, update capture, paste, and row-display branches together, and preserve file detection before image detection.
 
 For combined text paste, require at least two text items in the UI, preserve the previewed queue IDs until confirmation, and drain the queue only after a paste command is posted. Back, leaving the confirmation view, and popover closure cancel a pending recipient-activation wait. The completion callback must show failures in the popover. Keep ordinary sequential Paste behavior independent of these changes.
 
@@ -37,4 +39,4 @@ Tests use XCTest and should be named `testBehaviorUnderCondition`. All clipboard
 
 ## Commit & Pull Request Guidelines
 
-Recent commits use short, imperative subjects such as `Fix multi-image pasteboard copies losing all but the first item`. Keep each commit focused. Pull requests should explain user-visible behavior, identify affected clipboard types, include test results, and note manual checks. Add screenshots or accessibility artifacts for popover, icon, or VoiceOver changes, and link the relevant issue when one exists. CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`; work on a branch and merge only after CI passes.
+Recent commits use short, imperative subjects such as `Fix multi-image pasteboard copies losing all but the first item`. Keep each commit focused. Pull requests should explain user-visible behavior, identify affected clipboard types, include test results, and note manual checks. Add screenshots or accessibility artifacts for popover, icon, or VoiceOver changes, and link the relevant issue when one exists. CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`. A repository ruleset protects `main`: pull request required, `Test and build` and `Site build is current` must pass, no force push or deletion. Work on a branch and merge through a PR; the admin bypass is for deliberate hotfixes only.
