@@ -14,7 +14,7 @@
     },
     "refunds": {
       "title": "Política de Reembolso · Vanto",
-      "description": "A política de reembolso de 30 dias do Vanto."
+      "description": "A política de reembolso de 14 dias do Vanto."
     },
     "404": {
       "title": "Página não encontrada · Vanto",
@@ -95,7 +95,7 @@
       { "q": "Por que ele precisa da permissão de Acessibilidade?", "a": "O macOS exige essa permissão para que o Vanto reconheça seus atalhos globais e cole no app que você está usando." },
       { "q": "Quais Macs são compatíveis?", "a": "Macs com Apple Silicon e macOS 13 ou posterior. Macs com Intel não são compatíveis." },
       { "q": "É uma assinatura?", "a": "Não. Uma única compra dá a você uma licença vitalícia para até três dispositivos seus." },
-      { "q": "Posso baixar de novo ou pedir reembolso?", "a": "Você pode baixar o Vanto novamente neste site a qualquer momento. Se o Vanto não for para você, é possível pedir reembolso em até 30 dias após a compra. Veja a <a class=\"contact-link\" href=\"{{@root}}refunds\">política de reembolso</a>." },
+      { "q": "Posso baixar de novo ou pedir reembolso?", "a": "Você pode baixar o Vanto novamente neste site a qualquer momento. Se o Vanto não for para você, é possível pedir reembolso em até 14 dias após a compra. Veja a <a class=\"contact-link\" href=\"{{@root}}refunds\">política de reembolso</a>." },
       { "q": "Como funcionam as atualizações?", "a": "Automaticamente. O Vanto procura novas versões, baixa e instala tudo sozinho. Não há nada para configurar." }
     ]
   },

@@ -14,7 +14,7 @@
     },
     "refunds": {
       "title": "Rückerstattung · Vanto",
-      "description": "Die 30-Tage-Rückerstattung für Vanto."
+      "description": "Die 14-Tage-Rückerstattung für Vanto."
     },
     "404": {
       "title": "Seite nicht gefunden · Vanto",
@@ -95,7 +95,7 @@
       { "q": "Warum braucht Vanto Zugriff auf die Bedienungshilfen?", "a": "macOS verlangt diese Berechtigung, damit Vanto auf seine globalen Tastenkürzel reagieren und in die App einfügen kann, die du gerade verwendest." },
       { "q": "Welche Macs werden unterstützt?", "a": "Macs mit Apple-Chip und macOS 13 oder neuer. Macs mit Intel-Prozessor werden nicht unterstützt." },
       { "q": "Ist das ein Abo?", "a": "Nein. Mit einem einzigen Kauf erhältst du eine unbefristete Lizenz für bis zu drei deiner Geräte." },
-      { "q": "Kann ich Vanto erneut laden oder mein Geld zurückbekommen?", "a": "Du kannst Vanto jederzeit erneut von dieser Website laden. Wenn Vanto nicht zu dir passt, bekommst du innerhalb von 30 Tagen nach dem Kauf dein Geld zurück. Details findest du in der <a class=\"contact-link\" href=\"{{@root}}refunds\">Rückerstattungsrichtlinie</a>." },
+      { "q": "Kann ich Vanto erneut laden oder mein Geld zurückbekommen?", "a": "Du kannst Vanto jederzeit erneut von dieser Website laden. Wenn Vanto nicht zu dir passt, bekommst du innerhalb von 14 Tagen nach dem Kauf dein Geld zurück. Details findest du in der <a class=\"contact-link\" href=\"{{@root}}refunds\">Rückerstattungsrichtlinie</a>." },
       { "q": "Wie funktionieren Updates?", "a": "Automatisch. Vanto sucht nach neuen Versionen, lädt sie herunter und installiert sie selbst. Du musst nichts einrichten." }
     ]
   },
