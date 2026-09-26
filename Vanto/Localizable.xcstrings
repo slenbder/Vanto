@@ -52,7 +52,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stellen Sie eine Internetverbindung her, um diesen Mac zu deaktivieren."
+            "value" : "Stelle eine Internetverbindung her, um diesen Mac zu deaktivieren."
           }
         },
         "en" : {
@@ -328,7 +328,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vanto funktioniert auf diesem Mac nach Ablauf des Testzeitraums nicht mehr. Dadurch wird einer Ihrer drei Geräteplätze frei."
+            "value" : "Vanto funktioniert auf diesem Mac nach Ablauf des Testzeitraums nicht mehr. Dadurch wird einer deiner drei Geräteplätze frei."
           }
         },
         "en" : {
@@ -374,7 +374,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Geräteplatz wurde freigegeben, aber die lokale Lizenz konnte nicht entfernt werden. Versuchen Sie es erneut."
+            "value" : "Der Geräteplatz wurde freigegeben, aber die lokale Lizenz konnte nicht entfernt werden. Versuche es erneut."
           }
         },
         "en" : {
@@ -696,7 +696,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stellen Sie eine Internetverbindung her und versuchen Sie es erneut."
+            "value" : "Stelle eine Internetverbindung her und versuche es erneut."
           }
         },
         "en" : {
@@ -742,7 +742,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geben Sie Ihren Lizenzschlüssel ein, um Vanto weiter zu verwenden. Ihre Warteschlange bleibt erhalten."
+            "value" : "Gib deinen Lizenzschlüssel ein, um Vanto weiter zu verwenden. Deine Warteschlange bleibt erhalten."
           }
         },
         "en" : {
@@ -972,7 +972,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der Lizenzdienst ist nicht verfügbar. Versuchen Sie es später erneut."
+            "value" : "Der Lizenzdienst ist nicht verfügbar. Versuche es später erneut."
           }
         },
         "en" : {
@@ -1064,7 +1064,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diese Lizenz ist bereits auf drei Geräten aktiv. Deaktivieren Sie ein Gerät und versuchen Sie es erneut."
+            "value" : "Diese Lizenz ist bereits auf drei Geräten aktiv. Deaktiviere ein Gerät und versuche es erneut."
           }
         },
         "en" : {
@@ -1286,7 +1286,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ihr Testzeitraum ist abgelaufen"
+            "value" : "Dein Testzeitraum ist abgelaufen"
           }
         },
         "en" : {

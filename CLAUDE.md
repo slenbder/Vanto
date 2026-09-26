@@ -297,7 +297,9 @@ left-aligned; the VoiceOver announcement remains a single sentence. Keep the
 same visual text and width calculation in sync when changing this layout.
 
 When adding user-facing strings, add translations for all 7 locales in
-`Localizable.xcstrings`, with plural variations for counts. Xcode's automatic
+`Localizable.xcstrings`, with plural variations for counts. German addresses
+the user with informal "du" ("Versuche es erneut"), matching the website and
+Apple's German copy; never "Sie". Xcode's automatic
 extraction sometimes marks live keys as `stale` and adds empty `%@` variants.
 Do not commit that noise, and never run "Remove stale" without checking first.
 
