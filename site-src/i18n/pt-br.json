@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "index": {
+      "title": "Vanto",
+      "description": "O Vanto fica na barra de menus do Mac e coloca textos, imagens e arquivos em uma fila para você colar um por um."
+    },
+    "privacy": {
+      "title": "Política de Privacidade · Vanto",
+      "description": "Como o Vanto, o site e as compras tratam suas informações."
+    },
+    "terms": {
+      "title": "Termos de Uso · Vanto",
+      "description": "Os termos para usar o Vanto e sua licença."
+    },
+    "refunds": {
+      "title": "Política de Reembolso · Vanto",
+      "description": "A política de reembolso de 30 dias do Vanto."
+    },
+    "404": {
+      "title": "Página não encontrada · Vanto",
+      "description": "Página não encontrada."
+    }
+  },
+  "lang": {
+    "label": "Idioma",
+    "englishOnly": "Este documento está disponível apenas em inglês."
+  },
+  "header": {
+    "home": "Início do Vanto",
+    "navLabel": "Principal",
+    "play": "Experimente",
+    "why": "Por que funciona",
+    "faq": "Dúvidas",
+    "buy": "Comprar licença",
+    "download": "Baixar"
+  },
+  "hero": {
+    "title": "Copie tudo.<br />Cole <em>em ordem.</em>",
+    "lede": "Reúna textos, imagens e arquivos sem ficar pulando entre janelas. Organize a fila uma vez e depois cole item por item.",
+    "purchaseNote": "Teste de 14 dias no lançamento. Licença de pagamento único.",
+    "caption": "<b>Nada de bagunça no Dock.</b> Só a fila, exatamente quando você precisa.",
+    "vp": {
+      "label": "A janela do Vanto: gravando, 3 itens na fila — Olá, mundo!, Montanhas.png e proposta_emprego.docx — com Parar, Colar, Limpar, Combinar e colar, e Sair.",
+      "status": "Gravando",
+      "count": "3 itens na fila",
+      "item1": "Olá, mundo!",
+      "item2": "Montanhas.png",
+      "item3": "proposta_emprego.docx",
+      "stop": "Parar",
+      "paste": "Colar",
+      "clear": "Limpar",
+      "combine": "Combinar e colar…",
+      "quit": "Sair"
+    }
+  },
+  "proof": {
+    "label": "Destaques",
+    "items": ["FIFO por padrão", "Textos, imagens e arquivos", "Todo o texto em uma só colagem", "Atalhos personalizáveis"]
+  },
+  "play": {
+    "title": "Três palavras podem<br /><em>mudar a história?</em>",
+    "lede": "Copie três palavras, organize a fila e cole tudo formando uma ideia completamente diferente.",
+    "progressLabel": "Progresso da demonstração",
+    "steps": { "copy": "Copiar", "arrange": "Organizar", "paste": "Colar" },
+    "sourceLabel": "Copie daqui",
+    "sourceHint": "Cada toque copia a próxima palavra destacada.",
+    "targetLabel": "Cole aqui",
+    "emptyCount": "0 itens",
+    "queueTip": "Arraste as palavras ou use as setas.",
+    "previewLabel": "Prévia do destino",
+    "previewTitle": "Onde vai parar · o de cima primeiro",
+    "controlsLabel": "Controles da demonstração",
+    "controls": { "copy": "Copiar", "paste": "Colar", "clear": "Limpar" },
+    "reset": "Reiniciar e reorganizar"
+  },
+  "why": {
+    "title": "A fila inteira em uma janela.",
+    "items": [
+      { "title": "Fique onde está.", "text": "Copie um lote agora e cole depois, sem voltar à origem a cada item." },
+      { "title": "A ordem é sua.", "text": "Reorganize, remova e confira tudo em uma janela compacta na barra de menus." },
+      { "title": "Cole com seu atalho.", "text": "Pressione ⌃⌘V para o próximo item ou escolha outro atalho nos Ajustes." },
+      { "title": "Tudo fica no seu Mac.", "text": "Sem conta, sem área de transferência na nuvem, sem análises no app. O que você copia fica no seu computador." }
+    ]
+  },
+  "faq": {
+    "title": "Dúvidas sobre o Vanto",
+    "lede": "Compatibilidade, permissões e o que uma compra inclui.",
+    "contact": "Não encontrou sua resposta? Escreva para {{@faqEmail}}",
+    "items": [
+      { "q": "O que exatamente o Vanto faz?", "a": "Ele reúne o que você copia, deixa você mudar a ordem e cola cada item, um por um. Uma tarefa pequena, bem-feita." },
+      { "q": "O que posso colocar na fila?", "a": "Textos, imagens, arquivos avulsos e grupos de arquivos. Tudo fica visível em uma janela compacta na barra de menus." },
+      { "q": "Posso colar vários textos de uma vez?", "a": "Sim. Combine os textos da fila em uma única colagem, na ordem que você escolher. Separe os itens com quebra de linha, espaço, vírgula ou um separador próprio." },
+      { "q": "Posso mudar os atalhos e o idioma?", "a": "Os dois atalhos globais podem ser alterados nos Ajustes. O app está disponível em inglês, russo, espanhol, alemão, japonês, chinês simplificado e português do Brasil." },
+      { "q": "Minha área de transferência sai do meu Mac?", "a": "Não. O Vanto funciona localmente, não exige conta e não envia nada do que você copia para a internet." },
+      { "q": "Por que ele precisa da permissão de Acessibilidade?", "a": "O macOS exige essa permissão para que o Vanto reconheça seus atalhos globais e cole no app que você está usando." },
+      { "q": "Quais Macs são compatíveis?", "a": "Macs com Apple Silicon e macOS 13 ou posterior. Macs com Intel não são compatíveis." },
+      { "q": "É uma assinatura?", "a": "Não. Uma única compra dá a você uma licença vitalícia para até três dispositivos seus." },
+      { "q": "Posso baixar de novo ou pedir reembolso?", "a": "Você pode baixar o Vanto novamente neste site a qualquer momento. Se o Vanto não for para você, é possível pedir reembolso em até 30 dias após a compra. Veja a <a class=\"contact-link\" href=\"{{@root}}refunds\">política de reembolso</a>." },
+      { "q": "Como funcionam as atualizações?", "a": "Automaticamente. O Vanto procura novas versões, baixa e instala tudo sozinho. Não há nada para configurar." }
+    ]
+  },
+  "final": {
+    "queueItem": "próximo item",
+    "title": "Comece com 14 dias.",
+    "lede": "No lançamento, o download virá com um teste completo de 14 dias. Se o Vanto conquistar um lugar na sua barra de menus, compre uma chave vitalícia e insira no próprio app.",
+    "download": "Baixar o Vanto",
+    "downloadSoon": "O download do Vanto chega em breve.",
+    "note": "Apple Silicon · macOS 13+ · Download em breve",
+    "licenseQuestion": "Já testou o Vanto?",
+    "licenseLink": "Comprar uma licença vitalícia",
+    "licenseSoon": "A compra de licenças chega em breve.",
+    "licenseNote": "Uma compra · 3 dispositivos · Atualizações gratuitas"
+  },
+  "footer": {
+    "tagline": "Copie mais. Alterne menos.",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "refunds": "Reembolsos",
+    "cookies": "Cookies",
+    "madeBy": "Feito por Slenbder"
+  },
+  "notFound": {
+    "title": "Não há nada aqui.",
+    "text": "Esta página não existe ou mudou de lugar. A fila continua esperando na página inicial.",
+    "button": "Voltar ao Vanto"
+  },
+  "js": {
+    "theme": {
+      "toDark": "Mudar para o tema escuro",
+      "toLight": "Mudar para o tema claro"
+    },
+    "consent": {
+      "label": "Preferências de cookies",
+      "treat": "Dar uma mordida no cookie",
+      "idle": "Fila: 1 cookie. Colar?",
+      "bites": ["Fila: ⅔ de cookie. Colar?", "Fila: ⅓ de cookie. Está sumindo.", "Fila: farelos. Assunto encerrado."],
+      "regrown": "Fornada nova. Fila: 1 cookie.",
+      "granted": "Colado. Só farelos, prometo.",
+      "denied": "Pulado. Sem ressentimentos.",
+      "text": "O Microsoft Clarity registra rolagens e cliques.",
+      "details": "Detalhes",
+      "skip": "Pular",
+      "skipLabel": "Pular — recusar os cookies do Clarity",
+      "allow": "Colar",
+      "allowLabel": "Colar — permitir os cookies do Clarity"
+    },
+    "game": {
+      "blank": "______",
+      "itemType": "Texto",
+      "empty": "Suas palavras copiadas vão esperar aqui.",
+      "count": { "one": "{count} item", "other": "{count} itens" },
+      "copyLabel": "Copiar a próxima palavra, {count} de 3 copiadas",
+      "pasteLabel": "Colar a próxima palavra, {count} de 3 coladas",
+      "moveUp": "Mover “{word}” para cima",
+      "moveDown": "Mover “{word}” para baixo",
+      "different": "Outra ordem. Uma história totalmente diferente.",
+      "status": {
+        "start": "Comece com Copiar.",
+        "copyMore": { "one": "Falta {count} para copiar.", "other": "Faltam {count} para copiar." },
+        "copied": "As palavras certas. Nova ordem, novo sentido.",
+        "moved": "“{word}” foi para a posição {position}. Sentido em aberto.",
+        "pasteMore": { "one": "Falta {count} para colar.", "other": "Faltam {count} para colar." },
+        "done": "Fila vazia. Sentido alterado.",
+        "clearedEarly": "Fila limpa. Copie quando quiser.",
+        "clearedLate": "Fila limpa. Reinicie para começar de novo."
+      },
+      "scenarios": [
+        {
+          "id": "countdown",
+          "source": "<span class=\"source-word\" data-word=\"pânico\">Pânico</span>. <span class=\"source-word\" data-word=\"plano\">Plano</span>. <span class=\"source-word\" data-word=\"nada\">Nada</span>. É sempre assim.",
+          "targetParts": ["3… ", ". 2… ", ". 1… ", ". Vai!"],
+          "slotCase": ["title", "title", "title"],
+          "correctOrder": ["nada", "pânico", "plano"],
+          "labels": {},
+          "hint": "Três palavras. Seis fluxos de trabalho suspeitamente familiares.",
+          "success": "Nada. Pânico. Plano. Surpreendentemente eficiente."
+        },
+        {
+          "id": "suspects",
+          "source": "O vaso quebrou. <span class=\"source-word\" data-word=\"a gravidade\">A gravidade</span> fez isso, <span class=\"source-word\" data-word=\"o gato\">o gato</span> ajudou e <span class=\"source-word\" data-word=\"meu irmão\">meu irmão</span> só assistiu.",
+          "targetParts": ["", " fez isso, ", " ajudou e ", " só assistiu."],
+          "slotCase": ["title", "lower", "lower"],
+          "correctOrder": ["meu irmão", "a gravidade", "o gato"],
+          "labels": {},
+          "hint": "Os mesmos suspeitos. Um depoimento bem diferente.",
+          "success": "Caso encerrado. Armaram para o gato."
+        },
+        {
+          "id": "tagline",
+          "source": "Um <span class=\"source-word\" data-word=\"plano\">plano</span>. Um <span class=\"source-word\" data-word=\"tiro\">tiro</span>. Sem <span class=\"source-word\" data-word=\"backup\">backup</span>. Esse é o slogan.",
+          "targetParts": ["Um ", ". Um ", ". Sem ", "."],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["backup", "tiro", "plano"],
+          "labels": {},
+          "hint": "Reorganize o trailer. Reescreva o filme.",
+          "success": "Um backup. Um tiro. Sem plano. Bem mais honesto."
+        }
+      ]
+    }
+  }
+}

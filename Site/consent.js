@@ -2,6 +2,8 @@
 // Clarity is never loaded until the visitor chooses Allow; Umami is cookieless
 // and runs regardless. Any [data-consent-open] element reopens the prompt.
 (() => {
+  // No strings (i18n.js failed to load) means no banner, so Clarity stays off.
+  if (!window.vantoI18n) return;
   const STORAGE_KEY = 'vanto-consent';
   const CLARITY_ID = 'yntsvccfk0';
   const PRODUCTION_HOST = 'vanto.slenbder.com';
@@ -38,10 +40,11 @@
 
   // The cookie is a toy: biting it never counts as a choice, only the two
   // equal-weight buttons do. Its title doubles as a queue joke and a live region.
-  const TITLE_IDLE = 'Queue: 1 cookie. Paste it?';
-  const TITLE_BITES = ['Queue: ⅔ cookie. Paste it?', 'Queue: ⅓ cookie. Going fast.', 'Queue: crumbs. That settles it.'];
-  const TITLE_REGROWN = 'Fresh batch. Queue: 1 cookie.';
-  const TITLE_CHOICE = { granted: 'Pasted. Crumbs only, promise.', denied: 'Skipped. No hard feelings.' };
+  const { t, get, root } = window.vantoI18n;
+  const TITLE_IDLE = t('consent.idle');
+  const TITLE_BITES = get('consent.bites');
+  const TITLE_REGROWN = t('consent.regrown');
+  const TITLE_CHOICE = { granted: t('consent.granted'), denied: t('consent.denied') };
   const BITES = [
     { origin: '38px 10px', crumbs: [35, 13], teeth: [[37, 11, 7.5], [43, 18, 6], [30, 6, 5.5]] },
     { origin: '44px 29px', crumbs: [39, 29], teeth: [[43, 29, 7], [45, 21, 5.5], [39, 37, 5.5]] },
@@ -50,10 +53,10 @@
 
   const banner = document.createElement('section');
   banner.className = 'consent';
-  banner.setAttribute('aria-label', 'Cookie preferences');
+  banner.setAttribute('aria-label', t('consent.label'));
   banner.hidden = true;
   banner.innerHTML = `
-    <button class="consent-treat" type="button" aria-label="Take a bite of the cookie">
+    <button class="consent-treat" type="button" aria-label="${t('consent.treat')}">
       <span class="consent-treat-roll"><svg viewBox="0 0 48 48" aria-hidden="true">
         <defs>
           <mask id="consent-bites" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
@@ -77,11 +80,11 @@
     </button>
     <div class="consent-copy">
       <p class="consent-title" aria-live="polite">${TITLE_IDLE}</p>
-      <p class="consent-text">Microsoft Clarity records scrolls and clicks. <a href="/privacy#analytics" data-track="Consent Details Click">Details</a></p>
+      <p class="consent-text">${t('consent.text')} <a href="${root}privacy#analytics" data-track="Consent Details Click">${t('consent.details')}</a></p>
     </div>
     <div class="consent-actions">
-      <button class="consent-button" type="button" data-consent="denied" aria-label="Skip — decline Clarity cookies">Skip</button>
-      <button class="consent-button" type="button" data-consent="granted" aria-label="Paste it — allow Clarity cookies">Paste it</button>
+      <button class="consent-button" type="button" data-consent="denied" aria-label="${t('consent.skipLabel')}">${t('consent.skip')}</button>
+      <button class="consent-button" type="button" data-consent="granted" aria-label="${t('consent.allowLabel')}">${t('consent.allow')}</button>
     </div>`;
   document.body.appendChild(banner);
 

@@ -51,3 +51,22 @@ jobs:
           -derivedDataPath /tmp/VantoReleaseDerivedData
           CODE_SIGNING_ALLOWED=NO
           build
+
+  site:
+    name: Site build is current
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      # Site/ is generated from site-src/ and committed, because Cloudflare
+      # Pages deploys it with no build step. A stale or hand-edited page fails here.
+      - name: Rebuild the site
+        run: node scripts/build-site.mjs
+
+      - name: Verify generated site is committed
+        run: |
+          git status --porcelain -- Site
+          test -z "$(git status --porcelain -- Site)"

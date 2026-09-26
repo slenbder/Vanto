@@ -1,33 +1,13 @@
 (() => {
-  const scenarios = [
-    {
-      id: 'countdown',
-      source: '<span class="source-word" data-word="panic">Panic</span>. <span class="source-word" data-word="plan">Plan</span>. <span class="source-word" data-word="nothing">Nothing</span>. That’s how it goes.',
-      targetParts: ['3…\u00a0', '.\u00a02…\u00a0', '.\u00a01…\u00a0', '.\u00a0Go!'],
-      slotCase: ['title', 'title', 'title'],
-      correctOrder: ['nothing', 'panic', 'plan'],
-      hint: 'Three words. Six suspiciously familiar workflows.',
-      success: 'Nothing. Panic. Plan. Surprisingly efficient.'
-    },
-    {
-      id: 'suspects',
-      source: 'The vase broke. <span class="source-word" data-word="gravity">Gravity</span> did it, <span class="source-word" data-word="my cat">my cat</span> helped, <span class="source-word" data-word="i">I</span> just watched.',
-      targetParts: ['', '\u00a0did it,\u00a0', '\u00a0helped, and\u00a0', '\u00a0just watched.'],
-      slotCase: ['title', 'lower', 'lower'],
-      correctOrder: ['i', 'gravity', 'my cat'],
-      hint: 'Same suspects. Very different testimony.',
-      success: 'Case closed. The cat was framed.'
-    },
-    {
-      id: 'tagline',
-      source: 'One <span class="source-word" data-word="plan">plan</span>. One <span class="source-word" data-word="chance">chance</span>. No <span class="source-word" data-word="backup">backup</span>. That’s the tagline.',
-      targetParts: ['One\u00a0', '. One\u00a0', '. No\u00a0', '.'],
-      slotCase: ['lower', 'lower', 'lower'],
-      correctOrder: ['backup', 'chance', 'plan'],
-      hint: 'Rearrange the trailer. Rewrite the movie.',
-      success: 'One backup. One chance. No plan. Much more honest.'
-    }
-  ];
+  // Each language has its own three scenarios (site-src/i18n/*.json): the words,
+  // sentence frames, and the intended order are written for that language.
+  // `slotCase` capitalizes a word that starts a sentence; `labels` overrides how
+  // a word is shown (English "i" → "I"); ids stay the same in every language.
+  // Without strings the demo stays in its static first-scenario state.
+  if (!window.vantoI18n) return;
+  const { t, get } = window.vantoI18n;
+  const scenarios = get('game.scenarios');
+  const BLANK = t('game.blank');
 
   const chooseScenario = () => {
     let previous = null;
@@ -73,11 +53,11 @@
     window.vantoAnalytics?.track(name, data);
   };
 
-  const queueLabel = word => word === 'i' ? 'I' : word;
+  const queueLabel = word => scenario.labels?.[word] ?? word;
 
   const slotLabel = (word, index) => {
     const label = queueLabel(word);
-    if (scenario.slotCase[index] === 'title' && word !== 'i') {
+    if (scenario.slotCase[index] === 'title') {
       return label.charAt(0).toUpperCase() + label.slice(1);
     }
     return label;
@@ -102,7 +82,7 @@
         const blank = document.createElement('span');
         blank.className = blankClass;
         blank.dataset.index = index;
-        blank.textContent = '______';
+        blank.textContent = BLANK;
         container.appendChild(blank);
       }
     });
@@ -137,12 +117,12 @@
   const updateControls = () => {
     copyCounter.textContent = `${copied} / 3`;
     pasteCounter.textContent = `${pasted.length} / 3`;
-    copyButton.setAttribute('aria-label', `Copy next word, ${copied} of 3 copied`);
-    pasteButton.setAttribute('aria-label', `Paste next word, ${pasted.length} of 3 pasted`);
+    copyButton.setAttribute('aria-label', t('game.copyLabel', { count: copied }));
+    pasteButton.setAttribute('aria-label', t('game.pasteLabel', { count: pasted.length }));
     copyButton.disabled = copied >= sourceWords.length || pasted.length > 0;
     pasteButton.disabled = pasteInFlight || copied < sourceWords.length || queue.length === 0 || pasted.length >= 3;
     clearButton.disabled = queue.length === 0;
-    queueCount.textContent = `${queue.length} ${queue.length === 1 ? 'item' : 'items'}`;
+    queueCount.textContent = t('game.count', { count: queue.length });
   };
 
   const moveItem = (from, to, method, focusDirection = 0) => {
@@ -151,7 +131,7 @@
     queue.splice(to, 0, item);
     trackOnce('Demo Reorder', { method });
     renderQueue();
-    queueStatus.textContent = `Moved ${queueLabel(item)} to position ${to + 1}. Meaning pending.`;
+    queueStatus.textContent = t('game.status.moved', { word: queueLabel(item), position: to + 1 });
 
     // renderQueue rebuilds every row, so hand keyboard focus back to the moved
     // item's arrow — the opposite one once it reaches the end of the queue.
@@ -203,7 +183,7 @@
 
   const renderQueue = () => {
     if (!queue.length) {
-      queueList.innerHTML = '<div class="empty-queue"><span>⌘</span><p>Your copied words will wait here.</p></div>';
+      queueList.innerHTML = `<div class="empty-queue"><span>⌘</span><p>${t('game.empty')}</p></div>`;
       updateControls();
       return;
     }
@@ -217,10 +197,10 @@
       chip.dataset.index = index;
       chip.innerHTML = `
         <span class="chip-grip" aria-hidden="true"><svg><use href="#hd-grip"/></svg></span>
-        <span class="chip-copy"><small>Text</small><strong>${label}</strong></span>
+        <span class="chip-copy"><small>${t('game.itemType')}</small><strong>${label}</strong></span>
         <span class="chip-controls">
-          <button type="button" data-direction="-1" aria-label="Move ${label} up" ${index === 0 ? 'disabled' : ''}><svg aria-hidden="true"><use href="#hd-up"/></svg></button>
-          <button type="button" data-direction="1" aria-label="Move ${label} down" ${index === queue.length - 1 ? 'disabled' : ''}><svg aria-hidden="true"><use href="#hd-down"/></svg></button>
+          <button type="button" data-direction="-1" aria-label="${t('game.moveUp', { word: label })}" ${index === 0 ? 'disabled' : ''}><svg aria-hidden="true"><use href="#hd-up"/></svg></button>
+          <button type="button" data-direction="1" aria-label="${t('game.moveDown', { word: label })}" ${index === queue.length - 1 ? 'disabled' : ''}><svg aria-hidden="true"><use href="#hd-down"/></svg></button>
         </span>`;
       chip.addEventListener('dragstart', () => {
         draggedIndex = index;
@@ -260,10 +240,10 @@
     window.setTimeout(renderQueue, 180);
 
     if (copied === 3) {
-      queueStatus.textContent = 'Right words. New order, new meaning.';
+      queueStatus.textContent = t('game.status.copied');
       window.setTimeout(() => setStep('reorder'), 220);
     } else {
-      queueStatus.textContent = `${3 - copied} more to copy.`;
+      queueStatus.textContent = t('game.status.copyMore', { count: 3 - copied });
     }
     updateControls();
   });
@@ -289,11 +269,11 @@
         renderQueue();
 
         if (pasted.length < 3) {
-          queueStatus.textContent = `${3 - pasted.length} left to paste.`;
+          queueStatus.textContent = t('game.status.pasteMore', { count: 3 - pasted.length });
         } else {
           const intendedOrder = pasted.every((value, index) => value === scenario.correctOrder[index]);
-          queueStatus.textContent = 'Queue clear. Meaning changed.';
-          resultHint.textContent = intendedOrder ? scenario.success : 'Different order. Entirely different story.';
+          queueStatus.textContent = t('game.status.done');
+          resultHint.textContent = intendedOrder ? scenario.success : t('game.different');
           targetSentence.classList.remove('success');
           void targetSentence.offsetWidth;
           targetSentence.classList.add('success');
@@ -317,10 +297,10 @@
     if (pasted.length === 0) {
       copied = 0;
       sourceWords.forEach(word => word.classList.remove('copied'));
-      queueStatus.textContent = 'Queue cleared. Copy when ready.';
+      queueStatus.textContent = t('game.status.clearedEarly');
       setStep('copy');
     } else {
-      queueStatus.textContent = 'Queue cleared. Reset to start over.';
+      queueStatus.textContent = t('game.status.clearedLate');
       setStep('paste');
     }
     renderQueue();
@@ -335,12 +315,12 @@
     pasteInFlight = false;
     sourceWords.forEach(word => word.classList.remove('copied'));
     blanks.forEach(blank => {
-      blank.textContent = '______';
+      blank.textContent = BLANK;
       blank.classList.remove('filled');
     });
     resultHint.textContent = scenario.hint;
     targetSentence.classList.remove('success');
-    queueStatus.textContent = 'Start with Copy.';
+    queueStatus.textContent = t('game.status.start');
     setStep('copy');
     renderQueue();
   };

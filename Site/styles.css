@@ -232,7 +232,7 @@ h2 { margin-bottom: 0; font-size: clamp(42px, 4.5vw, 64px); line-height: 1.08; l
 @media (hover: hover) { .control-button:hover:not(:disabled) { transform: translateY(-2px); } }
 .control-button:disabled { cursor: not-allowed; opacity: .35; }
 .control-button b { font-size: 14px; }
-.control-button small { font-size: 11px; font-variant-numeric: tabular-nums; }
+.control-button small { font-size: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .copy-control { background: var(--accent); color: var(--on-accent); }
 .paste-control { background: var(--queue-surface-raised); color: var(--queue-text); }
 .clear-control { color: var(--muted); }
@@ -433,7 +433,8 @@ footer > div > button { padding: 0; border: 0; background: none; color: inherit;
   .word-game[data-step="try-again"] .source-panel,
   .word-game[data-step="try-again"] .game-queue-wrap { display: none; }
   .game-controls { grid-template-columns: repeat(3, 1fr); width: 100%; margin-top: 0; padding: 4px; justify-self: stretch; }
-  .control-button { min-width: 0; min-height: 44px; padding: 0 8px; }
+  /* A long label ("Копировать") drops its 0 / 3 counter below instead of squeezing it. */
+  .control-button { flex-wrap: wrap; column-gap: 6px; row-gap: 0; min-width: 0; min-height: 44px; padding: 4px 8px; line-height: 1.25; }
   .control-button b { font-size: 13px; }
   .control-button small { font-size: 11px; }
   .reset-control { min-height: 44px; }
@@ -472,4 +473,89 @@ footer > div > button { padding: 0; border: 0; background: none; color: inherit;
   html { scroll-behavior: auto; }
   .hero-shot-float { animation: none; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Language menu: a <details> disclosure beside the theme toggle. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.lang-menu { position: relative; }
+.lang-toggle {
+  display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 11px; border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--paper-raised); color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; list-style: none; user-select: none;
+}
+.lang-toggle::-webkit-details-marker { display: none; }
+.lang-toggle svg { width: 17px; height: 17px; }
+.lang-menu[open] .lang-toggle { border-color: color-mix(in srgb, var(--ink) 30%, var(--line)); }
+.lang-list {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 35; min-width: 210px; margin: 0; padding: 6px; list-style: none;
+  border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow);
+}
+.lang-list a { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 40px; padding: 0 12px; border-radius: var(--radius-sm); color: var(--muted); font-size: 14px; font-weight: 600; letter-spacing: 0; }
+.lang-list a:hover, .lang-list a:focus-visible { background: var(--paper-deep); color: var(--ink); }
+.lang-list a[aria-current="true"] { color: var(--ink); font-weight: 750; }
+.lang-list a[aria-current="true"]::after { content: ""; width: 9px; height: 5px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); transform: translateY(-2px) rotate(-45deg); }
+
+.footer-langs { grid-column: 1 / -1; justify-self: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; font-size: 13px; }
+.footer-langs a { transition: color 150ms ease; }
+.footer-langs a:hover { color: var(--ink); }
+.footer-langs a[aria-current="true"] { color: var(--ink); font-weight: 650; }
+
+/* Touch screens: footer links and language items get a full 44px tap height
+   without changing how they look. */
+@media (pointer: coarse) {
+  footer > div > a, footer > div > button, .footer-langs a, .footer-mark { display: inline-flex; align-items: center; min-height: 44px; }
+  footer > div:first-of-type, .footer-langs { row-gap: 0; }
+  .lang-list a { min-height: 44px; }
+}
+
+/* Legal pages stay in English; translated chrome says so in the visitor's language. */
+.legal .legal-translation { margin: 0 0 40px; padding: 14px 18px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper-raised); color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+/* With the language menu the centered header needs ~1240px in Russian, so
+   below that the nav takes the space between the wordmark and the actions,
+   and on narrow laptops keeps only FAQ, as on phones. */
+.site-header nav a { white-space: nowrap; }
+@media (min-width: 761px) and (max-width: 1280px) {
+  .site-header { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .site-header nav { justify-content: center; }
+}
+@media (min-width: 761px) and (max-width: 980px) {
+  .site-header nav a:not(.nav-faq) { display: none; }
+}
+
+@media (max-width: 760px) {
+  .lang-toggle { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .lang-toggle .lang-code { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lang-toggle svg { width: 18px; height: 18px; }
+  .lang-list { position: fixed; top: 76px; right: 14px; }
+}
+
+/* Per-language typography. Chinese and Japanese get their own system fonts,
+   no negative tracking, and taller lines; long German and Russian words may
+   hyphenate in section headings (never in the hero line). The English legal text inside keeps its own rules. */
+:root:lang(ja) { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif; }
+:root:lang(zh) { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+:is(:lang(ja), :lang(zh)):not(.wordmark, .wordmark *) { letter-spacing: 0; }
+:is(:lang(ja), :lang(zh)) :is(h1, h2) { line-height: 1.22; }
+:is(:lang(ja), :lang(zh)) :is(h3, .source-sentence, .target-sentence) { line-height: 1.5; }
+:is(:lang(ja), :lang(zh)) body { line-break: strict; }
+:lang(ja) :is(h1, h2, h3, .hero-lede, .stage-caption, .source-sentence, .target-sentence, .preview-target-sentence, .panel-hint, .section-heading p) { word-break: auto-phrase; }
+/* Full-width glyphs read larger than Latin at the same size; one step down
+   keeps "まとめてコピー。" on one line like "Copy everything." */
+:is(:lang(ja), :lang(zh)) h1 { font-size: clamp(44px, 3.9vw, 56px); }
+:is(:lang(ja), :lang(zh)) h2 { font-size: clamp(36px, 3.9vw, 54px); }
+@media (max-width: 760px) {
+  :is(:lang(ja), :lang(zh)) h1 { font-size: clamp(32px, 9vw, 42px); }
+  :is(:lang(ja), :lang(zh)) h2 { font-size: clamp(28px, 8.4vw, 36px); }
+}
+:is(:lang(de), :lang(ru)) :is(h2, h3) { hyphens: auto; -webkit-hyphens: auto; }
+/* German's queue count breaks before its last word, as in the app's popover. */
+:lang(de) .vp-head { height: auto; }
+:lang(de) .vp-count { line-height: 1.15; }
+:lang(de) .vp-list { height: calc(100.5 * var(--pt)); }
+/* "Geordnet einfügen." runs about 5% wider than "Paste in order." */
+@media (min-width: 761px) { :lang(de) h1 { font-size: clamp(50px, 4.3vw, 62px); } }
+/* On phones a long emphasized phrase ("изменить историю?", "die Geschichte
+   ändern?") must wrap rather than widen the page. */
+@media (max-width: 760px) {
+  h1 em, h2 em { white-space: normal; }
 }

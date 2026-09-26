@@ -25,6 +25,16 @@
 
   window.vantoAnalytics = { track };
 
+  // The English home page's first-visit language redirect leaves a note for the
+  // page it lands on, so automatic hops are told apart from menu switches.
+  try {
+    const from = sessionStorage.getItem('vanto-lang-redirect');
+    if (from) {
+      sessionStorage.removeItem('vanto-lang-redirect');
+      track('Language Redirect', { from, to: window.vantoI18n?.code || document.documentElement.lang });
+    }
+  } catch {}
+
   document.addEventListener('click', event => {
     const element = event.target.closest?.('[data-track]');
     if (!element) return;
@@ -40,7 +50,8 @@
   document.addEventListener('click', event => {
     const summary = event.target.closest?.('details > summary');
     if (!summary || summary.parentElement.open) return;
-    track('FAQ Open', { question: summary.textContent.trim() });
+    // The English question (data-faq) keeps every language's opens in one row.
+    track('FAQ Open', { question: summary.parentElement.dataset.faq || summary.textContent.trim() });
   });
 
   // Section reach: fires once per section when its top passes 60% of the viewport.

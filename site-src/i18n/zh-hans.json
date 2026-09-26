@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "index": {
+      "title": "Vanto",
+      "description": "Vanto 常驻 Mac 菜单栏，把文本、图像和文件排进队列，让你逐个粘贴。"
+    },
+    "privacy": {
+      "title": "隐私政策 · Vanto",
+      "description": "Vanto、本网站及购买流程如何处理你的信息。"
+    },
+    "terms": {
+      "title": "使用条款 · Vanto",
+      "description": "使用 Vanto 及其许可证的条款。"
+    },
+    "refunds": {
+      "title": "退款政策 · Vanto",
+      "description": "Vanto 的 30 天退款政策。"
+    },
+    "404": {
+      "title": "找不到页面 · Vanto",
+      "description": "找不到页面。"
+    }
+  },
+  "lang": {
+    "label": "语言",
+    "englishOnly": "本文档仅提供英文版本。"
+  },
+  "header": {
+    "home": "Vanto 首页",
+    "navLabel": "主导航",
+    "play": "试一试",
+    "why": "为什么好用",
+    "faq": "常见问题",
+    "buy": "购买许可证",
+    "download": "下载"
+  },
+  "hero": {
+    "title": "统统复制。<br />按顺序<em>粘贴。</em>",
+    "lede": "收集文本、图像和文件，无需在窗口之间来回切换。队列只需排一次，然后逐个粘贴。",
+    "purchaseNote": "发布后可免费试用 14 天。许可证一次买断。",
+    "caption": "<b>不占程序坞。</b>只有队列，在你需要时出现。",
+    "vp": {
+      "label": "Vanto 窗口：录制中，队列中有 3 项（你好，世界！、山.png 和 录用通知.docx），以及停止、粘贴、清空、合并并粘贴和退出按钮。",
+      "status": "录制中",
+      "count": "队列中有 3 项",
+      "item1": "你好，世界！",
+      "item2": "山.png",
+      "item3": "录用通知.docx",
+      "stop": "停止",
+      "paste": "粘贴",
+      "clear": "清空",
+      "combine": "合并并粘贴…",
+      "quit": "退出"
+    }
+  },
+  "proof": {
+    "label": "产品亮点",
+    "items": ["默认先进先出", "文本、图像和文件", "合并文本，一次粘贴", "快捷键可自定义"]
+  },
+  "play": {
+    "title": "三个词，<br /><em>能改写故事吗？</em>",
+    "lede": "复制三个词，调整队列顺序，再把它们粘贴成一个完全不同的意思。",
+    "progressLabel": "演示进度",
+    "steps": { "copy": "复制", "arrange": "排序", "paste": "粘贴" },
+    "sourceLabel": "从这里复制",
+    "sourceHint": "每按一次，复制下一个高亮的词。",
+    "targetLabel": "粘贴到这里",
+    "emptyCount": "0 项",
+    "queueTip": "拖动词语，或使用箭头按钮。",
+    "previewLabel": "粘贴位置预览",
+    "previewTitle": "粘贴位置 · 从最上面一项开始",
+    "controlsLabel": "演示控制",
+    "controls": { "copy": "复制", "paste": "粘贴", "clear": "清空" },
+    "reset": "重置并重新排序"
+  },
+  "why": {
+    "title": "整个队列，尽在一个窗口。",
+    "items": [
+      { "title": "不用来回切换。", "text": "现在批量复制，稍后再粘贴，不必每粘贴一项就回到来源。" },
+      { "title": "顺序由你定。", "text": "在菜单栏的小窗口里调整顺序、删除和查看所有内容。" },
+      { "title": "用你的快捷键粘贴。", "text": "按 ⌃⌘V 粘贴下一项，也可以在设置中换成其他快捷键。" },
+      { "title": "一切留在你的 Mac 上。", "text": "无需账户，没有云剪贴板，应用内也没有数据分析。你复制的内容只留在本地。" }
+    ]
+  },
+  "faq": {
+    "title": "关于 Vanto 的问题",
+    "lede": "Mac 兼容性、权限，以及一次购买包含哪些内容。",
+    "contact": "没找到答案？请发邮件至 {{@faqEmail}}",
+    "items": [
+      { "q": "Vanto 到底是做什么的？", "a": "它收集你复制的内容，让你调整顺序，再逐个粘贴。只做一件小事，但把它做好。" },
+      { "q": "队列里可以放什么？", "a": "文本、图像、单个文件和多个文件。所有内容都显示在菜单栏的一个小窗口里。" },
+      { "q": "可以一次粘贴多段文本吗？", "a": "可以。把队列中的文本按你选择的顺序合并成一次粘贴，并用换行、空格、逗号或自定义分隔符隔开。" },
+      { "q": "可以更改快捷键和语言吗？", "a": "两个全局快捷键都可以在设置中更改。应用提供英语、俄语、西班牙语、德语、日语、简体中文和巴西葡萄牙语版本。" },
+      { "q": "我的剪贴板内容会离开 Mac 吗？", "a": "不会。Vanto 在本地运行，无需账户，也不会把你复制的任何内容发送到互联网。" },
+      { "q": "为什么需要辅助功能权限？", "a": "macOS 要求授予这项权限，Vanto 才能响应全局快捷键，并粘贴到你正在使用的应用中。" },
+      { "q": "支持哪些 Mac？", "a": "搭载 Apple 芯片、运行 macOS 13 或更高版本的 Mac。不支持搭载 Intel 处理器的 Mac。" },
+      { "q": "是订阅制吗？", "a": "不是。一次购买即可获得终身许可证，最多可在你的三台设备上使用。" },
+      { "q": "可以重新下载或申请退款吗？", "a": "你可以随时从本网站重新下载 Vanto。如果 Vanto 不适合你，可在购买后 30 天内申请退款。详见<a class=\"contact-link\" href=\"{{@root}}refunds\">退款政策</a>。" },
+      { "q": "如何更新？", "a": "自动更新。Vanto 会自行检查新版本，并完成下载和安装，无需任何设置。" }
+    ]
+  },
+  "final": {
+    "queueItem": "下一项",
+    "title": "先免费用 14 天。",
+    "lede": "发布后，下载即包含 14 天全功能试用。如果 Vanto 值得在你的菜单栏占一席之地，就购买终身许可证密钥，在同一个应用中输入即可。",
+    "download": "下载 Vanto",
+    "downloadSoon": "Vanto 即将开放下载。",
+    "note": "Apple 芯片 · macOS 13+ · 即将开放下载",
+    "licenseQuestion": "已经试用过 Vanto？",
+    "licenseLink": "购买终身许可证",
+    "licenseSoon": "许可证即将开售。",
+    "licenseNote": "一次购买 · 3 台设备 · 免费获得后续更新"
+  },
+  "footer": {
+    "tagline": "多复制，少切换。",
+    "privacy": "隐私",
+    "terms": "条款",
+    "refunds": "退款",
+    "cookies": "Cookie",
+    "madeBy": "由 Slenbder 制作"
+  },
+  "notFound": {
+    "title": "这里什么都没有。",
+    "text": "此页面不存在，或已移动。队列仍在首页等着你。",
+    "button": "返回 Vanto"
+  },
+  "js": {
+    "theme": {
+      "toDark": "切换到深色主题",
+      "toLight": "切换到浅色主题"
+    },
+    "consent": {
+      "label": "Cookie 偏好设置",
+      "treat": "咬一口饼干",
+      "idle": "队列：1 块饼干。要粘贴吗？",
+      "bites": ["队列：⅔ 块饼干。要粘贴吗？", "队列：⅓ 块饼干。越吃越快。", "队列：只剩饼干屑。就这么定了。"],
+      "regrown": "新鲜出炉。队列：1 块饼干。",
+      "granted": "已粘贴。只留饼干屑，保证。",
+      "denied": "已跳过。没关系。",
+      "text": "Microsoft Clarity 会记录滚动和点击。",
+      "details": "详情",
+      "skip": "跳过",
+      "skipLabel": "跳过：拒绝 Clarity Cookie",
+      "allow": "粘贴",
+      "allowLabel": "粘贴：允许 Clarity Cookie"
+    },
+    "game": {
+      "blank": "＿＿＿",
+      "itemType": "文本",
+      "empty": "你复制的词会在这里排队。",
+      "count": { "other": "{count} 项" },
+      "copyLabel": "复制下一个词，已复制 {count}/3",
+      "pasteLabel": "粘贴下一个词，已粘贴 {count}/3",
+      "moveUp": "上移“{word}”",
+      "moveDown": "下移“{word}”",
+      "different": "顺序不同，故事也完全不同。",
+      "status": {
+        "start": "先点“复制”。",
+        "copyMore": { "other": "还要复制 {count} 个。" },
+        "copied": "词都齐了。换个顺序，就换个意思。",
+        "moved": "已将“{word}”移到第 {position} 位。意思待定。",
+        "pasteMore": { "other": "还要粘贴 {count} 个。" },
+        "done": "队列已清空。意思变了。",
+        "clearedEarly": "队列已清空。准备好就复制吧。",
+        "clearedLate": "队列已清空。重置即可重新开始。"
+      },
+      "scenarios": [
+        {
+          "id": "countdown",
+          "source": "<span class=\"source-word\" data-word=\"恐慌\">恐慌</span>。<span class=\"source-word\" data-word=\"计划\">计划</span>。<span class=\"source-word\" data-word=\"摸鱼\">摸鱼</span>。向来如此。",
+          "targetParts": ["3……", "。2……", "。1……", "。开始！"],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["摸鱼", "恐慌", "计划"],
+          "labels": {},
+          "hint": "三个词，六种莫名眼熟的工作流程。",
+          "success": "摸鱼。恐慌。计划。效率出奇地高。"
+        },
+        {
+          "id": "suspects",
+          "source": "花瓶碎了。是<span class=\"source-word\" data-word=\"重力\">重力</span>干的，<span class=\"source-word\" data-word=\"猫\">猫</span>帮了忙，<span class=\"source-word\" data-word=\"我\">我</span>只是在旁边看着。",
+          "targetParts": ["是", "干的，", "帮了忙，", "只是在旁边看着。"],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["我", "重力", "猫"],
+          "labels": {},
+          "hint": "嫌疑人还是那几个，证词却完全不同。",
+          "success": "结案。猫是被冤枉的。"
+        },
+        {
+          "id": "tagline",
+          "source": "一个<span class=\"source-word\" data-word=\"计划\">计划</span>。一次<span class=\"source-word\" data-word=\"机会\">机会</span>。没有<span class=\"source-word\" data-word=\"退路\">退路</span>。这就是宣传语。",
+          "targetParts": ["一个", "。一次", "。没有", "。"],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["退路", "机会", "计划"],
+          "labels": {},
+          "hint": "调换预告片的顺序，整部电影就改写了。",
+          "success": "一个退路。一次机会。没有计划。这下诚实多了。"
+        }
+      ]
+    }
+  }
+}
