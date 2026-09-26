@@ -33,8 +33,6 @@
   const resultHint = document.querySelector('.result-hint');
   const targetSentence = document.querySelector('.target-sentence');
   const previewTargetSentence = document.querySelector('.preview-target-sentence');
-  const comingSoonButtons = document.querySelectorAll('[data-coming-soon]');
-  const releaseStatus = document.querySelector('.release-status');
   const progressSteps = [...document.querySelectorAll('[data-progress]')];
   const mobileLayout = window.matchMedia('(max-width: 760px)');
   let sourceWords = [];
@@ -326,9 +324,6 @@
   };
 
   resetButton.addEventListener('click', resetGame);
-  comingSoonButtons.forEach(button => button.addEventListener('click', () => {
-    releaseStatus.textContent = button.dataset.comingSoonMessage;
-  }));
   renderScenario();
   setStep('copy');
   renderQueue();

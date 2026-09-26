@@ -32,12 +32,13 @@
     "why": "为什么好用",
     "faq": "常见问题",
     "buy": "购买许可证",
-    "download": "下载"
+    "notify": "候补名单"
   },
   "hero": {
     "title": "统统复制。<br />按顺序<em>粘贴。</em>",
     "lede": "收集文本、图像和文件，无需在窗口之间来回切换。队列只需排一次，然后逐个粘贴。",
     "purchaseNote": "发布后可免费试用 14 天。许可证一次买断。",
+    "waitlistLink": "发布时立减 30%",
     "caption": "<b>不占程序坞。</b>只有队列，在你需要时出现。",
     "vp": {
       "label": "Vanto 窗口：录制中，队列中有 3 项（你好，世界！、山.png 和 录用通知.docx），以及停止、粘贴、清空、合并并粘贴和退出按钮。",
@@ -101,14 +102,13 @@
   },
   "final": {
     "queueItem": "下一项",
-    "title": "先免费用 14 天。",
-    "lede": "发布后，下载即包含 14 天全功能试用。如果 Vanto 值得在你的菜单栏占一席之地，就购买终身许可证密钥，在同一个应用中输入即可。",
-    "download": "下载 Vanto",
-    "downloadSoon": "Vanto 即将开放下载。",
+    "title": "发布时立减 30%。",
+    "lede": "Vanto 即将完成。留下你的邮箱，发布当天你会收到一封邮件，内含终身许可证 30% 折扣码，7 天内有效。14 天试用照常提供。",
+    "emailLabel": "电子邮箱地址",
+    "emailPlaceholder": "you@example.com",
+    "submit": "通知我",
+    "formNote": "现在会收到一封确认邮件，发布时再收到一封。可随时退订。<a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">隐私</a>",
     "note": "Apple 芯片 · macOS 13+ · 即将开放下载",
-    "licenseQuestion": "已经试用过 Vanto？",
-    "licenseLink": "购买终身许可证",
-    "licenseSoon": "许可证即将开售。",
     "licenseNote": "一次购买 · 3 台设备 · 免费获得后续更新"
   },
   "footer": {
@@ -125,6 +125,14 @@
     "button": "返回 Vanto"
   },
   "js": {
+    "waitlist": {
+      "sending": "正在提交…",
+      "success": "快好了：请查收邮件并确认你的邮箱地址。",
+      "already": "你已在名单中，发布时见。",
+      "rateLimit": "尝试次数过多，请一分钟后再试。",
+      "invalid": "请输入有效的邮箱地址。",
+      "error": "登记失败。请重试，或发邮件至 vanto@slenbder.com。"
+    },
     "theme": {
       "toDark": "切换到深色主题",
       "toLight": "切换到浅色主题"

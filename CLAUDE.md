@@ -404,6 +404,15 @@ hand-edited in `Site/`; bump their `?v=` in the partials when they change.
   and the device time zone (a VPN changes the IP country, not the time zone);
   both language events carry the same fields. Keep `privacy.html` in sync.
 
+Until the first release, the final `#download` section is a launch waitlist
+(30% off for 7 days after launch). `Site/waitlist.js` posts to the Loops form
+endpoint in the form's `action` with `userGroup=waitlist`, `source=website`,
+and `language` (a custom Loops contact property that must exist in Loops).
+Loops sends a double opt-in confirmation from `vanto.slenbder.com`. The email
+itself never goes to analytics; `Waitlist Submit`/`Success`/`Error` do.
+Header button labels must fit at 320 pt next to the wordmark and FAQ link in
+every language, so they are shorter than the section's own wording.
+
 Analytics live in `Site/analytics.js`: elements with `data-track="Event"` and
 `data-track-<key>` attributes send events, plus section reach, scroll depth,
 FAQ opens, the demo funnel reported from `app.js`, and the cookie banner's

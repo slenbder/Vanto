@@ -14,7 +14,7 @@
           <p class="hero-lede">
             {{t:hero.lede}}
           </p>
-          <p class="purchase-note">{{t:hero.purchaseNote}}</p>
+          <p class="purchase-note">{{t:hero.purchaseNote}} <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">{{t:hero.waitlistLink}}</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -169,21 +169,26 @@
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>{{t:final.queueItem}}</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
         <h2 data-reveal>{{t:final.title}}</h2>
         <p>{{t:final.lede}}</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="{{a:final.downloadSoon}}">{{t:final.download}}</button>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">{{t:final.emailLabel}}</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="{{a:final.emailPlaceholder}}" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">{{t:final.submit}}</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+        </form>
+        <span class="final-note" id="waitlist-note">{{t:final.formNote}}</span>
+        <span class="license-note" id="license">{{t:final.licenseNote}}</span>
         <span class="final-note">{{t:final.note}}</span>
-        <div class="license-option" id="license">
-          <span>{{t:final.licenseQuestion}}</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="{{a:final.licenseSoon}}">{{t:final.licenseLink}} <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">{{t:final.licenseNote}}</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
 {{> footer}}
 
 {{> scripts}}
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=1"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>

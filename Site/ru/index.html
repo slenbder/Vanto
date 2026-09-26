@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="/menuBarIcon.svg" />
     <script defer src="/u/script.js" data-website-id="0125056c-0544-4b0e-80f9-6be6818f1807" data-host-url="/u" data-domains="vanto.slenbder.com"></script>
     <title>Vanto</title>
-    <link rel="stylesheet" href="/styles.css?v=32" />
+    <link rel="stylesheet" href="/styles.css?v=33" />
     <link rel="canonical" href="https://vanto.slenbder.com/ru/" />
     <link rel="alternate" hreflang="en" href="https://vanto.slenbder.com/" />
     <link rel="alternate" hreflang="de" href="https://vanto.slenbder.com/de/" />
@@ -48,7 +48,7 @@
       </nav>
       <div class="header-actions">
         <a class="header-buy" href="/ru/#license" data-track="Buy Click" data-track-location="header">Купить лицензию</a>
-        <a class="button button-small button-ink" href="/ru/#download" data-track="Download Click" data-track-location="header">Скачать</a>
+        <a class="button button-small button-ink" href="/ru/#download" data-track="Waitlist Click" data-track-location="header">Скидка</a>
         <details class="lang-menu">
           <summary class="lang-toggle" title="Язык"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.1 2.2 3.1 4.7 3.1 7.5s-1 5.3-3.1 7.5c-2.1-2.2-3.1-4.7-3.1-7.5s1-5.3 3.1-7.5Z"/></svg><span class="visually-hidden">Язык: </span><span class="lang-code">RU</span></summary>
           <ul class="lang-list">
@@ -75,7 +75,7 @@
           <p class="hero-lede">
             Собирайте текст, изображения и файлы, не прыгая между окнами. Выстройте очередь один раз — и вставляйте по ней.
           </p>
-          <p class="purchase-note">14 дней пробного периода после релиза. Лицензия покупается один раз.</p>
+          <p class="purchase-note">14 дней пробного периода после релиза. Лицензия покупается один раз. <a class="contact-link" href="#download" data-track="Waitlist Click" data-track-location="hero">Скидка 30% на старте</a></p>
         </div>
 
         <figure class="hero-shot">
@@ -228,16 +228,20 @@
 
       <section class="final-section" id="download">
         <div class="final-queue" aria-hidden="true"><span>1</span><strong>следующий элемент</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
-        <h2 data-reveal>Начните с 14 дней.</h2>
-        <p>После релиза в загрузку войдёт полноценный пробный период на 14 дней. Если Vanto заслужит место в строке меню, купите бессрочный ключ и введите его в том же приложении.</p>
-        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="Загрузка Vanto скоро появится.">Скачать Vanto</button>
+        <h2 data-reveal>Скидка 30% на старте.</h2>
+        <p>Vanto почти готов. Оставьте email, и в день релиза вы получите одно письмо с кодом на скидку 30% на бессрочную лицензию. Код действует 7 дней. Пробный период на 14 дней будет в любом случае.</p>
+        <form class="waitlist-form" action="https://app.loops.so/api/newsletter-form/cmuirytjg0tdj0i3rdt6tb0x1" method="post" novalidate data-location="final">
+          <label class="visually-hidden" for="waitlist-email">Адрес электронной почты</label>
+          <div class="waitlist-row">
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com" required aria-describedby="waitlist-status waitlist-note" />
+            <button class="button button-ink waitlist-button" type="submit">Записаться</button>
+          </div>
+          <div class="waitlist-trap" aria-hidden="true"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
+          <p class="waitlist-status" id="waitlist-status" role="status" aria-live="polite"></p>
+        </form>
+        <span class="final-note" id="waitlist-note">Сейчас придёт письмо для подтверждения, на релизе — ещё одно. Отписаться можно в любой момент. <a class="contact-link" href="/ru/privacy#waitlist">Конфиденциальность</a></span>
+        <span class="license-note" id="license">Одна покупка · 3 устройства · Бесплатные обновления</span>
         <span class="final-note">Mac с чипом Apple · macOS 13+ · Загрузка скоро появится</span>
-        <div class="license-option" id="license">
-          <span>Уже попробовали Vanto?</span>
-          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="Покупка лицензий скоро откроется.">Купить бессрочную лицензию <span aria-hidden="true">→</span></button>
-        </div>
-        <span class="license-note">Одна покупка · 3 устройства · Бесплатные обновления</span>
-        <span class="release-status" role="status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -254,12 +258,13 @@
       <nav class="footer-langs" aria-label="Язык"><a href="/" hreflang="en" lang="en" data-lang="en" data-track="Language Switch" data-track-from="ru" data-track-to="en">English</a><a href="/de/" hreflang="de" lang="de" data-lang="de" data-track="Language Switch" data-track-from="ru" data-track-to="de">Deutsch</a><a href="/es/" hreflang="es" lang="es" data-lang="es" data-track="Language Switch" data-track-from="ru" data-track-to="es">Español</a><a href="/pt-br/" hreflang="pt-BR" lang="pt-BR" data-lang="pt-br" data-track="Language Switch" data-track-from="ru" data-track-to="pt-br">Português (Brasil)</a><a href="/ru/" hreflang="ru" lang="ru" data-lang="ru" aria-current="true">Русский</a><a href="/ja/" hreflang="ja" lang="ja" data-lang="ja" data-track="Language Switch" data-track-from="ru" data-track-to="ja">日本語</a><a href="/zh-hans/" hreflang="zh-Hans" lang="zh-Hans" data-lang="zh-hans" data-track="Language Switch" data-track-from="ru" data-track-to="zh-hans">简体中文</a></nav>
     </footer>
 
-    <script type="application/json" id="i18n-strings">{"lang":"ru","code":"ru","root":"/ru/","strings":{"theme":{"toDark":"Включить тёмную тему","toLight":"Включить светлую тему"},"consent":{"label":"Настройки cookie","treat":"Откусить печенье","idle":"Очередь: 1 печенька. Вставить?","bites":["Очередь: ⅔ печеньки. Вставить?","Очередь: ⅓ печеньки. Тает на глазах.","Очередь: крошки. Вопрос решён."],"regrown":"Свежая партия. Очередь: 1 печенька.","granted":"Вставлено. Только крошки, честно.","denied":"Пропущено. Без обид.","text":"Microsoft Clarity записывает прокрутку и клики.","details":"Подробнее","skip":"Пропустить","skipLabel":"Пропустить — отказаться от cookie Clarity","allow":"Вставить","allowLabel":"Вставить — разрешить cookie Clarity"},"game":{"blank":"______","itemType":"Текст","empty":"Скопированные слова будут ждать здесь.","count":{"one":"{count} элемент","few":"{count} элемента","many":"{count} элементов","other":"{count} элемента"},"copyLabel":"Скопировать следующее слово, скопировано {count} из 3","pasteLabel":"Вставить следующее слово, вставлено {count} из 3","moveUp":"Переместить «{word}» выше","moveDown":"Переместить «{word}» ниже","different":"Другой порядок. Совсем другая история.","status":{"start":"Начните с кнопки «Копировать».","copyMore":{"other":"Скопируйте ещё {count}."},"copied":"Слова на месте. Новый порядок — новый смысл.","moved":"«{word}» теперь на месте {position}. Смысл уточняется.","pasteMore":{"other":"Осталось вставить: {count}."},"done":"Очередь пуста. Смысл изменился.","clearedEarly":"Очередь очищена. Копируйте, когда будете готовы.","clearedLate":"Очередь очищена. Сбросьте, чтобы начать заново."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"паника\">Паника\u003c/span>. \u003cspan class=\"source-word\" data-word=\"план\">План\u003c/span>. \u003cspan class=\"source-word\" data-word=\"ничего\">Ничего\u003c/span>. Так и живём.","targetParts":["3… ",". 2… ",". 1… ",". Поехали!"],"slotCase":["title","title","title"],"correctOrder":["ничего","паника","план"],"labels":{},"hint":"Три слова. Шесть подозрительно знакомых рабочих процессов.","success":"Ничего. Паника. План. На удивление эффективно."},{"id":"suspects","source":"Вазу разбил \u003cspan class=\"source-word\" data-word=\"сквозняк\">сквозняк\u003c/span>, помогал \u003cspan class=\"source-word\" data-word=\"кот\">кот\u003c/span>, а \u003cspan class=\"source-word\" data-word=\"папа\">папа\u003c/span> просто смотрел.","targetParts":["Вазу разбил ",", помогал ",", а "," просто смотрел."],"slotCase":["lower","lower","lower"],"correctOrder":["папа","сквозняк","кот"],"labels":{},"hint":"Те же подозреваемые. Совсем другие показания.","success":"Дело закрыто. Кота подставили."},{"id":"tagline","source":"Один \u003cspan class=\"source-word\" data-word=\"план\">план\u003c/span>. Один \u003cspan class=\"source-word\" data-word=\"шанс\">шанс\u003c/span>. \u003cspan class=\"source-word\" data-word=\"запасной вариант\">Запасной вариант\u003c/span> не предусмотрен. Вот и весь слоган.","targetParts":["Один ",". Один ",". "," не предусмотрен."],"slotCase":["lower","lower","title"],"correctOrder":["запасной вариант","шанс","план"],"labels":{},"hint":"Переставьте трейлер — перепишите фильм.","success":"Один запасной вариант. Один шанс. План не предусмотрен. Гораздо честнее."}]}}}</script>
+    <script type="application/json" id="i18n-strings">{"lang":"ru","code":"ru","root":"/ru/","strings":{"waitlist":{"sending":"Отправляем…","success":"Почти готово: проверьте почту и подтвердите адрес.","already":"Вы уже в списке. До встречи на релизе.","rateLimit":"Слишком много попыток. Попробуйте через минуту.","invalid":"Введите корректный адрес почты.","error":"Не получилось записать. Попробуйте ещё раз или напишите на vanto@slenbder.com."},"theme":{"toDark":"Включить тёмную тему","toLight":"Включить светлую тему"},"consent":{"label":"Настройки cookie","treat":"Откусить печенье","idle":"Очередь: 1 печенька. Вставить?","bites":["Очередь: ⅔ печеньки. Вставить?","Очередь: ⅓ печеньки. Тает на глазах.","Очередь: крошки. Вопрос решён."],"regrown":"Свежая партия. Очередь: 1 печенька.","granted":"Вставлено. Только крошки, честно.","denied":"Пропущено. Без обид.","text":"Microsoft Clarity записывает прокрутку и клики.","details":"Подробнее","skip":"Пропустить","skipLabel":"Пропустить — отказаться от cookie Clarity","allow":"Вставить","allowLabel":"Вставить — разрешить cookie Clarity"},"game":{"blank":"______","itemType":"Текст","empty":"Скопированные слова будут ждать здесь.","count":{"one":"{count} элемент","few":"{count} элемента","many":"{count} элементов","other":"{count} элемента"},"copyLabel":"Скопировать следующее слово, скопировано {count} из 3","pasteLabel":"Вставить следующее слово, вставлено {count} из 3","moveUp":"Переместить «{word}» выше","moveDown":"Переместить «{word}» ниже","different":"Другой порядок. Совсем другая история.","status":{"start":"Начните с кнопки «Копировать».","copyMore":{"other":"Скопируйте ещё {count}."},"copied":"Слова на месте. Новый порядок — новый смысл.","moved":"«{word}» теперь на месте {position}. Смысл уточняется.","pasteMore":{"other":"Осталось вставить: {count}."},"done":"Очередь пуста. Смысл изменился.","clearedEarly":"Очередь очищена. Копируйте, когда будете готовы.","clearedLate":"Очередь очищена. Сбросьте, чтобы начать заново."},"scenarios":[{"id":"countdown","source":"\u003cspan class=\"source-word\" data-word=\"паника\">Паника\u003c/span>. \u003cspan class=\"source-word\" data-word=\"план\">План\u003c/span>. \u003cspan class=\"source-word\" data-word=\"ничего\">Ничего\u003c/span>. Так и живём.","targetParts":["3… ",". 2… ",". 1… ",". Поехали!"],"slotCase":["title","title","title"],"correctOrder":["ничего","паника","план"],"labels":{},"hint":"Три слова. Шесть подозрительно знакомых рабочих процессов.","success":"Ничего. Паника. План. На удивление эффективно."},{"id":"suspects","source":"Вазу разбил \u003cspan class=\"source-word\" data-word=\"сквозняк\">сквозняк\u003c/span>, помогал \u003cspan class=\"source-word\" data-word=\"кот\">кот\u003c/span>, а \u003cspan class=\"source-word\" data-word=\"папа\">папа\u003c/span> просто смотрел.","targetParts":["Вазу разбил ",", помогал ",", а "," просто смотрел."],"slotCase":["lower","lower","lower"],"correctOrder":["папа","сквозняк","кот"],"labels":{},"hint":"Те же подозреваемые. Совсем другие показания.","success":"Дело закрыто. Кота подставили."},{"id":"tagline","source":"Один \u003cspan class=\"source-word\" data-word=\"план\">план\u003c/span>. Один \u003cspan class=\"source-word\" data-word=\"шанс\">шанс\u003c/span>. \u003cspan class=\"source-word\" data-word=\"запасной вариант\">Запасной вариант\u003c/span> не предусмотрен. Вот и весь слоган.","targetParts":["Один ",". Один ",". "," не предусмотрен."],"slotCase":["lower","lower","title"],"correctOrder":["запасной вариант","шанс","план"],"labels":{},"hint":"Переставьте трейлер — перепишите фильм.","success":"Один запасной вариант. Один шанс. План не предусмотрен. Гораздо честнее."}]}}}</script>
     <script src="/i18n.js?v=1"></script>
     <script src="/theme.js?v=4"></script>
     <script src="/analytics.js?v=3"></script>
     <script src="/consent.js?v=12"></script>
-    <script src="/app.js?v=18"></script>
+    <script src="/app.js?v=19"></script>
+    <script src="/waitlist.js?v=1"></script>
     <script src="/hero-shot.js?v=15"></script>
     <script src="/reveal.js?v=16"></script>
   </body>

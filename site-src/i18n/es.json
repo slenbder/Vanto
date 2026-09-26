@@ -32,12 +32,13 @@
     "why": "Por qué funciona",
     "faq": "Preguntas",
     "buy": "Comprar licencia",
-    "download": "Descargar"
+    "notify": "Avísame"
   },
   "hero": {
     "title": "Copia todo.<br />Pega <em>en orden.</em>",
     "lede": "Reúne textos, imágenes y archivos sin saltar entre ventanas. Ordena la cola una vez y luego pega un elemento tras otro.",
     "purchaseNote": "Prueba de 14 días desde el lanzamiento. Licencia de pago único.",
+    "waitlistLink": "30 % de descuento en el lanzamiento",
     "caption": "<b>Nada de ruido en el Dock.</b> Solo la cola, justo cuando la necesitas.",
     "vp": {
       "label": "La ventana de Vanto: grabando, 3 elementos en la cola (¡Hola, mundo!, Montañas.png y oferta_empleo.docx), con Detener, Pegar, Borrar, Combinar y pegar, y Salir.",
@@ -101,14 +102,13 @@
   },
   "final": {
     "queueItem": "siguiente elemento",
-    "title": "Empieza con 14 días.",
-    "lede": "Desde el lanzamiento, la descarga incluirá una prueba completa de 14 días. Si Vanto se gana un sitio en tu barra de menús, compra una clave de por vida e introdúcela en la misma app.",
-    "download": "Descargar Vanto",
-    "downloadSoon": "La descarga de Vanto llegará pronto.",
+    "title": "30 % de descuento en el lanzamiento.",
+    "lede": "Vanto está casi listo. Deja tu email y el día del lanzamiento recibirás un único correo con un código del 30 % de descuento en una licencia de por vida, válido durante 7 días. La prueba de 14 días viene incluida igualmente.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "submit": "Avísame",
+    "formNote": "Ahora te llegará un correo para confirmar y otro en el lanzamiento. Puedes darte de baja cuando quieras. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Privacidad</a>",
     "note": "Chip de Apple · macOS 13+ · Descarga muy pronto",
-    "licenseQuestion": "¿Ya probaste Vanto?",
-    "licenseLink": "Comprar una licencia de por vida",
-    "licenseSoon": "La compra de licencias llegará pronto.",
     "licenseNote": "Un solo pago · 3 dispositivos · Actualizaciones gratis"
   },
   "footer": {
@@ -125,6 +125,14 @@
     "button": "Volver a Vanto"
   },
   "js": {
+    "waitlist": {
+      "sending": "Enviando…",
+      "success": "Casi listo: revisa tu bandeja de entrada y confirma tu correo.",
+      "already": "Ya estás en la lista. Nos vemos en el lanzamiento.",
+      "rateLimit": "Demasiados intentos. Vuelve a intentarlo en un minuto.",
+      "invalid": "Introduce un correo electrónico válido.",
+      "error": "No se pudo completar el registro. Inténtalo de nuevo o escribe a vanto@slenbder.com."
+    },
     "theme": {
       "toDark": "Cambiar al tema oscuro",
       "toLight": "Cambiar al tema claro"
