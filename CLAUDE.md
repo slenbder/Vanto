@@ -399,7 +399,10 @@ hand-edited in `Site/`; bump their `?v=` in the partials when they change.
   (keeping query and hash); a choice from the language menu is stored in
   `localStorage['vanto-lang']` and always wins.
 - `FAQ Open` reports the English question (`data-faq`) in every language.
-  `Language Switch` and `Language Redirect` are tracked too.
+  `Language Switch` and `Language Redirect` are tracked too, and once per tab
+  session `Visitor Locale` reports the browser language, the site language,
+  and the device time zone (a VPN changes the IP country, not the time zone);
+  both language events carry the same fields. Keep `privacy.html` in sync.
 
 Analytics live in `Site/analytics.js`: elements with `data-track="Event"` and
 `data-track-<key>` attributes send events, plus section reach, scroll depth,
