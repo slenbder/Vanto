@@ -200,6 +200,7 @@ the final artifact.
   doesn't leave hotkeys stuck paused afterward. Switch the language picker
   through a few locales and confirm both screens' text updates immediately,
   with no truncated labels — check at least ru, es, de, and one of ja/zh-Hans.
+  German addresses the user as "du" throughout, including the license screens.
 - **Trial and license** — on a clean Mac (no `com.slenbder.vanto.*`
   Keychain items), confirm the trial starts with 14 days and survives a
   relaunch. Check the 7/3/1-day reminders appear once each, in English
@@ -223,8 +224,14 @@ the final artifact.
   supported macOS versions, and verify installation, first launch, permissions,
   signing, notarization, and Gatekeeper behavior on the exact artifact that will
   be distributed. Confirm its Info.plist carries the live `LemonSqueezy*`
-  values. Replace the Settings screen's current website placeholder with the
-  real product/support destination before shipping.
+  values, and that Settings → website opens `https://vanto.slenbder.com`.
+- **Website** — on the production site, open every language (`/`, `/de/`,
+  `/es/`, `/pt-br/`, `/ru/`, `/ja/`, `/zh-hans/`) on a phone and a desktop.
+  Switch languages from the header menu and confirm the section anchor is
+  kept; confirm a first visit to `/` in a private window follows the browser
+  language once. Play the demo to the end, open the cookie banner, and check
+  a localized 404 (for example `/ru/nope`). Confirm the Download and Buy links
+  point at the signed artifact and the live checkout once they exist.
 
 ## Known limitations (v1)
 

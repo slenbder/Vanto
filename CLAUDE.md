@@ -59,10 +59,19 @@ Lemon Squeezy IDs and the checkout URL are per-configuration build settings
 Debug points at the test-mode product, Release at the live one. A pre-build
 script fails `archive` if any of them is empty.
 
-CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`:
-regenerates the project and fails on any diff in `Vanto.xcodeproj` or
-`Info.plist`, runs `VantoTests`, and compiles Release unsigned. It
-publishes nothing.
+CI (`.github/workflows/ci.yml`) runs on PRs to and pushes of `main`.
+The `Test and build` job regenerates the project and fails on any diff in
+`Vanto.xcodeproj` or `Info.plist`, runs `VantoTests`, and compiles Release
+unsigned. The `Site build is current` job reruns
+`node scripts/build-site.mjs` and fails if `Site/` differs. It publishes
+nothing.
+
+`main` is protected by the repository ruleset `main`: no deletion, no force
+push, changes only through a pull request (0 approvals, since a solo author
+cannot approve their own PR), and both CI jobs above must pass before merge.
+The Repository admin role may bypass it; use that only for a deliberate
+hotfix, and work on a branch with a PR otherwise. GitHub's "AI Scan for pull
+requests" is turned off (it failed every PR with an unsupported-model error).
 
 **App Sandbox must be OFF.** A sandboxed app cannot post synthetic keyboard events or register global key monitors — this is a hard requirement, not optional.
 

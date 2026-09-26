@@ -98,7 +98,32 @@ verified: that push is what ships the update.
 `.github/workflows/ci.yml` runs on pull requests to `main`, pushes to `main`,
 and manual dispatch, on a `macos-15` Apple Silicon runner. It regenerates the
 project, checks for drift, runs `VantoTests`, and compiles Release
-without signing. It does not archive, sign, or publish anything.
+without signing. A second job on `ubuntu-latest` rebuilds the website and
+fails if the committed `Site/` differs. Neither archives, signs, or
+publishes anything.
+
+A repository ruleset protects `main`: changes arrive through a pull request,
+both jobs (`Test and build`, `Site build is current`) must pass, and force
+pushes and deletion are blocked. The Repository admin role can bypass it for
+a deliberate hotfix.
+
+## Website
+
+`Site/` is deployed by Cloudflare Pages from `main` with no build step, so
+its generated pages are committed. After editing anything in `site-src/`,
+rebuild with Node 18 or later (no dependencies) and commit the result:
+
+```sh
+node scripts/build-site.mjs
+```
+
+Preview locally, including the `functions/` analytics proxy:
+
+```sh
+npx --yes wrangler@4 pages dev Site --port 8788
+```
+
+Each pull request also gets a Cloudflare Pages preview URL.
 
 ## Tests
 
