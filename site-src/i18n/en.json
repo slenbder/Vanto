@@ -14,7 +14,7 @@
     },
     "refunds": {
       "title": "Refund Policy · Vanto",
-      "description": "Vanto’s 30-day refund policy."
+      "description": "Vanto’s 14-day refund policy."
     },
     "404": {
       "title": "Page not found · Vanto",
@@ -95,7 +95,7 @@
       { "q": "Why does it need Accessibility permission?", "a": "macOS requires that permission so Vanto can listen for its global shortcuts and paste into the app you are using." },
       { "q": "Which Macs are supported?", "a": "Apple silicon Macs running macOS 13 or later. Intel Macs are not supported." },
       { "q": "Is it a subscription?", "a": "No. One purchase gives you a lifetime license for up to three of your devices." },
-      { "q": "Can I download it again or get a refund?", "a": "You can download Vanto again from this website at any time. If Vanto isn’t right for you, you can ask for a refund within 30 days of purchase. See the <a class=\"contact-link\" href=\"{{@root}}refunds\">refund policy</a>." },
+      { "q": "Can I download it again or get a refund?", "a": "You can download Vanto again from this website at any time. If Vanto isn’t right for you, you can ask for a refund within 14 days of purchase. See the <a class=\"contact-link\" href=\"{{@root}}refunds\">refund policy</a>." },
       { "q": "How do updates work?", "a": "Automatically. Vanto checks for new versions, then downloads and installs them on its own. There is nothing to set up." }
     ]
   },
