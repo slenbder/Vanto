@@ -31,7 +31,6 @@
     "play": "Try it",
     "why": "Why it works",
     "faq": "FAQ",
-    "buy": "Buy a license",
     "notify": "Join waitlist"
   },
   "hero": {
@@ -108,6 +107,7 @@
     "emailPlaceholder": "you@example.com",
     "submit": "Notify me",
     "formNote": "A confirmation email now, one more at launch. Unsubscribe anytime. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Privacy</a>",
+    "changeEmail": "Use a different email",
     "note": "Apple silicon · macOS 13+ · Download coming soon",
     "licenseNote": "One purchase · 3 devices · Free future updates"
   },

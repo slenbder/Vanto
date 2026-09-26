@@ -31,7 +31,6 @@
     "play": "试一试",
     "why": "为什么好用",
     "faq": "常见问题",
-    "buy": "购买许可证",
     "notify": "候补名单"
   },
   "hero": {
@@ -108,6 +107,7 @@
     "emailPlaceholder": "you@example.com",
     "submit": "通知我",
     "formNote": "现在会收到一封确认邮件，发布时再收到一封。可随时退订。<a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">隐私</a>",
+    "changeEmail": "换一个邮箱",
     "note": "Apple 芯片 · macOS 13+ · 即将开放下载",
     "licenseNote": "一次购买 · 3 台设备 · 免费获得后续更新"
   },

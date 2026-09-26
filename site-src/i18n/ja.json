@@ -31,7 +31,6 @@
     "play": "試してみる",
     "why": "便利な理由",
     "faq": "FAQ",
-    "buy": "ライセンスを購入",
     "notify": "ウェイトリスト"
   },
   "hero": {
@@ -108,6 +107,7 @@
     "emailPlaceholder": "you@example.com",
     "submit": "通知を受け取る",
     "formNote": "登録後すぐに確認メールが届き、リリース時にもう1通お送りします。配信はいつでも停止できます。<a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">プライバシー</a>",
+    "changeEmail": "別のアドレスを入力",
     "note": "Appleシリコン · macOS 13以降 · まもなくダウンロード開始",
     "licenseNote": "買い切り · 最大3台 · 今後のアップデートも無料"
   },

@@ -12,6 +12,7 @@
   const trap = form.querySelector('input[name="company"]');
   const button = form.querySelector('button[type="submit"]');
   const status = form.querySelector('.waitlist-status');
+  const change = form.querySelector('.waitlist-change');
   const where = form.dataset.location;
   const track = (name, data) => window.vantoAnalytics?.track(name, { location: where, ...data });
   let busy = false;
@@ -21,11 +22,27 @@
     status.textContent = message;
   };
 
+  // After a signup the field locks, and focus moves to "Use a different email"
+  // rather than staying on the now-disabled submit button, so keyboard users
+  // keep their place and a mistyped address can still be corrected.
   const finish = () => {
     form.classList.add('done');
     input.readOnly = true;
     button.disabled = true;
+    change.hidden = false;
+    change.focus();
   };
+
+  change.addEventListener('click', () => {
+    form.classList.remove('done');
+    input.readOnly = false;
+    button.disabled = false;
+    change.hidden = true;
+    show('idle', '');
+    input.focus();
+    input.select();
+    track('Waitlist Change');
+  });
 
   form.addEventListener('submit', async event => {
     event.preventDefault();

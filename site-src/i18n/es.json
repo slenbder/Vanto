@@ -31,7 +31,6 @@
     "play": "Pruébalo",
     "why": "Por qué funciona",
     "faq": "Preguntas",
-    "buy": "Comprar licencia",
     "notify": "Avísame"
   },
   "hero": {
@@ -108,6 +107,7 @@
     "emailPlaceholder": "tu@ejemplo.com",
     "submit": "Avísame",
     "formNote": "Ahora te llegará un correo para confirmar y otro en el lanzamiento. Puedes darte de baja cuando quieras. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Privacidad</a>",
+    "changeEmail": "Usar otro correo",
     "note": "Chip de Apple · macOS 13+ · Descarga muy pronto",
     "licenseNote": "Un solo pago · 3 dispositivos · Actualizaciones gratis"
   },

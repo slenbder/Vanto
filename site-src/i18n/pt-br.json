@@ -31,7 +31,6 @@
     "play": "Experimente",
     "why": "Por que funciona",
     "faq": "Dúvidas",
-    "buy": "Comprar licença",
     "notify": "Me avise"
   },
   "hero": {
@@ -108,6 +107,7 @@
     "emailPlaceholder": "voce@exemplo.com",
     "submit": "Me avise",
     "formNote": "Agora chega um e-mail de confirmação e, no lançamento, mais um. Cancele quando quiser. <a class=\"contact-link\" href=\"{{@root}}privacy#waitlist\">Privacidade</a>",
+    "changeEmail": "Usar outro e-mail",
     "note": "Apple Silicon · macOS 13+ · Download em breve",
     "licenseNote": "Uma compra · 3 dispositivos · Atualizações gratuitas"
   },
