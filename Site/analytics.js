@@ -25,13 +25,31 @@
 
   window.vantoAnalytics = { track };
 
+  // Who reads which language from where. Umami adds the IP country to every
+  // event; the device time zone is what a VPN does not change, so a Dutch IP
+  // with Europe/Moscow and Russian chosen on the site reads as a Russian
+  // visitor behind a VPN. Sent once per tab session, and added to language events.
+  const siteLanguage = () => window.vantoI18n?.code || document.documentElement.lang;
+  const locale = (() => {
+    let timezone = 'unknown';
+    try { timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || timezone; } catch {}
+    const full = navigator.language || 'unknown';
+    return { browser: full.split('-')[0].toLowerCase(), browserLocale: full, timezone };
+  })();
+  try {
+    if (!sessionStorage.getItem('vanto-locale-sent')) {
+      sessionStorage.setItem('vanto-locale-sent', '1');
+      track('Visitor Locale', { ...locale, site: siteLanguage() });
+    }
+  } catch {}
+
   // The English home page's first-visit language redirect leaves a note for the
   // page it lands on, so automatic hops are told apart from menu switches.
   try {
     const from = sessionStorage.getItem('vanto-lang-redirect');
     if (from) {
       sessionStorage.removeItem('vanto-lang-redirect');
-      track('Language Redirect', { from, to: window.vantoI18n?.code || document.documentElement.lang });
+      track('Language Redirect', { from, to: siteLanguage(), ...locale });
     }
   } catch {}
 
@@ -42,6 +60,7 @@
     for (const { name, value } of element.attributes) {
       if (name.startsWith('data-track-')) data[name.slice('data-track-'.length)] = value;
     }
+    if (element.dataset.track === 'Language Switch') Object.assign(data, locale);
     track(element.dataset.track, Object.keys(data).length ? data : undefined);
   }, { capture: true });
 
