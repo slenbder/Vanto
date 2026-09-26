@@ -41,6 +41,9 @@ at Login. See `SETUP.md` to build the app from source.
   all future updates included. Enter the key from the purchase email in the
   license screen, or earlier via Settings → **Activate License**. Access
   unlocks immediately, with no relaunch.
+- **Refunds.** Within 14 days of purchase, for any reason: write to
+  `vanto@slenbder.com`. A refunded key stops working on all Macs. See
+  https://vanto.slenbder.com/refunds.
 - **Moving to another Mac.** Settings → **Deactivate This Mac** frees one of
   the three device slots. It needs an internet connection.
 - **Offline use.** A licensed copy keeps working offline. Vanto re-checks
@@ -231,7 +234,11 @@ the final artifact.
   kept; confirm a first visit to `/` in a private window follows the browser
   language once. Play the demo to the end, open the cookie banner, and check
   a localized 404 (for example `/ru/nope`). Confirm the Download and Buy links
-  point at the signed artifact and the live checkout once they exist.
+  point at the signed artifact and the live checkout once they exist. In
+  Umami, confirm today's visits report `Visitor Locale` (browser language,
+  site language, time zone) and that a language switch reports
+  `Language Switch` with the same fields. Confirm the refund policy and FAQ
+  say 14 days.
 
 ## Known limitations (v1)
 
