@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "index": {
+      "title": "Vanto",
+      "description": "Vanto vive en la barra de menús del Mac y pone en cola textos, imágenes y archivos para pegarlos uno a uno."
+    },
+    "privacy": {
+      "title": "Política de privacidad · Vanto",
+      "description": "Cómo Vanto, su sitio web y las compras tratan tu información."
+    },
+    "terms": {
+      "title": "Condiciones de uso · Vanto",
+      "description": "Las condiciones para usar Vanto y su licencia."
+    },
+    "refunds": {
+      "title": "Política de reembolso · Vanto",
+      "description": "La política de reembolso de 30 días de Vanto."
+    },
+    "404": {
+      "title": "Página no encontrada · Vanto",
+      "description": "Página no encontrada."
+    }
+  },
+  "lang": {
+    "label": "Idioma",
+    "englishOnly": "Este documento solo está disponible en inglés."
+  },
+  "header": {
+    "home": "Inicio de Vanto",
+    "navLabel": "Principal",
+    "play": "Pruébalo",
+    "why": "Por qué funciona",
+    "faq": "Preguntas",
+    "buy": "Comprar licencia",
+    "download": "Descargar"
+  },
+  "hero": {
+    "title": "Copia todo.<br />Pega <em>en orden.</em>",
+    "lede": "Reúne textos, imágenes y archivos sin saltar entre ventanas. Ordena la cola una vez y luego pega un elemento tras otro.",
+    "purchaseNote": "Prueba de 14 días desde el lanzamiento. Licencia de pago único.",
+    "caption": "<b>Nada de ruido en el Dock.</b> Solo la cola, justo cuando la necesitas.",
+    "vp": {
+      "label": "La ventana de Vanto: grabando, 3 elementos en la cola (¡Hola, mundo!, Montañas.png y oferta_empleo.docx), con Detener, Pegar, Borrar, Combinar y pegar, y Salir.",
+      "status": "Grabando",
+      "count": "3 elementos en la cola",
+      "item1": "¡Hola, mundo!",
+      "item2": "Montañas.png",
+      "item3": "oferta_empleo.docx",
+      "stop": "Detener",
+      "paste": "Pegar",
+      "clear": "Borrar",
+      "combine": "Combinar y pegar…",
+      "quit": "Salir"
+    }
+  },
+  "proof": {
+    "label": "Lo esencial",
+    "items": ["FIFO por defecto", "Textos, imágenes y archivos", "Todo el texto en un solo pegado", "Atajos personalizables"]
+  },
+  "play": {
+    "title": "¿Pueden tres palabras<br /><em>cambiar la historia?</em>",
+    "lede": "Copia tres palabras, ordena la cola y pégalas para formar una idea completamente distinta.",
+    "progressLabel": "Progreso de la demo",
+    "steps": { "copy": "Copiar", "arrange": "Ordenar", "paste": "Pegar" },
+    "sourceLabel": "Copia desde aquí",
+    "sourceHint": "Cada pulsación copia la siguiente palabra resaltada.",
+    "targetLabel": "Pega aquí",
+    "emptyCount": "0 elementos",
+    "queueTip": "Arrastra las palabras o usa las flechas.",
+    "previewLabel": "Vista previa del destino",
+    "previewTitle": "Dónde cae · primero el de arriba",
+    "controlsLabel": "Controles de la demo",
+    "controls": { "copy": "Copiar", "paste": "Pegar", "clear": "Borrar" },
+    "reset": "Reiniciar y reordenar"
+  },
+  "why": {
+    "title": "Toda la cola en una sola ventana.",
+    "items": [
+      { "title": "Quédate donde estás.", "text": "Copia un lote ahora y pégalo después, sin volver al origen tras cada elemento." },
+      { "title": "Tú decides el orden.", "text": "Reordena, elimina y revisa todo desde una ventana compacta en la barra de menús." },
+      { "title": "Pega con tu atajo.", "text": "Pulsa ⌃⌘V para el siguiente elemento o elige otro atajo en Ajustes." },
+      { "title": "Todo se queda en tu Mac.", "text": "Sin cuenta, sin portapapeles en la nube y sin analíticas en la app. Lo que copias se queda en tu equipo." }
+    ]
+  },
+  "faq": {
+    "title": "Preguntas sobre Vanto",
+    "lede": "Compatibilidad con el Mac, permisos y qué incluye una compra.",
+    "contact": "¿No encontraste tu respuesta? Escribe a {{@faqEmail}}",
+    "items": [
+      { "q": "¿Qué hace exactamente Vanto?", "a": "Recoge lo que copias, te deja cambiar el orden y pega cada elemento uno a uno. Una tarea pequeña, bien hecha." },
+      { "q": "¿Qué puedo poner en la cola?", "a": "Textos, imágenes, archivos sueltos y grupos de archivos. Todo queda a la vista en una ventana compacta en la barra de menús." },
+      { "q": "¿Puedo pegar varios textos a la vez?", "a": "Sí. Combina los textos de la cola en un solo pegado, en el orden que elijas. Sepáralos con un salto de línea, un espacio, una coma o tu propio separador." },
+      { "q": "¿Puedo cambiar los atajos y el idioma?", "a": "Los dos atajos globales se pueden cambiar en Ajustes. La app está disponible en inglés, ruso, español, alemán, japonés, chino simplificado y portugués de Brasil." },
+      { "q": "¿Mi portapapeles sale de mi Mac?", "a": "No. Vanto funciona en local, no requiere cuenta y no envía a internet nada de lo que copias." },
+      { "q": "¿Por qué necesita el permiso de Accesibilidad?", "a": "macOS exige ese permiso para que Vanto pueda detectar sus atajos globales y pegar en la app que estás usando." },
+      { "q": "¿Qué Mac son compatibles?", "a": "Mac con chip de Apple y macOS 13 o posterior. Los Mac con Intel no son compatibles." },
+      { "q": "¿Es una suscripción?", "a": "No. Un solo pago te da una licencia de por vida para hasta tres de tus dispositivos." },
+      { "q": "¿Puedo volver a descargarlo o pedir un reembolso?", "a": "Puedes volver a descargar Vanto desde este sitio cuando quieras. Si Vanto no es para ti, puedes pedir un reembolso en los 30 días siguientes a la compra. Consulta la <a class=\"contact-link\" href=\"{{@root}}refunds\">política de reembolso</a>." },
+      { "q": "¿Cómo funcionan las actualizaciones?", "a": "Solas. Vanto busca nuevas versiones, las descarga y las instala por su cuenta. No hay nada que configurar." }
+    ]
+  },
+  "final": {
+    "queueItem": "siguiente elemento",
+    "title": "Empieza con 14 días.",
+    "lede": "Desde el lanzamiento, la descarga incluirá una prueba completa de 14 días. Si Vanto se gana un sitio en tu barra de menús, compra una clave de por vida e introdúcela en la misma app.",
+    "download": "Descargar Vanto",
+    "downloadSoon": "La descarga de Vanto llegará pronto.",
+    "note": "Chip de Apple · macOS 13+ · Descarga muy pronto",
+    "licenseQuestion": "¿Ya probaste Vanto?",
+    "licenseLink": "Comprar una licencia de por vida",
+    "licenseSoon": "La compra de licencias llegará pronto.",
+    "licenseNote": "Un solo pago · 3 dispositivos · Actualizaciones gratis"
+  },
+  "footer": {
+    "tagline": "Copia más. Cambia menos de ventana.",
+    "privacy": "Privacidad",
+    "terms": "Condiciones",
+    "refunds": "Reembolsos",
+    "cookies": "Cookies",
+    "madeBy": "Hecho por Slenbder"
+  },
+  "notFound": {
+    "title": "Aquí no hay nada.",
+    "text": "Esta página no existe o se ha movido. La cola te sigue esperando en la página de inicio.",
+    "button": "Volver a Vanto"
+  },
+  "js": {
+    "theme": {
+      "toDark": "Cambiar al tema oscuro",
+      "toLight": "Cambiar al tema claro"
+    },
+    "consent": {
+      "label": "Preferencias de cookies",
+      "treat": "Dale un mordisco a la galleta",
+      "idle": "Cola: 1 galleta. ¿La pegamos?",
+      "bites": ["Cola: ⅔ de galleta. ¿La pegamos?", "Cola: ⅓ de galleta. Vuela.", "Cola: migajas. Asunto resuelto."],
+      "regrown": "Recién horneada. Cola: 1 galleta.",
+      "granted": "Pegada. Solo migajas, prometido.",
+      "denied": "Omitida. Sin rencores.",
+      "text": "Microsoft Clarity registra desplazamientos y clics.",
+      "details": "Detalles",
+      "skip": "Omitir",
+      "skipLabel": "Omitir: rechazar las cookies de Clarity",
+      "allow": "Pégala",
+      "allowLabel": "Pégala: aceptar las cookies de Clarity"
+    },
+    "game": {
+      "blank": "______",
+      "itemType": "Texto",
+      "empty": "Tus palabras copiadas esperarán aquí.",
+      "count": { "one": "{count} elemento", "other": "{count} elementos" },
+      "copyLabel": "Copiar la siguiente palabra, {count} de 3 copiadas",
+      "pasteLabel": "Pegar la siguiente palabra, {count} de 3 pegadas",
+      "moveUp": "Subir «{word}»",
+      "moveDown": "Bajar «{word}»",
+      "different": "Otro orden. Una historia completamente distinta.",
+      "status": {
+        "start": "Empieza con Copiar.",
+        "copyMore": { "one": "Falta {count} por copiar.", "other": "Faltan {count} por copiar." },
+        "copied": "Las palabras correctas. Nuevo orden, nuevo significado.",
+        "moved": "«{word}» pasa a la posición {position}. Significado pendiente.",
+        "pasteMore": { "one": "Falta {count} por pegar.", "other": "Faltan {count} por pegar." },
+        "done": "Cola vacía. Significado cambiado.",
+        "clearedEarly": "Cola borrada. Copia cuando quieras.",
+        "clearedLate": "Cola borrada. Reinicia para empezar de nuevo."
+      },
+      "scenarios": [
+        {
+          "id": "countdown",
+          "source": "<span class=\"source-word\" data-word=\"pánico\">Pánico</span>. <span class=\"source-word\" data-word=\"plan\">Plan</span>. <span class=\"source-word\" data-word=\"nada\">Nada</span>. Así es la vida.",
+          "targetParts": ["3… ", ". 2… ", ". 1… ", ". ¡Ya!"],
+          "slotCase": ["title", "title", "title"],
+          "correctOrder": ["nada", "pánico", "plan"],
+          "labels": {},
+          "hint": "Tres palabras. Seis flujos de trabajo sospechosamente familiares.",
+          "success": "Nada. Pánico. Plan. Sorprendentemente eficaz."
+        },
+        {
+          "id": "suspects",
+          "source": "El jarrón se rompió. <span class=\"source-word\" data-word=\"la gravedad\">La gravedad</span> lo hizo, <span class=\"source-word\" data-word=\"el gato\">el gato</span> ayudó y <span class=\"source-word\" data-word=\"mi hermano\">mi hermano</span> solo miró.",
+          "targetParts": ["", " lo hizo, ", " ayudó y ", " solo miró."],
+          "slotCase": ["title", "lower", "lower"],
+          "correctOrder": ["mi hermano", "la gravedad", "el gato"],
+          "labels": {},
+          "hint": "Los mismos sospechosos. Un testimonio muy distinto.",
+          "success": "Caso cerrado. Al gato le cargaron el muerto."
+        },
+        {
+          "id": "tagline",
+          "source": "Un <span class=\"source-word\" data-word=\"plan\">plan</span>. Un <span class=\"source-word\" data-word=\"intento\">intento</span>. Sin <span class=\"source-word\" data-word=\"respaldo\">respaldo</span>. Ese es el eslogan.",
+          "targetParts": ["Un ", ". Un ", ". Sin ", "."],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["respaldo", "intento", "plan"],
+          "labels": {},
+          "hint": "Reordena el tráiler. Reescribe la película.",
+          "success": "Un respaldo. Un intento. Sin plan. Mucho más honesto."
+        }
+      ]
+    }
+  }
+}

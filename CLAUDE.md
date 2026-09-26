@@ -362,6 +362,34 @@ forwards the visitor IP and country via Umami's `x-umami-client-*` headers.
 Preview locally with the `site` configuration in `.claude/launch.json`
 (`wrangler pages dev Site`, which also picks up `functions/`).
 
+The site ships in the app's 7 languages: English at `/`, the rest under
+`/de/`, `/es/`, `/pt-br/`, `/ru/`, `/ja/`, `/zh-hans/`. Every `.html` page in
+`Site/` (plus `sitemap.xml`) is **generated** — edit `site-src/` and run
+`node scripts/build-site.mjs`, never the output. Templates are
+`site-src/pages/*.html` with shared `site-src/partials/`; text lives in
+`site-src/i18n/<lang>.json`, where `en.json` is the reference shape and the
+build fails on any missing, extra, or mistyped key. Output is committed
+because Pages has no build step; CI rebuilds and fails on a diff. Static
+assets (`*.js`, `styles.css`, images, `_headers`, `robots.txt`) stay
+hand-edited in `Site/`; bump their `?v=` in the partials when they change.
+
+- Page scripts read their text from the `#i18n-strings` JSON each page embeds
+  (the `js` subtree of the dictionary) through `window.vantoI18n.t()`, with
+  `Intl.PluralRules` plurals; `i18n.js` must load before them.
+- The demo game's three scenarios are rewritten per language, not
+  translated: each needs three words that stay grammatical in every order
+  (gender, case, verb person), the same `id`s for analytics, and a
+  `correctOrder` that reads as the punchline.
+- Hero mock strings match `Vanto/Localizable.xcstrings`; German's queue count
+  breaks onto two lines, as in the app.
+- Legal pages stay English with a translated notice and chrome; their
+  canonical points at the English URL, and they have no `hreflang`.
+- The English home page redirects a first visit once by `navigator.languages`
+  (keeping query and hash); a choice from the language menu is stored in
+  `localStorage['vanto-lang']` and always wins.
+- `FAQ Open` reports the English question (`data-faq`) in every language.
+  `Language Switch` and `Language Redirect` are tracked too.
+
 Analytics live in `Site/analytics.js`: elements with `data-track="Event"` and
 `data-track-<key>` attributes send events, plus section reach, scroll depth,
 FAQ opens, the demo funnel reported from `app.js`, and the cookie banner's

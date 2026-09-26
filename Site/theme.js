@@ -3,6 +3,8 @@
   const themeButton = document.querySelector('.theme-toggle');
   const themeMetas = document.querySelectorAll('meta[name="theme-color"]');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  // Without i18n.js the button keeps the localized label the page shipped with.
+  const t = window.vantoI18n?.t;
 
   const readSaved = () => {
     try { return localStorage.getItem('vanto-theme'); } catch { return null; }
@@ -10,7 +12,7 @@
 
   const applyTheme = (theme, persist = false) => {
     root.dataset.theme = theme;
-    themeButton?.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`);
+    if (t) themeButton?.setAttribute('aria-label', t(theme === 'dark' ? 'theme.toLight' : 'theme.toDark'));
     // Both media-scoped metas follow the page theme once it is known, so a
     // manual choice that differs from the system still tints the browser UI.
     themeMetas.forEach(meta => meta.setAttribute('content', theme === 'dark' ? '#141517' : '#f0f1f3'));

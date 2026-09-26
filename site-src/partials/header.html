@@ -1,0 +1,20 @@
+    <header class="site-header">
+      <a class="wordmark" href="{{@home}}" aria-label="{{a:header.home}}">
+        <img class="wordmark-mark" src="/menuBarIcon.svg" alt="" aria-hidden="true" width="25" height="25" />
+        <span>Vanto</span>
+      </a>
+      <nav aria-label="{{a:header.navLabel}}">
+        <a href="{{@root}}#play" data-track="Nav Click" data-track-target="play">{{t:header.play}}</a>
+        <a href="{{@root}}#why" data-track="Nav Click" data-track-target="why">{{t:header.why}}</a>
+        <a class="nav-faq" href="{{@root}}#faq" data-track="Nav Click" data-track-target="faq">{{t:header.faq}}</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-buy" href="{{@root}}#license" data-track="Buy Click" data-track-location="header">{{t:header.buy}}</a>
+        <a class="button button-small button-ink" href="{{@root}}#download" data-track="Download Click" data-track-location="header">{{t:header.download}}</a>
+{{@langMenu}}
+        <button class="theme-toggle" type="button" aria-label="{{a:js.theme.toDark}}">
+          <span class="theme-sun" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="4"/><path d="M10 1.5v2.4M10 16.1v2.4M18.5 10h-2.4M3.9 10H1.5M15.6 4.4l-1.7 1.7M6.1 13.9l-1.7 1.7M15.6 15.6l-1.7-1.7M6.1 6.1 4.4 4.4"/></svg></span>
+          <span class="theme-moon" aria-hidden="true"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M16.5 12.6A7 7 0 0 1 7.4 3.5a7 7 0 1 0 9.1 9.1Z"/></svg></span>
+        </button>
+      </div>
+    </header>

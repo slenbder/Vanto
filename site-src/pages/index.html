@@ -1,0 +1,190 @@
+{{> head}}
+  <body>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="hd-up" viewBox="0 0 20 20"><path d="m6 12 4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="hd-down" viewBox="0 0 20 20"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="hd-grip" viewBox="0 0 20 20"><circle cx="7.5" cy="5" r="1.4" fill="currentColor"/><circle cx="12.5" cy="5" r="1.4" fill="currentColor"/><circle cx="7.5" cy="10" r="1.4" fill="currentColor"/><circle cx="12.5" cy="10" r="1.4" fill="currentColor"/><circle cx="7.5" cy="15" r="1.4" fill="currentColor"/><circle cx="12.5" cy="15" r="1.4" fill="currentColor"/></symbol>
+    </svg>
+{{> header}}
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>{{t:hero.title}}</h1>
+          <p class="hero-lede">
+            {{t:hero.lede}}
+          </p>
+          <p class="purchase-note">{{t:hero.purchaseNote}}</p>
+        </div>
+
+        <figure class="hero-shot">
+          <div class="hero-shot-tilt">
+            <div class="hero-shot-float">
+              <div class="vp" role="img" aria-label="{{a:hero.vp.label}}">
+                <img class="vp-shadow" src="/popover-shadow.webp" alt="" width="342" height="315" />
+                <svg class="vp-chrome" viewBox="0 0 272 240.5" aria-hidden="true">
+                  <defs><radialGradient id="vp-sheen" class="vp-sheen-light" gradientUnits="userSpaceOnUse" cx="96" cy="60" r="150"><stop offset="0" stop-color="#fff" stop-opacity="1" /><stop offset="1" stop-color="#fff" stop-opacity="0" /></radialGradient></defs>
+                  <path class="vp-shape" d="M0.5 30A19.5 19.5 0 0 1 20 10.5H146Q149 10.5 151 8.5L158.6 1.2Q160.75 -0.4 162.9 1.2L170.5 8.5Q172.5 10.5 175.5 10.5H252A19.5 19.5 0 0 1 271.5 30V220A19.5 19.5 0 0 1 252 239.5H20A19.5 19.5 0 0 1 0.5 220Z" />
+                  <path class="vp-sheen" d="M0.5 30A19.5 19.5 0 0 1 20 10.5H146Q149 10.5 151 8.5L158.6 1.2Q160.75 -0.4 162.9 1.2L170.5 8.5Q172.5 10.5 175.5 10.5H252A19.5 19.5 0 0 1 271.5 30V220A19.5 19.5 0 0 1 252 239.5H20A19.5 19.5 0 0 1 0.5 220Z" fill="url(#vp-sheen)" />
+                </svg>
+                <div class="vp-body" aria-hidden="true">
+                  <div class="vp-head"><span class="vp-dot"></span><span class="vp-status">{{t:hero.vp.status}}</span><span class="vp-count">{{t:hero.vp.count}}</span><span class="vp-gear"></span></div>
+                  <div class="vp-divider"></div>
+                  <ol class="vp-list">
+                    <li class="vp-row"><span>1.</span><span>{{t:hero.vp.item1}}</span></li>
+                    <li class="vp-row"><span>2.</span><img src="/popover-icon-png.webp" alt="" width="64" height="64" /><span>{{t:hero.vp.item2}}</span></li>
+                    <li class="vp-row"><span>3.</span><img src="/popover-icon-docx.webp" alt="" width="64" height="64" /><span>{{t:hero.vp.item3}}</span></li>
+                  </ol>
+                  <div class="vp-divider"></div>
+                  <div class="vp-actions"><div class="vp-actions-main"><div><span>{{t:hero.vp.stop}}</span><span>{{t:hero.vp.paste}}</span><span>{{t:hero.vp.clear}}</span></div><span>{{t:hero.vp.combine}}</span></div><span>{{t:hero.vp.quit}}</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <figcaption class="stage-caption">{{t:hero.caption}}</figcaption>
+        </figure>
+      </section>
+
+      <section class="proof-strip" aria-label="{{a:proof.label}}">
+        <span>{{t:proof.items.0}}</span><i></i><span>{{t:proof.items.1}}</span><i></i><span>{{t:proof.items.2}}</span><i></i><span>{{t:proof.items.3}}</span>
+      </section>
+
+      <section class="play-section" id="play">
+        <div class="section-heading" data-reveal>
+          <h2>{{t:play.title}}</h2>
+          <p>{{t:play.lede}}</p>
+        </div>
+
+        <div class="word-game" data-step="copy">
+          <div class="game-progress" role="group" aria-label="{{a:play.progressLabel}}">
+            <span class="active" data-progress="copy" aria-current="step"><b>1</b>{{t:play.steps.copy}}</span>
+            <i aria-hidden="true"></i>
+            <span data-progress="reorder"><b>2</b>{{t:play.steps.arrange}}</span>
+            <i aria-hidden="true"></i>
+            <span data-progress="paste"><b>3</b>{{t:play.steps.paste}}</span>
+          </div>
+
+          <article class="game-panel source-panel">
+            <div class="panel-label"><span>01</span>{{t:play.sourceLabel}}</div>
+            <p class="source-sentence">{{@gameSource}}</p>
+            <p class="panel-hint">{{t:play.sourceHint}}</p>
+          </article>
+
+          <div class="game-queue-wrap">
+            <div class="game-queue">
+              <div class="queue-head">
+                <div><img class="mini-mark" src="/menuBarIcon.svg" alt="" aria-hidden="true" width="18" height="18" /><strong>Vanto</strong></div>
+                <span class="queue-count">{{t:play.emptyCount}}</span>
+              </div>
+              <div class="queue-list">
+                <div class="empty-queue"><span>⌘</span><p>{{t:js.game.empty}}</p></div>
+              </div>
+              <p class="queue-tip">{{t:play.queueTip}}</p>
+            </div>
+            <div class="mobile-target-preview" role="group" aria-label="{{a:play.previewLabel}}">
+              <span>{{t:play.previewTitle}}</span>
+              <p class="preview-target-sentence">{{@gamePreview}}</p>
+            </div>
+            <span class="queue-status" aria-live="polite">{{t:js.game.status.start}}</span>
+          </div>
+
+          <article class="game-panel target-panel">
+            <div class="panel-label"><span>02</span>{{t:play.targetLabel}}</div>
+            <p class="target-sentence">{{@gameTarget}}</p>
+            <p class="panel-hint result-hint">{{@gameHint}}</p>
+          </article>
+
+          <div class="game-controls" role="group" aria-label="{{a:play.controlsLabel}}">
+            <button class="control-button copy-control" type="button"><b>{{t:play.controls.copy}}</b><small>0 / 3</small></button>
+            <button class="control-button paste-control" type="button" disabled><b>{{t:play.controls.paste}}</b><small>0 / 3</small></button>
+            <button class="control-button clear-control" type="button" disabled><b>{{t:play.controls.clear}}</b></button>
+          </div>
+          <button class="reset-control" type="button">{{t:play.reset}}</button>
+        </div>
+      </section>
+
+      <section class="why-section" id="why">
+        <div class="why-heading" data-reveal>
+          <h2>{{t:why.title}}</h2>
+        </div>
+        <div class="why-grid">
+          <article><h3>{{t:why.items.0.title}}</h3><p>{{t:why.items.0.text}}</p></article>
+          <article><h3>{{t:why.items.1.title}}</h3><p>{{t:why.items.1.text}}</p></article>
+          <article><h3>{{t:why.items.2.title}}</h3><p>{{t:why.items.2.text}}</p></article>
+          <article><h3>{{t:why.items.3.title}}</h3><p>{{t:why.items.3.text}}</p></article>
+        </div>
+      </section>
+
+      <section class="faq-section" id="faq">
+        <div class="faq-heading" data-reveal>
+          <h2>{{t:faq.title}}</h2>
+          <p>{{t:faq.lede}}</p>
+          <p class="contact-line">{{t:faq.contact}}</p>
+        </div>
+        <div class="faq-list">
+          <details open data-faq="{{en:faq.items.0.q}}">
+            <summary>{{t:faq.items.0.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.0.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.1.q}}">
+            <summary>{{t:faq.items.1.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.1.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.2.q}}">
+            <summary>{{t:faq.items.2.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.2.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.3.q}}">
+            <summary>{{t:faq.items.3.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.3.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.4.q}}">
+            <summary>{{t:faq.items.4.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.4.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.5.q}}">
+            <summary>{{t:faq.items.5.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.5.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.6.q}}">
+            <summary>{{t:faq.items.6.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.6.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.7.q}}">
+            <summary>{{t:faq.items.7.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.7.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.8.q}}">
+            <summary>{{t:faq.items.8.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.8.a}}</p>
+          </details>
+          <details data-faq="{{en:faq.items.9.q}}">
+            <summary>{{t:faq.items.9.q}}<span aria-hidden="true"></span></summary>
+            <p>{{t:faq.items.9.a}}</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="final-section" id="download">
+        <div class="final-queue" aria-hidden="true"><span>1</span><strong>{{t:final.queueItem}}</strong><svg class="final-grip" aria-hidden="true"><use href="#hd-grip"/></svg></div>
+        <h2 data-reveal>{{t:final.title}}</h2>
+        <p>{{t:final.lede}}</p>
+        <button class="button button-ink final-button" type="button" data-track="Download Click" data-track-location="final" data-coming-soon data-coming-soon-message="{{a:final.downloadSoon}}">{{t:final.download}}</button>
+        <span class="final-note">{{t:final.note}}</span>
+        <div class="license-option" id="license">
+          <span>{{t:final.licenseQuestion}}</span>
+          <button class="license-link" type="button" data-track="Buy Click" data-track-location="final" data-coming-soon data-coming-soon-message="{{a:final.licenseSoon}}">{{t:final.licenseLink}} <span aria-hidden="true">→</span></button>
+        </div>
+        <span class="license-note">{{t:final.licenseNote}}</span>
+        <span class="release-status" role="status" aria-live="polite"></span>
+      </section>
+    </main>
+
+{{> footer}}
+
+{{> scripts}}
+    <script src="/app.js?v=18"></script>
+    <script src="/hero-shot.js?v=15"></script>
+    <script src="/reveal.js?v=16"></script>
+  </body>
+</html>

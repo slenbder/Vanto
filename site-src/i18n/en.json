@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "index": {
+      "title": "Vanto",
+      "description": "Vanto lives in the Mac menu bar and queues text, images, and files for pasting one by one."
+    },
+    "privacy": {
+      "title": "Privacy Policy · Vanto",
+      "description": "How Vanto, its website, and purchases handle your information."
+    },
+    "terms": {
+      "title": "Terms of Use · Vanto",
+      "description": "The terms for using Vanto and its license."
+    },
+    "refunds": {
+      "title": "Refund Policy · Vanto",
+      "description": "Vanto’s 30-day refund policy."
+    },
+    "404": {
+      "title": "Page not found · Vanto",
+      "description": "Page not found."
+    }
+  },
+  "lang": {
+    "label": "Language",
+    "englishOnly": "This document is available in English only."
+  },
+  "header": {
+    "home": "Vanto home",
+    "navLabel": "Primary",
+    "play": "Try it",
+    "why": "Why it works",
+    "faq": "FAQ",
+    "buy": "Buy a license",
+    "download": "Download"
+  },
+  "hero": {
+    "title": "Copy everything.<br />Paste <em>in order.</em>",
+    "lede": "Collect text, images, and files without bouncing between windows. Arrange the queue once, then paste through it.",
+    "purchaseNote": "14-day trial at launch. One-time license.",
+    "caption": "<b>No Dock clutter.</b> Just the queue, exactly when you need it.",
+    "vp": {
+      "label": "The Vanto window: recording, 3 items in queue — Hello, world!, Mountains.png and job_offer.docx — with Stop, Paste, Clear, Combine and Paste, and Quit.",
+      "status": "Recording",
+      "count": "3 items in queue",
+      "item1": "Hello, world!",
+      "item2": "Mountains.png",
+      "item3": "job_offer.docx",
+      "stop": "Stop",
+      "paste": "Paste",
+      "clear": "Clear",
+      "combine": "Combine and Paste…",
+      "quit": "Quit"
+    }
+  },
+  "proof": {
+    "label": "Product highlights",
+    "items": ["FIFO by default", "Text, images &amp; files", "Combine text in one paste", "Rebindable shortcuts"]
+  },
+  "play": {
+    "title": "Can three words<br /><em>change the story?</em>",
+    "lede": "Copy three words, arrange the queue, then paste them into a completely different idea.",
+    "progressLabel": "Demo progress",
+    "steps": { "copy": "Copy", "arrange": "Arrange", "paste": "Paste" },
+    "sourceLabel": "Copy from here",
+    "sourceHint": "Each press copies the next highlighted word.",
+    "targetLabel": "Paste over here",
+    "emptyCount": "0 items",
+    "queueTip": "Drag words, or use the arrow controls.",
+    "previewLabel": "Paste destination preview",
+    "previewTitle": "Where it lands · top item first",
+    "controlsLabel": "Demo controls",
+    "controls": { "copy": "Copy", "paste": "Paste", "clear": "Clear" },
+    "reset": "Reset &amp; rearrange"
+  },
+  "why": {
+    "title": "The whole queue in one window.",
+    "items": [
+      { "title": "Stay where you are.", "text": "Copy a batch now and paste it later, without returning to the source after every item." },
+      { "title": "Make the order yours.", "text": "Rearrange, remove, and inspect everything from one compact menu-bar window." },
+      { "title": "Paste with your shortcut.", "text": "Press ⌃⌘V for the next item, or choose a different shortcut in Settings." },
+      { "title": "Keep it on your Mac.", "text": "No account, no cloud clipboard, no analytics in the app. Your copied content stays local." }
+    ]
+  },
+  "faq": {
+    "title": "Questions about Vanto",
+    "lede": "Mac compatibility, permissions, and what one purchase includes.",
+    "contact": "Didn’t find your answer? Write to {{@faqEmail}}",
+    "items": [
+      { "q": "What exactly does Vanto do?", "a": "It collects what you copy, lets you change the order, and pastes each item one by one. One small job, done properly." },
+      { "q": "What can I put in the queue?", "a": "Text, images, individual files, and groups of files. Everything stays visible in one compact menu-bar window." },
+      { "q": "Can I paste several text items at once?", "a": "Yes. Combine the text queue into one paste, in your chosen order. Separate items with a line break, space, comma, or your own separator." },
+      { "q": "Can I change the shortcuts and language?", "a": "Both global shortcuts can be changed in Settings. The app is available in English, Russian, Spanish, German, Japanese, Simplified Chinese, and Brazilian Portuguese." },
+      { "q": "Does my clipboard leave my Mac?", "a": "No. Vanto works locally, requires no account, and sends none of your copied content to the internet." },
+      { "q": "Why does it need Accessibility permission?", "a": "macOS requires that permission so Vanto can listen for its global shortcuts and paste into the app you are using." },
+      { "q": "Which Macs are supported?", "a": "Apple silicon Macs running macOS 13 or later. Intel Macs are not supported." },
+      { "q": "Is it a subscription?", "a": "No. One purchase gives you a lifetime license for up to three of your devices." },
+      { "q": "Can I download it again or get a refund?", "a": "You can download Vanto again from this website at any time. If Vanto isn’t right for you, you can ask for a refund within 30 days of purchase. See the <a class=\"contact-link\" href=\"{{@root}}refunds\">refund policy</a>." },
+      { "q": "How do updates work?", "a": "Automatically. Vanto checks for new versions, then downloads and installs them on its own. There is nothing to set up." }
+    ]
+  },
+  "final": {
+    "queueItem": "next item",
+    "title": "Start with 14 days.",
+    "lede": "At launch, the download will include a full 14-day trial. If Vanto earns a place in your menu bar, buy a lifetime key and enter it in the same app.",
+    "download": "Download Vanto",
+    "downloadSoon": "The Vanto download is coming soon.",
+    "note": "Apple silicon · macOS 13+ · Download coming soon",
+    "licenseQuestion": "Already tried Vanto?",
+    "licenseLink": "Buy a lifetime license",
+    "licenseSoon": "License checkout is coming soon.",
+    "licenseNote": "One purchase · 3 devices · Free future updates"
+  },
+  "footer": {
+    "tagline": "Copy more. Switch less.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "refunds": "Refunds",
+    "cookies": "Cookies",
+    "madeBy": "Made by Slenbder"
+  },
+  "notFound": {
+    "title": "Nothing here.",
+    "text": "This page doesn’t exist, or it moved. The queue is still waiting on the home page.",
+    "button": "Back to Vanto"
+  },
+  "js": {
+    "theme": {
+      "toDark": "Switch to dark theme",
+      "toLight": "Switch to light theme"
+    },
+    "consent": {
+      "label": "Cookie preferences",
+      "treat": "Take a bite of the cookie",
+      "idle": "Queue: 1 cookie. Paste it?",
+      "bites": ["Queue: ⅔ cookie. Paste it?", "Queue: ⅓ cookie. Going fast.", "Queue: crumbs. That settles it."],
+      "regrown": "Fresh batch. Queue: 1 cookie.",
+      "granted": "Pasted. Crumbs only, promise.",
+      "denied": "Skipped. No hard feelings.",
+      "text": "Microsoft Clarity records scrolls and clicks.",
+      "details": "Details",
+      "skip": "Skip",
+      "skipLabel": "Skip — decline Clarity cookies",
+      "allow": "Paste it",
+      "allowLabel": "Paste it — allow Clarity cookies"
+    },
+    "game": {
+      "blank": "______",
+      "itemType": "Text",
+      "empty": "Your copied words will wait here.",
+      "count": { "one": "{count} item", "other": "{count} items" },
+      "copyLabel": "Copy next word, {count} of 3 copied",
+      "pasteLabel": "Paste next word, {count} of 3 pasted",
+      "moveUp": "Move {word} up",
+      "moveDown": "Move {word} down",
+      "different": "Different order. Entirely different story.",
+      "status": {
+        "start": "Start with Copy.",
+        "copyMore": { "one": "{count} more to copy.", "other": "{count} more to copy." },
+        "copied": "Right words. New order, new meaning.",
+        "moved": "Moved {word} to position {position}. Meaning pending.",
+        "pasteMore": { "one": "{count} left to paste.", "other": "{count} left to paste." },
+        "done": "Queue clear. Meaning changed.",
+        "clearedEarly": "Queue cleared. Copy when ready.",
+        "clearedLate": "Queue cleared. Reset to start over."
+      },
+      "scenarios": [
+        {
+          "id": "countdown",
+          "source": "<span class=\"source-word\" data-word=\"panic\">Panic</span>. <span class=\"source-word\" data-word=\"plan\">Plan</span>. <span class=\"source-word\" data-word=\"nothing\">Nothing</span>. That’s how it goes.",
+          "targetParts": ["3… ", ". 2… ", ". 1… ", ". Go!"],
+          "slotCase": ["title", "title", "title"],
+          "correctOrder": ["nothing", "panic", "plan"],
+          "labels": {},
+          "hint": "Three words. Six suspiciously familiar workflows.",
+          "success": "Nothing. Panic. Plan. Surprisingly efficient."
+        },
+        {
+          "id": "suspects",
+          "source": "The vase broke. <span class=\"source-word\" data-word=\"gravity\">Gravity</span> did it, <span class=\"source-word\" data-word=\"my cat\">my cat</span> helped, <span class=\"source-word\" data-word=\"i\">I</span> just watched.",
+          "targetParts": ["", " did it, ", " helped, and ", " just watched."],
+          "slotCase": ["title", "lower", "lower"],
+          "correctOrder": ["i", "gravity", "my cat"],
+          "labels": { "i": "I" },
+          "hint": "Same suspects. Very different testimony.",
+          "success": "Case closed. The cat was framed."
+        },
+        {
+          "id": "tagline",
+          "source": "One <span class=\"source-word\" data-word=\"plan\">plan</span>. One <span class=\"source-word\" data-word=\"chance\">chance</span>. No <span class=\"source-word\" data-word=\"backup\">backup</span>. That’s the tagline.",
+          "targetParts": ["One ", ". One ", ". No ", "."],
+          "slotCase": ["lower", "lower", "lower"],
+          "correctOrder": ["backup", "chance", "plan"],
+          "labels": {},
+          "hint": "Rearrange the trailer. Rewrite the movie.",
+          "success": "One backup. One chance. No plan. Much more honest."
+        }
+      ]
+    }
+  }
+}
