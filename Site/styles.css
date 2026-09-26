@@ -481,6 +481,8 @@ footer > div > button { padding: 0; border: 0; background: none; color: inherit;
 @media (max-width: 360px) {
   .hero-shot-tilt { --pt: 1.1px; }
   .site-header .wordmark > span:nth-child(2) { display: none; }
+  .header-actions { gap: 4px; }
+  .header-actions .button-small { padding: 0 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
